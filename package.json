@@ -1,0 +1,36 @@
+{
+  "name": "principal",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "npm-run-all --parallel dev:frontend dev:backend",
+    "dev:frontend": "next dev",
+    "dev:backend": "convex dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@clerk/clerk-react": "^5.20.0",
+    "@clerk/nextjs": "^6.9.2",
+    "@next/eslint-plugin-next": "~15.1.0",
+    "convex": "^1.17.0",
+    "eslint-plugin-react-hooks": "^5.1.0-beta-26f2496093-20240514",
+    "next": "15.1.0",
+    "react": "^19",
+    "react-dom": "^19"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3",
+    "@types/node": "^20",
+    "@types/react": "^18.3.17",
+    "@types/react-dom": "^18.3.1",
+    "autoprefixer": "^10.4.20",
+    "eslint": "^9",
+    "eslint-config-next": "15.1.0",
+    "npm-run-all": "^4.1.5",
+    "postcss": "^8.5.1",
+    "tailwindcss": "^4.0.3",
+    "typescript": "^5.1.3"
+  }
+}
