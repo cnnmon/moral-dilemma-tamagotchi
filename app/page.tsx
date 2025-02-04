@@ -5,15 +5,7 @@ import { api } from "../convex/_generated/api";
 import { SignOutButton } from "@clerk/nextjs";
 import Image from "next/image";
 
-export default function Container() {
-  return (
-    <div className="w-full min-h-screen flex flex-col items-center justify-center">
-      <Home />
-    </div>
-  );
-}
-
-function Home() {
+export default function Home() {
   const { viewer, numbers } =
     useQuery(api.myFunctions.listNumbers, {
       count: 10,

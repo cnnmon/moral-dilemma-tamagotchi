@@ -17,6 +17,7 @@
     "convex": "^1.17.0",
     "eslint-plugin-react-hooks": "^5.1.0-beta-26f2496093-20240514",
     "next": "15.1.0",
+    "openai": "^4.82.0",
     "react": "^19",
     "react-dom": "^19"
   },

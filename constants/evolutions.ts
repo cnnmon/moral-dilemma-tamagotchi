@@ -1,110 +1,156 @@
-import { MoralDimension } from "./morals";
+import { MoralDimensions, MoralDimensionsType } from "./morals";
 
-export type Evolution = {
-  name: string;
-  category: MoralDimension;
+// represents a stage in pet evolution
+interface Stage1Evolution {
+  id: string;
   description: string;
-  nextStage?: string[]; // optional property for next stage evolutions
-};
+  requirements: Partial<MoralDimensionsType>;
+  nextStages?: Record<string, Stage2Evolution>;
+}
 
-export const stage1Evolutions: Record<string, Evolution> = {
+interface Stage2Evolution {
+  id: string;
+  description: string;
+  requirements: Partial<MoralDimensionsType>;
+}
+
+export const evolutions: Record<string, Stage1Evolution> = {
   harbinger: {
-    name: "harbinger",
+    id: "harbinger",
     description: "a judge who is always ready to make a decision",
-    category: "compassion",
-    nextStage: ["judge", "shepherd"],
+    requirements: {
+      [MoralDimensions.compassion]: 1, // empathy
+    },
+    nextStages: {
+      judge: {
+        id: "judge",
+        description: "an arbiter who embodies integrity",
+        requirements: {
+          [MoralDimensions.devotion]: 10, // integrity
+        },
+      },
+      shepherd: {
+        id: "shepherd",
+        description: "a guide who embodies loyalty",
+        requirements: {
+          [MoralDimensions.devotion]: 1, // loyalty
+        },
+      },
+    },
   },
   devout: {
-    name: "devout",
+    id: "devout",
     description: "a martyr who is always ready to make a sacrifice",
-    category: "purity",
-    nextStage: ["beacon", "martyr"],
+    requirements: {
+      [MoralDimensions.purity]: 1, // virtue
+    },
+    nextStages: {
+      beacon: {
+        id: "beacon",
+        description: "a beacon of justice",
+        requirements: {
+          [MoralDimensions.retribution]: 1, // justice
+        },
+      },
+      martyr: {
+        id: "martyr",
+        description: "a symbol of forgiveness",
+        requirements: {
+          [MoralDimensions.retribution]: 1, // forgiveness
+        },
+      },
+    },
   },
   watcher: {
-    name: "watcher",
+    id: "watcher",
     description: "a warden who is always ready to protect",
-    category: "retribution",
-    nextStage: ["warden", "vigilante"],
+    requirements: {
+      [MoralDimensions.retribution]: 1, // justice
+    },
+    nextStages: {
+      warden: {
+        id: "warden",
+        description: "a protector of authority",
+        requirements: {
+          [MoralDimensions.dominance]: 1, // authority
+        },
+      },
+      vigilante: {
+        id: "vigilante",
+        description: "an advocate of autonomy",
+        requirements: {
+          [MoralDimensions.dominance]: 1, // autonomy
+        },
+      },
+    },
   },
   loyalist: {
-    name: "loyalist",
+    id: "loyalist",
     description: "a guardian who is always ready to protect",
-    category: "devotion",
-    nextStage: ["champion", "guardian"],
+    requirements: {
+      [MoralDimensions.devotion]: 1, // loyalty
+    },
+    nextStages: {
+      champion: {
+        id: "champion",
+        description: "a paragon of integrity",
+        requirements: {
+          [MoralDimensions.devotion]: 1, // integrity
+        },
+      },
+      guardian: {
+        id: "guardian",
+        description: "a defender of justice",
+        requirements: {
+          [MoralDimensions.retribution]: 1, // justice
+        },
+      },
+    },
   },
   crowned: {
-    name: "crowned",
+    id: "crowned",
     description: "a tyrant who is always ready to rule",
-    category: "dominance",
-    nextStage: ["tyrant", "sovereign"],
+    requirements: {
+      [MoralDimensions.dominance]: 1, // authority
+    },
+    nextStages: {
+      tyrant: {
+        id: "tyrant",
+        description: "a ruler of indulgence",
+        requirements: {
+          [MoralDimensions.purity]: 1, // indulgence
+        },
+      },
+      sovereign: {
+        id: "sovereign",
+        description: "a leader of virtue",
+        requirements: {
+          [MoralDimensions.purity]: 1, // virtue
+        },
+      },
+    },
   },
   sigma: {
-    name: "sigma",
+    id: "sigma",
     description: "a hedonist who is always ready to indulge",
-    category: "ego",
-    nextStage: ["hedonist", "npc"],
-  },
-};
-
-export const stage2Evolutions: Record<string, Evolution> = {
-  judge: {
-    name: "judge",
-    description: "an arbiter who embodies integrity",
-    category: "devotion",
-  },
-  shepherd: {
-    name: "shepherd",
-    description: "a guide who embodies loyalty",
-    category: "devotion",
-  },
-  beacon: {
-    name: "beacon",
-    description: "a beacon of justice",
-    category: "retribution",
-  },
-  martyr: {
-    name: "martyr",
-    description: "a symbol of forgiveness",
-    category: "retribution",
-  },
-  warden: {
-    name: "warden",
-    description: "a protector of authority",
-    category: "dominance",
-  },
-  vigilante: {
-    name: "vigilante",
-    description: "an advocate of autonomy",
-    category: "dominance",
-  },
-  champion: {
-    name: "champion",
-    description: "a paragon of integrity",
-    category: "devotion",
-  },
-  guardian: {
-    name: "guardian",
-    description: "a defender of justice",
-    category: "retribution",
-  },
-  tyrant: {
-    name: "tyrant",
-    description: "a ruler of indulgence",
-    category: "purity",
-  },
-  sovereign: {
-    name: "sovereign",
-    description: "a leader of virtue",
-    category: "purity",
-  },
-  hedonist: {
-    name: "hedonist",
-    description: "a seeker of indulgence",
-    category: "ego",
-  },
-  npc: {
-    name: "npc",
-    description: "an embodiment of indifference",
-    category: "compassion",
+    requirements: {
+      [MoralDimensions.ego]: 10, // selfhood
+    },
+    nextStages: {
+      hedonist: {
+        id: "hedonist",
+        description: "a seeker of indulgence",
+        requirements: {
+          [MoralDimensions.ego]: 1, // indulgence
+        },
+      },
+      npc: {
+        id: "npc",
+        description: "an embodiment of indifference",
+        requirements: {
+          [MoralDimensions.compassion]: 1, // indifference
+        },
+      },
+    },
   },
 };

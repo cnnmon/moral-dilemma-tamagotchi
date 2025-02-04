@@ -21,9 +21,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${pixel.className}`}>
-        <ClerkProvider dynamic>
-          <ConvexClientProvider>{children}</ConvexClientProvider>
-        </ClerkProvider>
+        <div className="w-full min-h-screen flex flex-col items-center justify-center">
+          <ClerkProvider dynamic>
+            <ConvexClientProvider>{children}</ConvexClientProvider>
+          </ClerkProvider>
+        </div>
       </body>
     </html>
   );
