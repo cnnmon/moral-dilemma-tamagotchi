@@ -14,7 +14,7 @@ dilemmas are presented at random times and the user is given a text box to respo
     - health
     - cleanliness
     - happiness
-    - sanity (increased with well-reasoned responses)
+    - sanity (increased with well-reasoned dilemmas)
 - completed dilemmas & history
 
 ## moral dimensions
@@ -57,7 +57,7 @@ dilemmas are presented at random times and the user is given a text box to respo
 
 ## prompts
 
-processing dilemma responses
+processing dilemma dilemmas
 
 ```markdown
 you are {pet}, an adolescent bird still figuring out morals. use an informal voice, all lowercase.
@@ -89,7 +89,7 @@ weigh the dilemma’s relevance to each moral dimension. if it strongly ties to 
 
 {pet}'s personality: {personality}
 
-personality should evolve naturally over time based on past responses. start by noting a weak personality. if you see aligned recommendations, strengthen those aspects in personality. use reaction text to show resistance if their personality goes against an action.
+personality should evolve naturally over time based on past dilemmas. start by noting a weak personality. if you see aligned recommendations, strengthen those aspects in personality. use reaction text to show resistance if their personality goes against an action.
 
 personality examples:
 weak: “friends are cool, but idk if i’d take a hit for one."

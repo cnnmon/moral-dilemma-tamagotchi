@@ -1,20 +1,26 @@
 import { MoralDimensions, MoralDimensionsType } from "./morals";
 
+export type Stage1EvolutionId = "harbinger" | "devout" | "watcher" | "loyalist" | "crowned" | "sigma";
+
+export type Stage2EvolutionId = "judge" | "shepherd" | "beacon" | "martyr" | "warden" | "vigilante" | "champion" | "guardian" | "tyrant" | "sovereign" | "hedonist" | "npc";
+
+export type EvolutionId = "egg" | Stage1EvolutionId | Stage2EvolutionId;
+
 // represents a stage in pet evolution
 interface Stage1Evolution {
-  id: string;
+  id: Stage1EvolutionId;
   description: string;
   requirements: Partial<MoralDimensionsType>;
-  nextStages?: Record<string, Stage2Evolution>;
+  nextStages: Partial<Record<Stage2EvolutionId, Stage2Evolution>>;
 }
 
 interface Stage2Evolution {
-  id: string;
+  id: Stage2EvolutionId;
   description: string;
   requirements: Partial<MoralDimensionsType>;
 }
 
-export const evolutions: Record<string, Stage1Evolution> = {
+export const evolutions: Record<Stage1EvolutionId, Stage1Evolution> = {
   harbinger: {
     id: "harbinger",
     description: "a judge who is always ready to make a decision",

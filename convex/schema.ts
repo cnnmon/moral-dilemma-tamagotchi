@@ -25,16 +25,20 @@ export default defineSchema({
     personality: v.string(), // traits (> 150 characters)
     baseStats: v.object(baseStats), // ends game if 0
     moralStats: v.object(moralStats),
-    history: v.id("responses"),
+    history: v.array(v.id("dilemmas")),
+    graduated: v.optional(v.boolean()), // whether the pet has graduated
   }).index("by_userId", ["userId"]),
 
   dilemmas: defineTable({
     userId: v.string(),
     petId: v.id("pets"), // pet id
-    dilemmaId: v.string(), // dilemma string identifier
+    title: v.string(), // dilemma string identifier
     responseText: v.string(), // player's input
+    outcome: v.optional(v.string()), // pet's decision or question
     updatedMoralStats: v.optional(v.object(moralStats)),
     updatedPersonality: v.optional(v.string()), // updated personality
-    reaction: v.optional(v.string()), // reaction text
-  }).index("by_userId", ["userId"]),
+    resolved: v.boolean(), // whether the response is resolved
+  })
+    .index("by_userId", ["userId"])
+    .index("by_petId", ["petId"]),
 });

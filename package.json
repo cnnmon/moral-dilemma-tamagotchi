@@ -19,7 +19,9 @@
     "next": "15.1.0",
     "openai": "^4.82.0",
     "react": "^19",
-    "react-dom": "^19"
+    "react-dom": "^19",
+    "sonner": "^1.7.4",
+    "zod": "^3.24.1"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
