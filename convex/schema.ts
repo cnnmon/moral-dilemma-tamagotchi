@@ -21,11 +21,11 @@ export default defineSchema({
   pets: defineTable({
     userId: v.string(), // owner of the pet as email
     name: v.string(),
-    evolutionId: v.string(), // evolution string identifier
+    age: v.number(), // represents 1-3 stages of growth
+    evolutionId: v.optional(v.string()), // evolution string identifier
     personality: v.string(), // traits (> 150 characters)
     baseStats: v.object(baseStats), // ends game if 0
     moralStats: v.object(moralStats),
-    history: v.array(v.id("dilemmas")),
     graduated: v.optional(v.boolean()), // whether the pet has graduated
   }).index("by_userId", ["userId"]),
 
@@ -38,7 +38,7 @@ export default defineSchema({
     updatedMoralStats: v.optional(v.object(moralStats)),
     updatedPersonality: v.optional(v.string()), // updated personality
     resolved: v.boolean(), // whether the response is resolved
+    overridden: v.optional(v.boolean()), // whether the response is overridden by the pet's personality
   })
-    .index("by_userId", ["userId"])
-    .index("by_petId", ["petId"]),
+    .index("by_userAndPetId", ["userId", "petId"]),
 });

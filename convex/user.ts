@@ -4,7 +4,6 @@ import { Id } from './_generated/dataModel';
 interface UserInfo {
   userId: string | null;
   petId: Id<'pets'> | null;
-  status: 'needs_pet' | 'has_pet' | 'not_authenticated';
 }
 
 // internal helper to get user info and latest pet
@@ -16,8 +15,7 @@ export async function getUserAndPetId(
   if (!identity?.email) {
     return { 
       userId: null, 
-      petId: null, 
-      status: 'not_authenticated' 
+      petId: null,
     };
   }
 
@@ -34,6 +32,5 @@ export async function getUserAndPetId(
   return {
     userId,
     petId: latestPet?._id ?? null,
-    status: latestPet ? 'has_pet' : 'needs_pet',
   };
 }

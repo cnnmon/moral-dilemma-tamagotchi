@@ -4,8 +4,9 @@ import { useQuery, useMutation } from "convex/react";
 import { api } from "../convex/_generated/api";
 import { SignOutButton } from "@clerk/nextjs";
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
+import { Doc, Id } from "@/convex/_generated/dataModel";
 
 interface Dilemma {
   id: string;
@@ -45,11 +46,61 @@ function CreatePetForm() {
   );
 }
 
-function DilemmaPrompt({ dilemma }: { dilemma: Dilemma }) {
+function DilemmaPrompt({
+  pet,
+  dilemma,
+  onAnswered,
+}: {
+  pet: Doc<"pets">;
+  dilemma: Dilemma;
+  onAnswered: () => void;
+}) {
   const [response, setResponse] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const submitResponse = useMutation(api.dilemmas.processDilemma);
-  const [petResponse, setPetResponse] = useState<string | undefined>();
+  const [clarifyingQuestion, setClarifyingQuestion] = useState<
+    string | undefined
+  >();
+  const [currentDilemmaId, setCurrentDilemmaId] = useState<
+    string | undefined
+  >();
+
+  // subscribe to updates for the current dilemma
+  const dilemmaUpdate = useQuery(
+    api.dilemmas.getDilemmaById,
+    currentDilemmaId
+      ? { dilemmaId: currentDilemmaId as Id<"dilemmas"> }
+      : "skip"
+  );
+
+  // when we get an update and it's resolved, show the outcome
+  useEffect(() => {
+    if (!dilemmaUpdate) {
+      return;
+    }
+
+    if (dilemmaUpdate.resolved && dilemmaUpdate.outcome) {
+      if (!dilemmaUpdate.ok) {
+        // show clarifying question
+        setClarifyingQuestion(dilemmaUpdate.outcome);
+        toast.info(dilemmaUpdate.outcome, {
+          position: "bottom-center",
+          className: "font-pixel",
+        });
+      } else {
+        // clear input and show success
+        setResponse("");
+        setClarifyingQuestion(undefined);
+        setCurrentDilemmaId(undefined);
+        toast.success(dilemmaUpdate.outcome, {
+          position: "bottom-center",
+          className: "font-pixel",
+        });
+        // notify parent that dilemma was answered
+        onAnswered();
+      }
+    }
+  }, [dilemmaUpdate, onAnswered]);
 
   const handleSubmit = async () => {
     if (!response.trim()) {
@@ -69,22 +120,8 @@ function DilemmaPrompt({ dilemma }: { dilemma: Dilemma }) {
         responseText: response.trim(),
       });
 
-      // if we got a response back from the pet, show it
-      if (result?.outcome) {
-        setPetResponse(result.outcome);
-        toast.info(result.outcome, {
-          position: "bottom-center",
-          className: "font-pixel",
-        });
-      } else {
-        // if no response, clear the input and show success
-        setResponse("");
-        setPetResponse(undefined);
-        toast.success("response processed! ৻(  •̀ ᗜ •́  ৻)", {
-          position: "bottom-center",
-          className: "font-pixel",
-        });
-      }
+      // store the dilemma id to subscribe to updates
+      setCurrentDilemmaId(result.dilemmaId);
     } catch (error) {
       console.error("❌ Error processing response:", error);
       toast.error("something went wrong! try again?", {
@@ -98,10 +135,12 @@ function DilemmaPrompt({ dilemma }: { dilemma: Dilemma }) {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="text-center">{dilemma.text}</div>
-      {petResponse && (
+      <div className="text-center">
+        {dilemma.text.replace(/{name}/g, pet.name)}
+      </div>
+      {clarifyingQuestion && (
         <div className="text-center text-orange-500 font-pixel">
-          {petResponse}
+          {clarifyingQuestion}
         </div>
       )}
       <textarea
@@ -125,9 +164,26 @@ function DilemmaPrompt({ dilemma }: { dilemma: Dilemma }) {
 
 export default function Home() {
   const result = useQuery(api.dilemmas.getNextDilemma);
-  const pet = useQuery(api.pets.getPetStatus);
+  const petResponse = useQuery(api.pets.getPetStatus);
+  const [currentDilemma, setCurrentDilemma] = useState<Dilemma | null>(null);
 
-  if (result === undefined || pet === undefined) {
+  // when we get a new dilemma from the query, store it if we don't have one
+  useEffect(() => {
+    if (!currentDilemma && result?.status === "has_dilemma" && result.dilemma) {
+      setCurrentDilemma(result.dilemma);
+    }
+  }, [result, currentDilemma]);
+
+  // callback to clear the current dilemma when successfully answered
+  const onDilemmaAnswered = () => {
+    setCurrentDilemma(null);
+  };
+
+  if (result === undefined || petResponse === undefined) {
+    return null;
+  }
+
+  if (!petResponse?.pet) {
     return null;
   }
 
@@ -144,17 +200,22 @@ export default function Home() {
 
         {/* Show different content based on status */}
         {result.status === "needs_pet" && <CreatePetForm />}
-        {result.status === "has_dilemma" && result.dilemma && (
-          <>
-            {pet?.pet && (
-              <div className="text-center">
-                <h1 className="text-2xl font-bold">{pet.pet.name}</h1>
-                <p className="text-gray-600">{pet.pet.personality}</p>
-              </div>
-            )}
-            <DilemmaPrompt dilemma={result.dilemma} />
-          </>
-        )}
+        {result.status === "has_dilemma" &&
+          (currentDilemma || result.dilemma) && (
+            <>
+              {petResponse?.pet && (
+                <div className="text-center">
+                  <h1 className="text-2xl font-bold">{petResponse.pet.name}</h1>
+                  <p className="text-gray-600">{petResponse.pet.personality}</p>
+                </div>
+              )}
+              <DilemmaPrompt
+                pet={petResponse.pet}
+                dilemma={currentDilemma || result.dilemma}
+                onAnswered={onDilemmaAnswered}
+              />
+            </>
+          )}
         {result.status === "not_authenticated" && (
           <div>Please sign in to play</div>
         )}

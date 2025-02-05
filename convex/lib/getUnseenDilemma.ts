@@ -1,4 +1,4 @@
-import { Dilemma, dilemmas } from '../constants/dilemmas';
+import { Dilemma, dilemmas } from '../../constants/dilemmas';
 
 // get a random dilemma that hasn't been seen by this pet
 export function getUnseenDilemma(seenDilemmaIds: string[]): Dilemma | null {

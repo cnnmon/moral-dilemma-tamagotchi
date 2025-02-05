@@ -6,14 +6,13 @@ import { getUserAndPetId } from './user';
 export const getPetStatus = query({
   args: {},
   handler: async (ctx) => {
-    const userInfo = await getUserAndPetId(ctx);
-    if (userInfo.status === 'not_authenticated') return null;
+    const { petId } = await getUserAndPetId(ctx);
+    if (!petId) return null;
 
     // if user has a pet, get its data
-    const pet = userInfo.petId ? await ctx.db.get(userInfo.petId) : null;
+    const pet = petId ? await ctx.db.get(petId) : null;
 
     return {
-      status: userInfo.status,
       pet,
     };
   },
@@ -46,16 +45,16 @@ export const createPet = mutation({
     name: v.string(),
   },
   handler: async (ctx, args) => {
-    const { userId, status } = await getUserAndPetId(ctx);
+    const { userId } = await getUserAndPetId(ctx);
     if (!userId) throw new Error('not authenticated');
-    if (status === 'has_pet') throw new Error('you already have a pet');
 
     // create the pet with default stats
     return ctx.db.insert('pets', {
       userId,
       name: args.name,
-      evolutionId: 'egg', // start as an egg
-      personality: 'a curious little egg, waiting to hatch and discover the world',
+      age: 1, // start as an egg
+      evolutionId: undefined, // only is defined after first evolution
+      personality: '',
       baseStats: {
         health: 5,
         hunger: 5,
@@ -70,7 +69,6 @@ export const createPet = mutation({
         purity: 5,
         ego: 5,
       },
-      history: [],
       graduated: false,
     });
   },

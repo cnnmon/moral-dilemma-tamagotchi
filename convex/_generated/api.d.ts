@@ -14,6 +14,9 @@ import type {
   FunctionReference,
 } from "convex/server";
 import type * as dilemmas from "../dilemmas.js";
+import type * as lib_getUnseenDilemma from "../lib/getUnseenDilemma.js";
+import type * as lib_processDilemmaResponse from "../lib/processDilemmaResponse.js";
+import type * as lib_prompt from "../lib/prompt.js";
 import type * as pets from "../pets.js";
 import type * as user from "../user.js";
 
@@ -27,6 +30,9 @@ import type * as user from "../user.js";
  */
 declare const fullApi: ApiFromModules<{
   dilemmas: typeof dilemmas;
+  "lib/getUnseenDilemma": typeof lib_getUnseenDilemma;
+  "lib/processDilemmaResponse": typeof lib_processDilemmaResponse;
+  "lib/prompt": typeof lib_prompt;
   pets: typeof pets;
   user: typeof user;
 }>;
