@@ -3,37 +3,30 @@
 import { useState, useEffect } from "react";
 import { useMutation, useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
-import { toast } from "sonner";
-import { Doc, Id } from "@/convex/_generated/dataModel";
+import { Id } from "@/convex/_generated/dataModel";
 import { DilemmaTemplate } from "@/constants/dilemmas";
 
-interface DilemmaPromptProps {
-  pet: Doc<"pets">;
+interface TextInputProps {
   dilemma: DilemmaTemplate;
-  onAnswered: () => void;
+  onOutcome: (message: string) => void;
+  onProcessingStart?: () => void;
+  onProcessingEnd?: () => void;
+  disabled?: boolean;
 }
 
-export function TextInput({ dilemma, onAnswered }: DilemmaPromptProps) {
+export function TextInput({
+  dilemma,
+  onOutcome,
+  onProcessingStart,
+  onProcessingEnd,
+  disabled = false,
+}: TextInputProps) {
   const [response, setResponse] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const submitResponse = useMutation(api.dilemmas.processDilemma);
-  const [clarifyingQuestion, setClarifyingQuestion] = useState<
-    string | undefined
-  >();
-  const [currentDilemma, setCurrentDilemma] =
-    useState<DilemmaTemplate>(dilemma);
   const [currentDilemmaId, setCurrentDilemmaId] = useState<
     string | undefined
   >();
-
-  // update current dilemma when prop changes and no active dilemma is being processed
-  useEffect(() => {
-    if (!currentDilemmaId && dilemma.id !== currentDilemma.id) {
-      setCurrentDilemma(dilemma);
-      setClarifyingQuestion(undefined);
-      setResponse("");
-    }
-  }, [dilemma, currentDilemma.id, currentDilemmaId]);
 
   // subscribe to updates for the current dilemma
   const dilemmaUpdate = useQuery(
@@ -48,54 +41,36 @@ export function TextInput({ dilemma, onAnswered }: DilemmaPromptProps) {
     if (!dilemmaUpdate) return;
 
     if (dilemmaUpdate.resolved && dilemmaUpdate.outcome) {
-      if (!dilemmaUpdate.ok) {
-        // show clarifying question
-        setClarifyingQuestion(dilemmaUpdate.outcome);
-        toast.info(dilemmaUpdate.outcome, {
-          position: "bottom-center",
-          className: "font-pixel",
-          duration: Infinity,
-          dismissible: true,
-        });
-      } else {
-        // clear input and show success
-        setResponse("");
-        setClarifyingQuestion(undefined);
+      onOutcome(dilemmaUpdate.outcome);
+      setResponse("");
+
+      if (dilemmaUpdate.ok) {
+        // if the response was accepted (not a clarifying question)
         setCurrentDilemmaId(undefined);
-        toast.success(dilemmaUpdate.outcome, {
-          position: "bottom-center",
-          className: "font-pixel",
-          duration: Infinity,
-          dismissible: true,
-        });
-        // notify parent that dilemma was answered
-        onAnswered();
+        setIsSubmitting(false);
+        onProcessingEnd?.();
+      } else {
+        // if it was a clarifying question, just reset submit state
+        setIsSubmitting(false);
       }
-      setIsSubmitting(false);
     }
-  }, [dilemmaUpdate, onAnswered]);
+  }, [dilemmaUpdate, onOutcome, onProcessingEnd]);
 
   const handleSubmit = async () => {
     if (!response.trim()) {
-      toast.error("please write a response first!", {
-        position: "bottom-center",
-        className: "font-pixel",
-        duration: Infinity,
-        dismissible: true,
-      });
+      onOutcome("please write a response first!");
       return;
     }
 
     setIsSubmitting(true);
+    onProcessingStart?.();
     console.log("🚀 Submitting response:", response);
 
     try {
       const result = await submitResponse({
         dilemma: {
-          title: currentDilemma.id,
-          text: clarifyingQuestion
-            ? `${currentDilemma.text}\n\n${clarifyingQuestion}`
-            : currentDilemma.text,
+          title: dilemma.id,
+          text: dilemma.text,
         },
         responseText: response.trim(),
       });
@@ -104,32 +79,38 @@ export function TextInput({ dilemma, onAnswered }: DilemmaPromptProps) {
       setCurrentDilemmaId(result.dilemmaId);
     } catch (error) {
       console.error("❌ Error processing response:", error);
-      toast.error("something went wrong! try again?", {
-        position: "bottom-center",
-        className: "font-pixel",
-        duration: Infinity,
-        dismissible: true,
-      });
+      onOutcome("something went wrong! try again?");
       setIsSubmitting(false);
+      onProcessingEnd?.();
     }
   };
 
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleSubmit();
+    }
+  };
+
+  const isDisabled = disabled || isSubmitting;
+
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4 w-full">
       <textarea
         className={`w-full resize-none border-2 border-black outline-none p-2 ${
-          isSubmitting ? "opacity-50 cursor-not-allowed" : ""
+          isDisabled ? "opacity-50 cursor-not-allowed" : ""
         }`}
         value={response}
         onChange={(e) => setResponse(e.target.value)}
-        disabled={isSubmitting}
+        onKeyPress={handleKeyPress}
+        disabled={isDisabled}
         placeholder={isSubmitting ? "thinking..." : "what should they do?"}
       />
       <button
         onClick={handleSubmit}
-        disabled={isSubmitting}
+        disabled={isDisabled}
         className={`bg-black text-white p-2 hover:bg-gray-800 ${
-          isSubmitting ? "opacity-50 cursor-not-allowed" : ""
+          isDisabled ? "opacity-50 cursor-not-allowed" : ""
         }`}
       >
         {isSubmitting ? "thinking..." : "submit"}

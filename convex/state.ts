@@ -1,13 +1,13 @@
 import { mutation, query } from "./_generated/server";
 import { Doc } from "./_generated/dataModel";
 import { getUserAndPetId } from "./user";
-import { getUnseenDilemma } from "./lib/getUnseenDilemma";
 import { dilemmaTemplates, DilemmaTemplate } from "../constants/dilemmas";
+import { getUnseenDilemmas } from "./lib/getUnseenDilemma";
 
 export type GameState = 
   | { status: 'not_authenticated' }
   | { status: 'needs_pet' }
-  | { status: 'has_dilemma', dilemma: DilemmaTemplate, pet: Doc<"pets"> }
+  | { status: 'has_dilemmas', dilemmas: DilemmaTemplate[], pet: Doc<"pets"> }
   | { status: 'out_of_dilemmas', pet: Doc<"pets"> }
   | {
       status: 'has_unresolved_dilemma',
@@ -16,7 +16,7 @@ export type GameState =
       pet: Doc<"pets">
     }
 
-// get an active pet & dilemma
+// get an active pet & dilemmas
 export const getActiveGameState = query({
   args: {},
   handler: async (ctx): Promise<GameState> => {
@@ -72,17 +72,17 @@ export const getActiveGameState = query({
       }
     }
 
-    // get random unseen dilemma
+    // get all unseen dilemmas
     const seenDilemmaIds = seenDilemmas.map(d => d.title);
-    const dilemma = getUnseenDilemma(seenDilemmaIds);
+    const unseenDilemmas = getUnseenDilemmas(seenDilemmaIds);
     
-    if (!dilemma) {
+    if (!unseenDilemmas || unseenDilemmas.length === 0) {
       return { status: 'out_of_dilemmas', pet };
     }
     
     return {
-      status: 'has_dilemma',
-      dilemma: dilemma,
+      status: 'has_dilemmas',
+      dilemmas: unseenDilemmas,
       pet,
     };
   },

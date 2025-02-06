@@ -1,10 +1,12 @@
+import { DilemmaTemplate } from '../../constants/dilemmas';
 import { MoralDimensionsType } from '../../constants/morals';
 import { openai, eggPrompt, stage1Prompt, stage2Prompt } from './prompt';
 
 interface ProcessDilemmaParams {
   pet: Pet;
-  dilemmaText: string;
+  dilemma: DilemmaTemplate;
   responseText: string;
+  clarifyingQuestion?: string;
 }
 
 interface Pet {
@@ -17,7 +19,7 @@ interface Pet {
 
 // get prompt based on pet's stage
 // trust in caretaker decreases as pet's stage increases
-function getPrompt(pet: Pet, dilemmaText: string, responseText: string) {
+function getPrompt(pet: Pet, dilemma: DilemmaTemplate, responseText: string, clarifyingQuestion: string | undefined) {
   const stage = pet.age;
   let prompt: string | undefined;
 
@@ -37,9 +39,11 @@ function getPrompt(pet: Pet, dilemmaText: string, responseText: string) {
     throw new Error('invalid stage');
   }
 
+  const clarifyingQuestionText = clarifyingQuestion ? `${pet.name}'s clarifying question: "${clarifyingQuestion}"` : '';
   const formattedPrompt = prompt
-    .replace(/{pet}/g, pet.name)
-    .replace('{dilemma}', dilemmaText)
+    .replace('{dilemma}', dilemma.text)
+    .replace('{dilemma.moralDimensions}', dilemma.relatedStats.join(', '))
+    .replace('{clarifyingQuestion}', clarifyingQuestionText)
     .replace('{response}', responseText)
     .replace('{personality}', pet.personality)
     .replace('{morals.compassion}', pet.moralStats.compassion.toString())
@@ -47,7 +51,8 @@ function getPrompt(pet: Pet, dilemmaText: string, responseText: string) {
     .replace('{morals.devotion}', pet.moralStats.devotion.toString())
     .replace('{morals.dominance}', pet.moralStats.dominance.toString())
     .replace('{morals.purity}', pet.moralStats.purity.toString())
-    .replace('{morals.ego}', pet.moralStats.ego.toString());
+    .replace('{morals.ego}', pet.moralStats.ego.toString())
+    .replace(/{pet}/g, pet.name);
 
   return formattedPrompt;
 }
@@ -55,10 +60,11 @@ function getPrompt(pet: Pet, dilemmaText: string, responseText: string) {
 // process a dilemma response using openai
 export default async function processDilemmaResponse({
   pet,
-  dilemmaText,
+  dilemma,
   responseText,
+  clarifyingQuestion,
 }: ProcessDilemmaParams): Promise<unknown> {
-  const formattedPrompt = getPrompt(pet, dilemmaText, responseText);
+  const formattedPrompt = getPrompt(pet, dilemma, responseText, clarifyingQuestion);
   console.log('🤖 Formatted prompt:', formattedPrompt);
 
   // call openai api

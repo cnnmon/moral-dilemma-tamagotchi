@@ -69,6 +69,7 @@ export const processDilemma = mutation({
       .first();
     
     let dilemmaId: Id<'dilemmas'>;
+    let clarifyingQuestion: string | undefined;
     if (existingDilemma) {
       console.log('🔄 Dilemma already exists, skipping insertion');
 
@@ -79,6 +80,7 @@ export const processDilemma = mutation({
 
       // else it was an api error
       dilemmaId = existingDilemma._id;
+      clarifyingQuestion = existingDilemma.outcome;
     } else {
       // else it was a new dilemma
       dilemmaId = await ctx.db.insert('dilemmas', {
@@ -100,7 +102,9 @@ export const processDilemma = mutation({
     await ctx.scheduler.runAfter(0, internal.dilemmas.generateResponse, {
       responseText: args.responseText,
       userId: pet.userId,
-      dilemma: args.dilemma,
+      dilemmaId,
+      dilemmaTitle: args.dilemma.title,
+      clarifyingQuestion,
       pet: {
         _id: pet._id,
         name: pet.name,
@@ -109,7 +113,6 @@ export const processDilemma = mutation({
         moralStats: pet.moralStats,
         age: pet.age,
       },
-      dilemmaId,
     });
     console.log('✅ LLM processing scheduled');
 
@@ -122,10 +125,8 @@ export const processDilemma = mutation({
 export const generateResponse = internalAction({
   args: {
     dilemmaId: v.id('dilemmas'),
-    dilemma: v.object({
-      title: v.string(),
-      text: v.string(),
-    }),
+    dilemmaTitle: v.string(),
+    clarifyingQuestion: v.optional(v.string()),
     responseText: v.string(),
     userId: v.string(),
     pet: v.object({
@@ -151,14 +152,15 @@ export const generateResponse = internalAction({
     });
     
     const { pet, responseText } = args;
-    const templateDilemma = dilemmaTemplates[args.dilemma.title];
+    const templateDilemma = dilemmaTemplates[args.dilemmaTitle];
     
     // process with openai
     console.log('🔄 Calling LLM...');
     const generatedResponse = await processDilemmaResponse({
       pet,
-      dilemmaText: templateDilemma.text,
+      dilemma: templateDilemma,
       responseText,
+      clarifyingQuestion: args.clarifyingQuestion,
     });
     console.log('✅ LLM response received:', generatedResponse);
 
