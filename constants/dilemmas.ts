@@ -1,14 +1,14 @@
 import { MoralDimensions, MoralDimensionsType } from "./morals";
 
 // represents a moral choice presented to the player
-export interface Dilemma {
+export interface DilemmaTemplate {
   id: string;
   text: string;
   relatedStats: Array<keyof MoralDimensionsType>;
   stakes: 0 | 1 | 2 | 3; // difficulty/impact level
 }
 
-const compassionDilemmas: Record<string, Dilemma> = {
+const compassionDilemmas: Record<string, DilemmaTemplate> = {
   train: {
     id: "train",
     text: "{pet} is on a packed train. an exhausted looking office worker asks for their seat. should {pet} give it up or pretend not to hear?",
@@ -23,7 +23,7 @@ const compassionDilemmas: Record<string, Dilemma> = {
   },
 };
 
-const retributionDilemmas: Record<string, Dilemma> = {
+const retributionDilemmas: Record<string, DilemmaTemplate> = {
   jobinterviews: {
     id: "jobinterviews",
     text: "{pet} found out that a close friend has been cheating on all of their automated job interviews, but the job interviews are stupid anyway. should they say anything about it?",
@@ -38,7 +38,7 @@ const retributionDilemmas: Record<string, Dilemma> = {
   },
 };
 
-const devotionDilemmas: Record<string, Dilemma> = {
+const devotionDilemmas: Record<string, DilemmaTemplate> = {
   talentshow: {
     id: "talentshow",
     text: "{pet} and {pet}'s close friend just happen to have prepared the same song for the talent show. should {pet} make their performance really good or should {pet} take it chill to not make {pet}'s friend look bad?",
@@ -53,7 +53,7 @@ const devotionDilemmas: Record<string, Dilemma> = {
   },
 };
 
-const dominanceDilemmas: Record<string, Dilemma> = {
+const dominanceDilemmas: Record<string, DilemmaTemplate> = {
   groupproject: {
     id: "groupproject",
     text: "{pet} is in a group project but everyone sucks at communicating. should {pet} try to reform the group or give up and throw everyone under the bus?",
@@ -74,7 +74,7 @@ const dominanceDilemmas: Record<string, Dilemma> = {
   },
 };
 
-const purityDilemmas: Record<string, Dilemma> = {
+const purityDilemmas: Record<string, DilemmaTemplate> = {
   fishcoin: {
     id: "fishcoin",
     text: "should {pet} exploit a public space after realizing it has millions of buried $fishcoin? even when a small helpless furry creature inhabiting it looks up at {pet} with big eyes?",
@@ -95,7 +95,7 @@ const purityDilemmas: Record<string, Dilemma> = {
   },
 };
 
-const egoDilemmas: Record<string, Dilemma> = {
+const egoDilemmas: Record<string, DilemmaTemplate> = {
   summercamp: {
     id: "summercamp",
     text: "{pet} and another stranger at summer camp are starving. there's only enough food for one. should {pet} eat it themself or give it to the stranger?",
@@ -110,7 +110,7 @@ const egoDilemmas: Record<string, Dilemma> = {
   },
 }
 
-export const dilemmas: Record<string, Dilemma> = {
+export const dilemmaTemplates: Record<string, DilemmaTemplate> = {
   ...compassionDilemmas,
   ...retributionDilemmas,
   ...devotionDilemmas,

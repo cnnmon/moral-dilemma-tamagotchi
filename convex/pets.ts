@@ -3,14 +3,16 @@ import { mutation, query } from './_generated/server';
 import { getUserAndPetId } from './user';
 
 // get the user's pet status and data
-export const getPetStatus = query({
+export const getActivePet = query({
   args: {},
   handler: async (ctx) => {
     const { petId } = await getUserAndPetId(ctx);
-    if (!petId) return null;
+    if (!petId) {
+      return null;
+    }
 
     // if user has a pet, get its data
-    const pet = petId ? await ctx.db.get(petId) : null;
+    const pet = await ctx.db.get(petId);
 
     return {
       pet,

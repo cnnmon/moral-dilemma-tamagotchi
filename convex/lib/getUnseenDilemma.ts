@@ -1,15 +1,21 @@
-import { Dilemma, dilemmas } from '../../constants/dilemmas';
+import { DilemmaTemplate, dilemmaTemplates } from '../../constants/dilemmas';
 
-// get a random dilemma that hasn't been seen by this pet
-export function getUnseenDilemma(seenDilemmaIds: string[]): Dilemma | null {
-  const allDilemmas = Object.values(dilemmas).flat();
-  const unseenDilemmas = allDilemmas.filter(
-    dilemma => !seenDilemmaIds.includes(dilemma.id)
-  );
-
-  if (unseenDilemmas.length === 0) {
+// get a random dilemma that hasn't been seen yet
+export function getUnseenDilemma(seenDilemmaIds: string[]): DilemmaTemplate | null {
+  // get all dilemma ids
+  const allDilemmaIds = Object.keys(dilemmaTemplates);
+  
+  // filter out seen dilemmas
+  const unseenDilemmaIds = allDilemmaIds.filter(id => !seenDilemmaIds.includes(id));
+  
+  // if no unseen dilemmas, return null
+  if (unseenDilemmaIds.length === 0) {
     return null;
   }
-
-  return unseenDilemmas[Math.floor(Math.random() * unseenDilemmas.length)];
+  
+  // get random unseen dilemma
+  const randomIndex = Math.floor(Math.random() * unseenDilemmaIds.length);
+  const randomDilemmaId = unseenDilemmaIds[randomIndex];
+  
+  return dilemmaTemplates[randomDilemmaId];
 }
