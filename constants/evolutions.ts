@@ -1,5 +1,12 @@
 import { MoralDimensions, MoralDimensionsType } from "./morals";
 
+// evolution time frames
+
+export const stage1DilemmaCount = 6; // see 6 dilemmas in egg stage before stage 1
+export const stage2DilemmaCount = 12; // see 12 dilemmas in stage 1 before stage 2
+
+// evolution types
+
 export type Stage1EvolutionId = "harbinger" | "devout" | "watcher" | "loyalist" | "crowned" | "sigma";
 
 export type Stage2EvolutionId = "judge" | "shepherd" | "beacon" | "martyr" | "warden" | "vigilante" | "champion" | "guardian" | "tyrant" | "sovereign" | "hedonist" | "npc";

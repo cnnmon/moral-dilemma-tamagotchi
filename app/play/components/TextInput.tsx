@@ -58,7 +58,7 @@ export function TextInput({
 
   const handleSubmit = async () => {
     if (!response.trim()) {
-      onOutcome("please write a response first!");
+      onOutcome("silence is not an option :(");
       return;
     }
 
@@ -95,26 +95,30 @@ export function TextInput({
   const isDisabled = disabled || isSubmitting;
 
   return (
-    <div className="flex flex-col gap-4 w-full">
+    <div className="flex flex-col gap-2 w-full">
       <textarea
-        className={`w-full resize-none border-2 border-black outline-none p-2 ${
+        className={`w-full resize-none border-2 border-black rounded-md outline-none p-2 ${
           isDisabled ? "opacity-50 cursor-not-allowed" : ""
         }`}
         value={response}
         onChange={(e) => setResponse(e.target.value)}
         onKeyPress={handleKeyPress}
         disabled={isDisabled}
-        placeholder={isSubmitting ? "thinking..." : "what should they do?"}
+        placeholder={isSubmitting ? "thinking..." : "speak your truth"}
       />
-      <button
-        onClick={handleSubmit}
-        disabled={isDisabled}
-        className={`bg-black text-white p-2 hover:bg-gray-800 ${
-          isDisabled ? "opacity-50 cursor-not-allowed" : ""
-        }`}
-      >
-        {isSubmitting ? "thinking..." : "submit"}
-      </button>
+      <div className="flex justify-end">
+        <p className="text-gray-600">
+          press enter or click{" "}
+          <a
+            onClick={handleSubmit}
+            className={`hover:underline ${
+              isDisabled ? "opacity-50 cursor-not-allowed" : ""
+            }`}
+          >
+            {isSubmitting ? "thinking..." : "submit"}
+          </a>
+        </p>
+      </div>
     </div>
   );
 }

@@ -8,7 +8,18 @@ export function Footer() {
   const resetGame = useMutation(api.state.resetGame);
 
   return (
-    <div className="fixed bottom-0 right-0 px-4 py-2 gap-2 flex flex-col">
+    <div className="fixed bottom-0 flex items-center right-0 px-4 py-2 gap-2">
+      <a
+        className="cursor-pointer"
+        onClick={() => {
+          if (window.confirm("Are you sure you want to reset the game?")) {
+            resetGame();
+            window.location.href = "/create";
+          }
+        }}
+      >
+        reset
+      </a>
       <SignOutButton
         signOutOptions={{
           redirectUrl: "/",
@@ -16,15 +27,6 @@ export function Footer() {
       >
         <a className="cursor-pointer">log out</a>
       </SignOutButton>
-      <a
-        className="cursor-pointer"
-        onClick={() => {
-          resetGame();
-          window.location.href = "/create";
-        }}
-      >
-        reset game
-      </a>
     </div>
   );
 }

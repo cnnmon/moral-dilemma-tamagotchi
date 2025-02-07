@@ -4,7 +4,7 @@ import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import Image from "next/image";
 import { TextInput } from "./components/TextInput";
-import { OutcomePopup } from "./components/OutcomePopup";
+import { OutcomePopup } from "./components/Outcome";
 import { useState, useEffect } from "react";
 import { DilemmaTemplate } from "@/constants/dilemmas";
 
@@ -157,16 +157,8 @@ export default function Play() {
   if (!pet) return null;
 
   return (
-    <div className="flex flex-col items-center gap-2">
-      <Image
-        src="/birb_smol.gif"
-        alt="birb"
-        width={200}
-        height={200}
-        unoptimized
-      />
-
-      <div className="w-full flex flex-col gap-2">
+    <div className="flex flex-col items-center gap-2 h-screen justify-center">
+      <div className="fixed top-0 p-4">
         {outcomes.map((outcome) => (
           <OutcomePopup
             key={outcome.id}
@@ -177,13 +169,23 @@ export default function Play() {
       </div>
 
       <div className="w-full">
-        <p className="text-xl font-bold">{pet.name}</p>
-        <p className="text-sm text-gray-600">{pet.personality}</p>
+        <p className="text-xl">{pet.name}</p>
+        <p className="text-xs text-gray-600">
+          a naive baby bird. {pet.personality}
+        </p>
       </div>
 
-      <div className="w-full">
+      <Image
+        src="/birb_smol.gif"
+        alt="birb"
+        width={150}
+        height={150}
+        unoptimized
+      />
+
+      <p className="w-full text-md">
         {currentDilemma.text.replace(/{pet}/g, pet.name)}
-      </div>
+      </p>
 
       {status === "has_unresolved_dilemma" && (
         <div className="w-full text-orange-500 font-pixel">
