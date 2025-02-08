@@ -7,6 +7,7 @@ import { TextInput } from "./components/TextInput";
 import { OutcomePopup } from "./components/Outcome";
 import { useState, useEffect } from "react";
 import { DilemmaTemplate } from "@/constants/dilemmas";
+import { Footer } from "./components/Footer";
 
 interface OutcomeMessage {
   id: number;
@@ -100,9 +101,7 @@ export default function Play() {
 
     // if we still don't have a dilemma and there are available ones, pick one
     if (!currentDilemma && stateResult.status === "has_dilemmas") {
-      const seed = hashString(
-        stateResult.pet.name + stateResult.dilemmas.length
-      );
+      const seed = hashString(stateResult.pet.name);
       const newDilemma = getRandomItem(stateResult.dilemmas, seed);
       setCurrentDilemma(newDilemma);
       localStorage.setItem(CURRENT_DILEMMA_KEY, JSON.stringify(newDilemma));
@@ -152,12 +151,10 @@ export default function Play() {
     return <div>choosing next dilemma...</div>;
   }
 
-  // get pet from state result
-  const pet = "pet" in stateResult ? stateResult.pet : null;
-  if (!pet) return null;
-
+  const pet = stateResult.pet;
   return (
     <div className="flex flex-col items-center gap-2 h-screen justify-center">
+      <Footer pet={pet} />
       <div className="fixed top-0 p-4">
         {outcomes.map((outcome) => (
           <OutcomePopup
@@ -170,7 +167,7 @@ export default function Play() {
 
       <div className="w-full">
         <p className="text-xl">{pet.name}</p>
-        <p className="text-xs text-gray-600">
+        <p className="text-sm text-gray-600">
           a naive baby bird. {pet.personality}
         </p>
       </div>

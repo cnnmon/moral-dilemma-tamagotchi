@@ -100,7 +100,7 @@ the following could also be multiple stats. want to make a config json and proce
 
 {pet} sees a crumpled can of Big Cheese rolling down the road on the way to trip several babies who just learned how to walk. {pet} is bleeding out. should {pet} pick up the can of Big Cheese? |
 | --- | --- |
-| retribution | {pet} found out that a close friend has been cheating on all of their automated job interviews, but the job interviews are stupid anyway. should they say anything about it?
+| retribution | {pet} found out that a close friend has been cheating on all of their automated job interviews. should they say anything about it?
 
 {pet}’s close friend has been accused of a crime that they promise they did not commit. should they lie to protect them or turn them in? |
 | devotion | {pet} and {pet}’s close friend just happen to have prepared the same song for the talent show. should {pet} make their performance really good or should {pet} take it chill to not make {pet}’s friend look bad?

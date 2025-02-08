@@ -26,7 +26,7 @@ const compassionDilemmas: Record<string, DilemmaTemplate> = {
 const retributionDilemmas: Record<string, DilemmaTemplate> = {
   jobinterviews: {
     id: "jobinterviews",
-    text: "{pet} found out that a close friend has been cheating on all of their automated job interviews, but the job interviews are stupid anyway. should they say anything about it?",
+    text: "{pet} found out that a close friend has been cheating on all of their automated job interviews. should they say anything about it?",
     relatedStats: [MoralDimensions.retribution],
     stakes: 1,
   },

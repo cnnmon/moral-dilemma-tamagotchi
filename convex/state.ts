@@ -7,8 +7,15 @@ import { getUnseenDilemmas } from "./lib/getUnseenDilemma";
 export type GameState = 
   | { status: 'not_authenticated' }
   | { status: 'needs_pet' }
-  | { status: 'has_dilemmas', dilemmas: DilemmaTemplate[], pet: Doc<"pets"> }
-  | { status: 'out_of_dilemmas', pet: Doc<"pets"> }
+  | {
+      status: 'has_dilemmas',
+      dilemmas: DilemmaTemplate[],
+      pet: Doc<"pets">
+    }
+  | {
+      status: 'out_of_dilemmas',
+      pet: Doc<"pets">
+    }
   | {
       status: 'has_unresolved_dilemma',
       dilemma: DilemmaTemplate,
@@ -73,8 +80,8 @@ export const getActiveGameState = query({
     }
 
     // get all unseen dilemmas
-    const seenDilemmaIds = seenDilemmas.map(d => d.title);
-    const unseenDilemmas = getUnseenDilemmas(seenDilemmaIds);
+    const seenDilemmaTitles = seenDilemmas.map(d => d.title);
+    const unseenDilemmas = getUnseenDilemmas(seenDilemmaTitles);
     
     if (!unseenDilemmas || unseenDilemmas.length === 0) {
       return { status: 'out_of_dilemmas', pet };
