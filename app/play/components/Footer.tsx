@@ -33,7 +33,13 @@ function SettingButtons() {
   );
 }
 
-export function Footer({ pet }: { pet: Doc<"pets"> }) {
+export function Footer({
+  pet,
+  seenDilemmasCount,
+}: {
+  pet: Doc<"pets">;
+  seenDilemmasCount: number;
+}) {
   const evolution = getEvolution(pet.evolutionId as EvolutionId);
   const moralStats = getMoralStatsWritten(pet.moralStats);
   return (
@@ -70,7 +76,7 @@ export function Footer({ pet }: { pet: Doc<"pets"> }) {
           </p>
           {/* EVOLUTION */}
           <p>
-            stage {pet.age}: {evolution.id} / 50%
+            stage {pet.age}: {evolution.id} / {seenDilemmasCount} completed
           </p>
         </div>
       </div>

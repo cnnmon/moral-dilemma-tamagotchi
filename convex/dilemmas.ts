@@ -94,7 +94,6 @@ export const processDilemma = mutation({
       userId: pet.userId,
       dilemmaId,
       dilemmaTitle: args.dilemma.title,
-      petId,
     });
     console.log('🤖 LLM processing scheduled!');
 
@@ -107,17 +106,14 @@ export const processDilemma = mutation({
 export const generateResponse = internalAction({
   args: {
     dilemmaId: v.id('dilemmas'),
-    petId: v.id('pets'),
     dilemmaTitle: v.string(),
     responseText: v.string(),
     userId: v.string(),
   },
   handler: async (ctx, args): Promise<ProcessedResponse> => {
-    const pet = await ctx.runQuery(api.pets.getPetById, {
-      petId: args.petId,
-    })
+    const pet = await ctx.runQuery(api.pets.getActivePet)
     if (!pet) {
-      throw new Error('❌ No pet exists for ' + args.petId);
+      throw new Error('❌ No pet exists for ' + args.userId);
     }
 
     // process dilemma with the response text

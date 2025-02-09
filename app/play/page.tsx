@@ -43,10 +43,10 @@ export default function Play() {
     return <div>choosing next dilemma...</div>;
   }
 
-  const pet = stateResult.pet;
+  const { pet, seenDilemmas } = stateResult;
   return (
     <div className="flex flex-col items-center gap-2 h-screen justify-center">
-      <Footer pet={pet} />
+      <Footer pet={pet} seenDilemmasCount={seenDilemmas.length} />
       <div className="fixed top-0 p-4">
         {outcomes.map((outcome) => (
           <OutcomePopup

@@ -9,11 +9,7 @@ export default function CreatePage() {
   const petResponse = useQuery(api.pets.getActivePet);
   const createPet = useMutation(api.pets.createPet);
 
-  if (petResponse === undefined) {
-    return null;
-  }
-
-  if (petResponse?.pet) {
+  if (petResponse) {
     window.location.href = "/play";
     return null;
   }

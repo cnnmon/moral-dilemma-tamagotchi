@@ -13,30 +13,6 @@ export const getActivePet = query({
 
     // if user has a pet, get its data
     const pet = await ctx.db.get(petId);
-
-    return {
-      pet,
-    };
-  },
-});
-
-// get a specific pet by id
-export const getPetById = query({
-  args: {
-    petId: v.id('pets'),
-  },
-  handler: async (ctx, args) => {
-    const { userId } = await getUserAndPetId(ctx);
-    if (!userId) return null;
-
-    // get the pet
-    const pet = await ctx.db.get(args.petId);
-    
-    // ensure the pet belongs to this user
-    if (!pet || pet.userId !== userId) {
-      return null;
-    }
-
     return pet;
   },
 });

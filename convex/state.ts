@@ -15,10 +15,12 @@ export type GameState =
     }
   | {
       status: 'out_of_dilemmas',
+      seenDilemmas: Doc<"dilemmas">[],
       pet: Doc<"pets">
     }
   | {
       status: 'has_unresolved_dilemma',
+      seenDilemmas: Doc<"dilemmas">[],
       unresolvedDilemma: DilemmaTemplate,
       question: string,
       pet: Doc<"pets">
@@ -73,6 +75,7 @@ export const getActiveGameState = query({
         const templateDilemma = dilemmaTemplates[dilemma.title];
         return { 
           status: 'has_unresolved_dilemma', 
+          seenDilemmas,
           unresolvedDilemma: templateDilemma,
           question: dilemma.outcome,
           pet,
@@ -85,7 +88,11 @@ export const getActiveGameState = query({
     const unseenDilemmas = getUnseenDilemmas(seenDilemmaTitles);
     
     if (!unseenDilemmas || unseenDilemmas.length === 0) {
-      return { status: 'out_of_dilemmas', pet };
+      return { 
+        status: 'out_of_dilemmas',
+        seenDilemmas,
+        pet
+      };
     }
     
     return {
