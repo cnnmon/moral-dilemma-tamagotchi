@@ -6,6 +6,8 @@ import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import { DilemmaTemplate } from "@/constants/dilemmas";
 
+const thinkingFlavorText = ["thinking...", "chewing on it...", "pondering..."];
+
 interface TextInputProps {
   dilemma: DilemmaTemplate;
   onOutcome: (message: string) => void;
@@ -27,6 +29,7 @@ export function TextInput({
   const [currentDilemmaId, setCurrentDilemmaId] = useState<
     string | undefined
   >();
+  const [flavorTextIndex, setFlavorTextIndex] = useState(0);
 
   // subscribe to updates for the current dilemma
   const dilemmaUpdate = useQuery(
@@ -40,21 +43,32 @@ export function TextInput({
   useEffect(() => {
     if (!dilemmaUpdate) return;
 
-    if (dilemmaUpdate.resolved && dilemmaUpdate.outcome) {
-      onOutcome(dilemmaUpdate.outcome);
+    // clarifying question
+    if (!dilemmaUpdate.resolved && dilemmaUpdate.outcome) {
       setResponse("");
+      setIsSubmitting(false);
+    }
 
-      if (dilemmaUpdate.ok) {
-        // if the response was accepted (not a clarifying question)
-        setCurrentDilemmaId(undefined);
-        setIsSubmitting(false);
-        onProcessingEnd?.();
-      } else {
-        // if it was a clarifying question, just reset submit state
-        setIsSubmitting(false);
-      }
+    // resolved & outcome is the decision made
+    if (dilemmaUpdate.resolved && dilemmaUpdate.outcome && dilemmaUpdate.ok) {
+      setResponse("");
+      onOutcome(dilemmaUpdate.outcome);
+      setCurrentDilemmaId(undefined);
+      onProcessingEnd?.();
     }
   }, [dilemmaUpdate, onOutcome, onProcessingEnd]);
+
+  // rotate thinking flavor text every second
+  useEffect(() => {
+    if (isSubmitting) {
+      const intervalId = setInterval(() => {
+        setFlavorTextIndex(
+          (prevIndex) => (prevIndex + 1) % thinkingFlavorText.length
+        );
+      }, 1000);
+      return () => clearInterval(intervalId);
+    }
+  }, [isSubmitting]);
 
   const handleSubmit = async () => {
     if (!response.trim()) {
@@ -102,21 +116,21 @@ export function TextInput({
         }`}
         value={response}
         onChange={(e) => setResponse(e.target.value)}
-        onKeyPress={handleKeyPress}
+        onKeyDown={handleKeyPress}
         disabled={isDisabled}
-        placeholder={isSubmitting ? "thinking..." : "speak your truth"}
+        placeholder="speak your truth"
       />
       <div className="flex justify-end">
         <p className="text-gray-600">
-          press enter or click{" "}
-          <a
-            onClick={handleSubmit}
-            className={`hover:underline ${
-              isDisabled ? "opacity-50 cursor-not-allowed" : ""
-            }`}
-          >
-            {isSubmitting ? "thinking..." : "submit"}
-          </a>
+          {!isSubmitting ? (
+            <>
+              press enter or click <a onClick={handleSubmit}>submit</a>
+            </>
+          ) : (
+            <span className="opacity-50 cursor-not-allowed pointer-events-none">
+              {thinkingFlavorText[flavorTextIndex]}
+            </span>
+          )}
         </p>
       </div>
     </div>

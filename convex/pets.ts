@@ -54,8 +54,8 @@ export const createPet = mutation({
     return ctx.db.insert('pets', {
       userId,
       name: args.name,
-      age: 1, // start as an egg
-      evolutionId: undefined, // only is defined after first evolution
+      age: 0, // start as an baby
+      evolutionId: 'baby', // only is defined after first evolution
       personality: '',
       baseStats: {
         health: 5,

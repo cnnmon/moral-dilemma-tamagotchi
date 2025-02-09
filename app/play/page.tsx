@@ -5,131 +5,23 @@ import { api } from "@/convex/_generated/api";
 import Image from "next/image";
 import { TextInput } from "./components/TextInput";
 import { OutcomePopup } from "./components/Outcome";
-import { useState, useEffect } from "react";
-import { DilemmaTemplate } from "@/constants/dilemmas";
 import { Footer } from "./components/Footer";
-
-interface OutcomeMessage {
-  id: number;
-  text: string;
-}
-
-const OUTCOMES_STORAGE_KEY = "pet-outcome-messages";
-const CURRENT_DILEMMA_KEY = "pet-current-dilemma";
-
-// simple hash function for seeding random selection
-function hashString(str: string): number {
-  let hash = 0;
-  for (let i = 0; i < str.length; i++) {
-    const char = str.charCodeAt(i);
-    hash = (hash << 5) - hash + char;
-    hash = hash & hash;
-  }
-  return hash;
-}
-
-// get random item using a seed
-function getRandomItem<T>(items: T[], seed: number): T {
-  const index = Math.abs(seed) % items.length;
-  return items[index];
-}
+import Loading from "./components/Loading";
+import { useOutcomes } from "./utils/useOutcomes";
+import { useCurrentDilemma } from "./utils/useCurrentDilemma";
 
 export default function Play() {
   const stateResult = useQuery(api.state.getActiveGameState);
-  const [outcomes, setOutcomes] = useState<OutcomeMessage[]>([]);
-  const [nextId, setNextId] = useState(0);
-  const [currentDilemma, setCurrentDilemma] = useState<DilemmaTemplate | null>(
-    null
-  );
-  const [isProcessing, setIsProcessing] = useState(false);
-
-  // load saved outcomes from local storage on mount
-  useEffect(() => {
-    const savedOutcomes = localStorage.getItem(OUTCOMES_STORAGE_KEY);
-    if (savedOutcomes) {
-      const parsed = JSON.parse(savedOutcomes);
-      setOutcomes(parsed.outcomes);
-      setNextId(parsed.nextId);
-    }
-  }, []);
-
-  // save outcomes to local storage whenever they change
-  useEffect(() => {
-    localStorage.setItem(
-      OUTCOMES_STORAGE_KEY,
-      JSON.stringify({ outcomes, nextId })
-    );
-  }, [outcomes, nextId]);
-
-  // handle dilemma selection and storage
-  useEffect(() => {
-    if (!stateResult) return;
-
-    // handle unresolved dilemma case
-    if (stateResult.status === "has_unresolved_dilemma") {
-      setCurrentDilemma(stateResult.dilemma);
-      localStorage.setItem(
-        CURRENT_DILEMMA_KEY,
-        JSON.stringify(stateResult.dilemma)
-      );
-      return;
-    }
-
-    // if we're processing a dilemma, don't change it
-    if (isProcessing) return;
-
-    // try to load saved dilemma if we don't have one
-    if (!currentDilemma) {
-      const savedDilemma = localStorage.getItem(CURRENT_DILEMMA_KEY);
-      if (savedDilemma) {
-        try {
-          const parsed = JSON.parse(savedDilemma);
-          if (
-            parsed &&
-            typeof parsed === "object" &&
-            "id" in parsed &&
-            "text" in parsed
-          ) {
-            setCurrentDilemma(parsed as DilemmaTemplate);
-          }
-        } catch (e) {
-          console.error("Failed to parse saved dilemma:", e);
-        }
-        return;
-      }
-    }
-
-    // if we still don't have a dilemma and there are available ones, pick one
-    if (!currentDilemma && stateResult.status === "has_dilemmas") {
-      const seed = hashString(stateResult.pet.name);
-      const newDilemma = getRandomItem(stateResult.dilemmas, seed);
-      setCurrentDilemma(newDilemma);
-      localStorage.setItem(CURRENT_DILEMMA_KEY, JSON.stringify(newDilemma));
-    }
-  }, [stateResult, currentDilemma, isProcessing]);
-
-  const addOutcome = (message: string) => {
-    setOutcomes((prev) => [...prev, { id: nextId, text: message }]);
-    setNextId((prev) => prev + 1);
-  };
-
-  const removeOutcome = (id: number) => {
-    setOutcomes((prev) => prev.filter((outcome) => outcome.id !== id));
-  };
-
-  const onDilemmaProcessingStart = () => {
-    setIsProcessing(true);
-  };
-
-  const onDilemmaProcessingEnd = () => {
-    setIsProcessing(false);
-    // clear current dilemma from storage to allow picking next one
-    localStorage.removeItem(CURRENT_DILEMMA_KEY);
-    setCurrentDilemma(null);
-  };
+  const { outcomes, addOutcome, removeOutcome } = useOutcomes();
+  const {
+    currentDilemma,
+    onDilemmaProcessingStart,
+    onDilemmaProcessingEnd,
+    isProcessing,
+  } = useCurrentDilemma(stateResult);
 
   if (stateResult === undefined) {
-    return <div>loading...</div>;
+    return <Loading />;
   }
 
   const { status } = stateResult;
@@ -137,13 +29,13 @@ export default function Play() {
   // auth state
   if (status === "not_authenticated") {
     window.location.href = "/";
-    return null;
+    return <Loading />;
   }
 
   // no pet state
   if (status === "needs_pet") {
     window.location.href = "/create";
-    return null;
+    return <Loading />;
   }
 
   // if no current dilemma, show loading
@@ -165,13 +57,6 @@ export default function Play() {
         ))}
       </div>
 
-      <div className="w-full">
-        <p className="text-xl">{pet.name}</p>
-        <p className="text-sm text-gray-600">
-          a naive baby bird. {pet.personality}
-        </p>
-      </div>
-
       <Image
         src="/birb_smol.gif"
         alt="birb"
@@ -185,8 +70,8 @@ export default function Play() {
       </p>
 
       {status === "has_unresolved_dilemma" && (
-        <div className="w-full text-orange-500 font-pixel">
-          {stateResult.question}
+        <div className="w-full font-pixel">
+          {pet.name} looks up at you. &quot;{stateResult.question}&quot;
         </div>
       )}
 

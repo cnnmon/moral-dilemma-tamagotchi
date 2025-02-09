@@ -2,8 +2,8 @@ import { MoralDimensions, MoralDimensionsType } from "./morals";
 
 // evolution time frames
 
-export const stage1DilemmaCount = 6; // see 6 dilemmas in egg stage before stage 1
-export const stage2DilemmaCount = 12; // see 12 dilemmas in stage 1 before stage 2
+export const stage1DilemmaCountTotal = 6; // see 6 dilemmas in age 0 before age 1
+export const stage2DilemmaCountTotal = 12 + stage1DilemmaCountTotal; // see 12 dilemmas in age 1 (+ 6 in age 0) before age 2
 
 // evolution types
 
@@ -11,45 +11,32 @@ export type Stage1EvolutionId = "harbinger" | "devout" | "watcher" | "loyalist" 
 
 export type Stage2EvolutionId = "judge" | "shepherd" | "beacon" | "martyr" | "warden" | "vigilante" | "champion" | "guardian" | "tyrant" | "sovereign" | "hedonist" | "npc";
 
-export type EvolutionId = "egg" | Stage1EvolutionId | Stage2EvolutionId;
+export type EvolutionId = "baby" | Stage1EvolutionId | Stage2EvolutionId;
 
 // represents a stage in pet evolution
-interface Stage1Evolution {
+type Evolution = {
+  id: "baby";
+  description: string;
+  nextStage: Stage1EvolutionId[];
+} | {
   id: Stage1EvolutionId;
   description: string;
   requirements: Partial<MoralDimensionsType>;
-  nextStages: Partial<Record<Stage2EvolutionId, Stage2Evolution>>;
-}
-
-interface Stage2Evolution {
+  nextStages: Stage2EvolutionId[];
+} | {
   id: Stage2EvolutionId;
   description: string;
   requirements: Partial<MoralDimensionsType>;
-}
+};
 
-export const evolutions: Record<Stage1EvolutionId, Stage1Evolution> = {
+export const stage1Evolutions: Record<Stage1EvolutionId, Evolution> = {
   harbinger: {
     id: "harbinger",
     description: "a judge who is always ready to make a decision",
     requirements: {
       [MoralDimensions.compassion]: 1, // empathy
     },
-    nextStages: {
-      judge: {
-        id: "judge",
-        description: "an arbiter who embodies integrity",
-        requirements: {
-          [MoralDimensions.devotion]: 10, // integrity
-        },
-      },
-      shepherd: {
-        id: "shepherd",
-        description: "a guide who embodies loyalty",
-        requirements: {
-          [MoralDimensions.devotion]: 1, // loyalty
-        },
-      },
-    },
+    nextStages: ["judge", "shepherd"],
   },
   devout: {
     id: "devout",
@@ -57,22 +44,7 @@ export const evolutions: Record<Stage1EvolutionId, Stage1Evolution> = {
     requirements: {
       [MoralDimensions.purity]: 1, // virtue
     },
-    nextStages: {
-      beacon: {
-        id: "beacon",
-        description: "a beacon of justice",
-        requirements: {
-          [MoralDimensions.retribution]: 1, // justice
-        },
-      },
-      martyr: {
-        id: "martyr",
-        description: "a symbol of forgiveness",
-        requirements: {
-          [MoralDimensions.retribution]: 1, // forgiveness
-        },
-      },
-    },
+    nextStages: ["martyr", "warden"],
   },
   watcher: {
     id: "watcher",
@@ -80,22 +52,7 @@ export const evolutions: Record<Stage1EvolutionId, Stage1Evolution> = {
     requirements: {
       [MoralDimensions.retribution]: 1, // justice
     },
-    nextStages: {
-      warden: {
-        id: "warden",
-        description: "a protector of authority",
-        requirements: {
-          [MoralDimensions.dominance]: 1, // authority
-        },
-      },
-      vigilante: {
-        id: "vigilante",
-        description: "an advocate of autonomy",
-        requirements: {
-          [MoralDimensions.dominance]: 1, // autonomy
-        },
-      },
-    },
+    nextStages: ["warden", "vigilante"],
   },
   loyalist: {
     id: "loyalist",
@@ -103,22 +60,7 @@ export const evolutions: Record<Stage1EvolutionId, Stage1Evolution> = {
     requirements: {
       [MoralDimensions.devotion]: 1, // loyalty
     },
-    nextStages: {
-      champion: {
-        id: "champion",
-        description: "a paragon of integrity",
-        requirements: {
-          [MoralDimensions.devotion]: 1, // integrity
-        },
-      },
-      guardian: {
-        id: "guardian",
-        description: "a defender of justice",
-        requirements: {
-          [MoralDimensions.retribution]: 1, // justice
-        },
-      },
-    },
+    nextStages: ["guardian", "champion"],
   },
   crowned: {
     id: "crowned",
@@ -126,22 +68,7 @@ export const evolutions: Record<Stage1EvolutionId, Stage1Evolution> = {
     requirements: {
       [MoralDimensions.dominance]: 1, // authority
     },
-    nextStages: {
-      tyrant: {
-        id: "tyrant",
-        description: "a ruler of indulgence",
-        requirements: {
-          [MoralDimensions.purity]: 1, // indulgence
-        },
-      },
-      sovereign: {
-        id: "sovereign",
-        description: "a leader of virtue",
-        requirements: {
-          [MoralDimensions.purity]: 1, // virtue
-        },
-      },
-    },
+    nextStages: ["tyrant", "sovereign"],
   },
   sigma: {
     id: "sigma",
@@ -149,21 +76,108 @@ export const evolutions: Record<Stage1EvolutionId, Stage1Evolution> = {
     requirements: {
       [MoralDimensions.ego]: 10, // selfhood
     },
-    nextStages: {
-      hedonist: {
-        id: "hedonist",
-        description: "a seeker of indulgence",
-        requirements: {
-          [MoralDimensions.ego]: 1, // indulgence
-        },
-      },
-      npc: {
-        id: "npc",
-        description: "an embodiment of indifference",
-        requirements: {
-          [MoralDimensions.compassion]: 1, // indifference
-        },
-      },
+    nextStages: ["hedonist", "npc"],
+  },
+}
+
+export const stage2Evolutions: Record<Stage2EvolutionId, Evolution> = {
+  // stage 2
+  judge: {
+    id: "judge",
+    description: "an arbiter who embodies integrity",
+    requirements: {
+      [MoralDimensions.devotion]: 10, // integrity
+    },
+  },
+  shepherd: {
+    id: "shepherd",
+    description: "a guide who embodies loyalty",
+    requirements: {
+      [MoralDimensions.devotion]: 1, // loyalty
+    },
+  },
+  beacon: {
+    id: "beacon",
+    description: "a beacon of justice",
+    requirements: {
+      [MoralDimensions.retribution]: 1, // justice
+    },
+  },
+  martyr: {
+    id: "martyr",
+    description: "a symbol of forgiveness",
+    requirements: {
+      [MoralDimensions.retribution]: 1, // forgiveness
+    },
+  },
+  warden: {
+    id: "warden",
+    description: "a protector of authority",
+    requirements: {
+      [MoralDimensions.dominance]: 1, // authority
+    },
+  },
+  vigilante: {
+    id: "vigilante",
+    description: "an advocate of autonomy",
+    requirements: {
+      [MoralDimensions.dominance]: 1, // autonomy
+    },
+  },
+  champion: {
+    id: "champion",
+    description: "a paragon of integrity",
+    requirements: {
+      [MoralDimensions.devotion]: 1, // integrity
+    },
+  },
+  guardian: {
+    id: "guardian",
+    description: "a defender of justice",
+    requirements: {
+      [MoralDimensions.retribution]: 1, // justice
+    },
+  },
+  tyrant: {
+    id: "tyrant",
+    description: "a ruler of indulgence",
+    requirements: {
+      [MoralDimensions.purity]: 1, // indulgence
+    },
+  },
+  sovereign: {
+    id: "sovereign",
+    description: "a leader of virtue",
+    requirements: {
+      [MoralDimensions.purity]: 1, // virtue
+    },
+  },
+  hedonist: {
+    id: "hedonist",
+    description: "a seeker of indulgence",
+    requirements: {
+      [MoralDimensions.ego]: 1, // indulgence
+    },
+  },
+  npc: {
+    id: "npc",
+    description: "an embodiment of indifference",
+    requirements: {
+      [MoralDimensions.compassion]: 1, // indifference
     },
   },
 };
+
+const evolutions: Record<EvolutionId, Evolution> = {
+  baby: {
+    id: "baby",
+    description: "a naive baby bird",
+    nextStage: ["harbinger", "devout", "watcher", "loyalist", "crowned", "sigma"],
+  },
+  ...stage1Evolutions,
+  ...stage2Evolutions
+}
+
+export function getEvolution(id: EvolutionId): Evolution {
+  return evolutions[id];
+}

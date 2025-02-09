@@ -15,7 +15,7 @@ type ProcessedResponse = {
   personality?: string;
 };
 
-// get a dilemma by id
+// get a saved dilemma by id
 export const getDilemmaById = query({
   args: { dilemmaId: v.id('dilemmas') },
   handler: async (ctx, args) => {
@@ -42,9 +42,7 @@ export const processDilemma = mutation({
   },
   handler: async (ctx, args): Promise<{ ok: boolean; dilemmaId: Id<'dilemmas'> }> => {
     console.log('🚀 Starting processDilemma with args:', args);
-    
     const { petId } = await getUserAndPetId(ctx);
-    
     if (!petId) {
       console.error('❌ No active pet found');
       throw new Error('❌ No active pet found');
@@ -52,37 +50,30 @@ export const processDilemma = mutation({
 
     // get the pet's current state
     const pet = await ctx.db.get(petId);
-    console.log('🐦 Found pet:', pet ? { name: pet.name, id: pet._id } : null);
-    
     if (!pet) {
       console.error('❌ Pet not found in database');
       throw new Error('❌ Pet not found in database');
     }
+    console.log('🐦 Found pet:', { name: pet.name, id: pet._id });
 
-    // save initial response
-    console.log('💾 Saving initial response...');
-    
-    // if dilemma already exists
+    // check if dilemma already exists
     const existingDilemma = await ctx.db.query('dilemmas')
       .withIndex('by_userAndPetId', q => q.eq('userId', pet.userId).eq('petId', petId))
       .filter(q => q.eq(q.field('title'), args.dilemma.title))
       .first();
     
     let dilemmaId: Id<'dilemmas'>;
-    let clarifyingQuestion: string | undefined;
     if (existingDilemma) {
+      // seen this dilemma? probably pet asked a clarifying question!
+      // or there is some api error... anyways handle gracefully
       console.log('🔄 Dilemma already exists, skipping insertion');
-
-      // if dilemma was resolved already, throw
       if (existingDilemma.resolved) {
         throw new Error('❌ Dilemma already resolved');
       }
 
-      // else it was an api error
       dilemmaId = existingDilemma._id;
-      clarifyingQuestion = existingDilemma.outcome;
     } else {
-      // else it was a new dilemma
+      // new dilemma creation to track progress
       dilemmaId = await ctx.db.insert('dilemmas', {
         userId: pet.userId,
         petId,
@@ -98,23 +89,14 @@ export const processDilemma = mutation({
     }
 
     // schedule action to generate response from llm
-    console.log('🤖 Scheduling LLM processing...');
     await ctx.scheduler.runAfter(0, internal.dilemmas.generateResponse, {
       responseText: args.responseText,
       userId: pet.userId,
       dilemmaId,
       dilemmaTitle: args.dilemma.title,
-      clarifyingQuestion,
-      pet: {
-        _id: pet._id,
-        name: pet.name,
-        evolutionId: pet.evolutionId,
-        personality: pet.personality,
-        moralStats: pet.moralStats,
-        age: pet.age,
-      },
+      petId,
     });
-    console.log('✅ LLM processing scheduled');
+    console.log('🤖 LLM processing scheduled!');
 
     // return the dilemma id so the client can subscribe to updates
     return { ok: true, dilemmaId };
@@ -125,84 +107,62 @@ export const processDilemma = mutation({
 export const generateResponse = internalAction({
   args: {
     dilemmaId: v.id('dilemmas'),
+    petId: v.id('pets'),
     dilemmaTitle: v.string(),
-    clarifyingQuestion: v.optional(v.string()),
     responseText: v.string(),
     userId: v.string(),
-    pet: v.object({
-      _id: v.id('pets'),
-      name: v.string(),
-      evolutionId: v.optional(v.string()),
-      personality: v.string(),
-      age: v.number(),
-      moralStats: v.object({
-        compassion: v.number(),
-        retribution: v.number(),
-        devotion: v.number(),
-        dominance: v.number(),
-        purity: v.number(),
-        ego: v.number(),
-      }),
-    }),
   },
   handler: async (ctx, args): Promise<ProcessedResponse> => {
-    console.log('🤖 Starting generateResponse with args:', {
-      dilemmaId: args.dilemmaId,
-      petName: args.pet.name,
-    });
-    
-    const { pet, responseText } = args;
+    const pet = await ctx.runQuery(api.pets.getPetById, {
+      petId: args.petId,
+    })
+    if (!pet) {
+      throw new Error('❌ No pet exists for ' + args.petId);
+    }
+
+    // process dilemma with the response text
     const templateDilemma = dilemmaTemplates[args.dilemmaTitle];
-    
-    // process with openai
-    console.log('🔄 Calling LLM...');
     const generatedResponse = await processDilemmaResponse({
       pet,
       dilemma: templateDilemma,
-      responseText,
-      clarifyingQuestion: args.clarifyingQuestion,
+      responseText: args.responseText,
     });
-    console.log('✅ LLM response received:', generatedResponse);
 
-    // parse response
+    // parse response by hand
     const parsedResponse = JSON.parse(generatedResponse as string);
     console.log('🔄 Validated response:', parsedResponse);
 
-    // if the response is not ok, it is a clarifying question
     if (!parsedResponse.ok) {
+      // if the response is not ok, it is a clarifying question
       const clarifyingQuestion = parsedResponse.outcome;
       await ctx.runMutation(api.dilemmas.updateDilemmaAndPet, {
         dilemmaId: args.dilemmaId,
-        petId: args.pet._id,
+        petId: pet._id,
         outcome: clarifyingQuestion,
         resolved: false,
       });
-      return parsedResponse;
-    }
-
-    // if the response is overridden by the pet's personality, update that
-    if (parsedResponse.override) {
+    } else if (parsedResponse.override) {
+      // if the response is overridden by the pet's personality, update that
       await ctx.runMutation(api.dilemmas.updateDilemmaAndPet, {
         dilemmaId: args.dilemmaId,
-        petId: args.pet._id,
+        petId: pet._id,
         outcome: parsedResponse.outcome,
         updatedMoralStats: parsedResponse.stats as MoralDimensionsType | undefined,
         updatedPersonality: parsedResponse.personality,
         resolved: true,
         overridden: true,
       });
+    } else {
+      // if the response is not overridden, update the dilemma
+      await ctx.runMutation(api.dilemmas.updateDilemmaAndPet, {
+        dilemmaId: args.dilemmaId,
+        petId: pet._id,
+        outcome: parsedResponse.outcome,
+        updatedMoralStats: parsedResponse.stats as MoralDimensionsType | undefined,
+        updatedPersonality: parsedResponse.personality,
+        resolved: true,
+      });
     }
-
-    // if the response is not overridden, update the dilemma
-    await ctx.runMutation(api.dilemmas.updateDilemmaAndPet, {
-      dilemmaId: args.dilemmaId,
-      petId: args.pet._id,
-      outcome: parsedResponse.outcome,
-      updatedMoralStats: parsedResponse.stats as MoralDimensionsType | undefined,
-      updatedPersonality: parsedResponse.personality,
-      resolved: true,
-    });
-
     return parsedResponse;
   },
 });
