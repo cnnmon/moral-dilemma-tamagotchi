@@ -17,6 +17,16 @@ export const getActivePet = query({
   },
 });
 
+// get a pet by id
+export const getPetById = query({
+  args: {
+    petId: v.id('pets'),
+  },
+  handler: async (ctx, args) => {
+    return ctx.db.get(args.petId);
+  },
+});
+
 // create a new pet
 export const createPet = mutation({
   args: {

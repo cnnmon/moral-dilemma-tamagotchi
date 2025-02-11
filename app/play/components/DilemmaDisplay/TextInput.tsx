@@ -72,7 +72,7 @@ export function TextInput({
 
   const handleSubmit = async () => {
     if (!response.trim()) {
-      onOutcome("silence is not an option :(");
+      onOutcome("silence is not an option");
       return;
     }
 
@@ -105,13 +105,12 @@ export function TextInput({
       handleSubmit();
     }
   };
-
   const isDisabled = disabled || isSubmitting;
 
   return (
-    <div className="flex flex-col gap-2 w-full">
+    <div className="flex flex-col mt-2">
       <textarea
-        className={`w-full resize-none border-2 border-black rounded-md outline-none p-2 ${
+        className={`resize-none border-2 border-black bg-gray-200 outline-none p-2 ${
           isDisabled ? "opacity-50 cursor-not-allowed" : ""
         }`}
         value={response}
@@ -121,7 +120,7 @@ export function TextInput({
         placeholder="speak your truth"
       />
       <div className="flex justify-end">
-        <p className="text-gray-600">
+        <p className="text-gray-600 text-sm">
           {!isSubmitting ? (
             <>
               press enter or click <a onClick={handleSubmit}>submit</a>

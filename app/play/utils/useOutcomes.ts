@@ -1,25 +1,28 @@
+import { GameState } from "@/convex/state";
 import { useEffect, useState } from "react";
 
 interface OutcomeMessage {
   id: number;
   text: string;
+  exitable: boolean;
 }
 
 const OUTCOMES_STORAGE_KEY = "pet-outcome-messages";
 
-export function useOutcomes() {
+export function useOutcomes(stateResult: GameState | undefined) {
+  const [clarifyingQuestion, setClarifyingQuestion] =
+    useState<string | null>(null);
   const [outcomes, setOutcomes] = useState<OutcomeMessage[]>([]);
-  const [nextId, setNextId] = useState(0);
+  const [nextId, setNextId] = useState(1);
 
   const addOutcome = (message: string) => {
-    setOutcomes((prev) => [...prev, { id: nextId, text: message }]);
+    setOutcomes((prev) => [...prev, { id: nextId, text: message, exitable: true }]);
     setNextId((prev) => prev + 1);
   };
 
   const removeOutcome = (id: number) => {
     setOutcomes((prev) => prev.filter((outcome) => outcome.id !== id));
   };
-
 
   // load saved outcomes from local storage on mount
   useEffect(() => {
@@ -31,6 +34,15 @@ export function useOutcomes() {
     }
   }, []);
 
+  // add clarifying question outcome if the user has an unresolved dilemma
+  useEffect(() => {
+    if (stateResult?.status === "has_unresolved_dilemma") {
+      setClarifyingQuestion(stateResult.question);
+    } else {
+      setClarifyingQuestion(null);
+    }
+  }, [stateResult]);
+
   // save outcomes to local storage whenever they change
   useEffect(() => {
     localStorage.setItem(
@@ -39,5 +51,15 @@ export function useOutcomes() {
     );
   }, [outcomes, nextId]);
 
-  return { outcomes, addOutcome, removeOutcome };
+  const outcomesWithClarifyingQuestion = clarifyingQuestion ? [
+    { id: 0, text: clarifyingQuestion, exitable: false },
+    ...outcomes,
+    ]
+    : outcomes;
+
+  return {
+    outcomes: outcomesWithClarifyingQuestion,
+    addOutcome,
+    removeOutcome,
+  };
 }

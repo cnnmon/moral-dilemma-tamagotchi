@@ -21,6 +21,7 @@ export default function CreatePage() {
         className="flex flex-col gap-4"
         onSubmit={async (e) => {
           e.preventDefault();
+          localStorage.clear(); // clear local storage
           await createPet({ name });
         }}
       >

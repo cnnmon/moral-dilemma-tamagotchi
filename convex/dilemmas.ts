@@ -94,6 +94,7 @@ export const processDilemma = mutation({
       userId: pet.userId,
       dilemmaId,
       dilemmaTitle: args.dilemma.title,
+      petId: pet._id,
     });
     console.log('🤖 LLM processing scheduled!');
 
@@ -105,13 +106,14 @@ export const processDilemma = mutation({
 // process response with openai
 export const generateResponse = internalAction({
   args: {
+    petId: v.id('pets'),
     dilemmaId: v.id('dilemmas'),
     dilemmaTitle: v.string(),
     responseText: v.string(),
     userId: v.string(),
   },
   handler: async (ctx, args): Promise<ProcessedResponse> => {
-    const pet = await ctx.runQuery(api.pets.getActivePet)
+    const pet = await ctx.runQuery(api.pets.getPetById, { petId: args.petId })
     if (!pet) {
       throw new Error('❌ No pet exists for ' + args.userId);
     }

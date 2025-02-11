@@ -1,5 +1,13 @@
 @import "tailwindcss";
 
+:root {
+  --color-background: #ececec;
+}
+
+body {
+  background-color: var(--color-background);
+}
+
 header {
   position: sticky;
   display: flex;
