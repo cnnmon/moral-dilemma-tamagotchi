@@ -1,7 +1,7 @@
 import React from "react";
 import Image from "next/image";
 
-const VIEWPORT_WIDTH = 573;
+const VIEWPORT_WIDTH = 600;
 const VIEWPORT_HEIGHT = 230;
 
 const Viewport = React.memo(function Viewport() {

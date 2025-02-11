@@ -5,7 +5,11 @@ import { useMutation } from "convex/react";
 import { SignOutButton } from "@clerk/nextjs";
 import { Doc } from "@/convex/_generated/dataModel";
 import { getMoralStatsWritten } from "@/constants/morals";
-import { EvolutionId, getEvolution } from "@/constants/evolutions";
+import {
+  EvolutionId,
+  getEvolutionTimeFrame,
+  getEvolution,
+} from "@/constants/evolutions";
 
 function SettingButtons() {
   const resetGame = useMutation(api.state.resetGame);
@@ -49,7 +53,7 @@ export function Footer({
         <div className="fixed bottom-0 max-w-lg items-center left-0 px-4 py-2 gap-2">
           {/* FACTS */}
           <p className="text-xl">{pet.name}</p>
-          <p className="text-gray-600">
+          <p className="text-zinc-600">
             {evolution.description}. {pet.personality}
           </p>
           {/* MORAL STATS */}
@@ -63,20 +67,23 @@ export function Footer({
                     percentage > 60
                       ? "text-black"
                       : percentage > 30
-                        ? "text-gray-500"
-                        : "text-gray-400"
+                        ? "text-zinc-500"
+                        : "text-zinc-400"
                   } mr-2`}
                 >
                   {description}
                 </span>
               ))
             ) : (
-              <span className="text-gray-400">moral uncertainty</span>
+              <span className="text-zinc-400">moral uncertainty</span>
             )}
           </p>
           {/* EVOLUTION */}
           <p>
-            stage {pet.age}: {evolution.id} / {seenDilemmasCount} completed
+            {evolution.id}
+            <br />
+            {seenDilemmasCount} / {getEvolutionTimeFrame(pet.age)} dilemmas
+            completed
           </p>
         </div>
       </div>

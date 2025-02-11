@@ -2,8 +2,15 @@ import { MoralDimensions, MoralDimensionsType } from "./morals";
 
 // evolution time frames
 
-export const stage1DilemmaCountTotal = 6; // see 6 dilemmas in age 0 before age 1
-export const stage2DilemmaCountTotal = 12 + stage1DilemmaCountTotal; // see 12 dilemmas in age 1 (+ 6 in age 0) before age 2
+const evolutionTimeFrame = {
+  0: 2, // 6 dilemmas in age 0 before age 1
+  1: 4, // 12 dilemmas in age 1 before age 2
+  2: -1, // you can see all the dilemmas in age 2
+}
+
+export function getEvolutionTimeFrame(age: number): number {
+  return evolutionTimeFrame[age as keyof typeof evolutionTimeFrame];
+}
 
 // evolution types
 

@@ -29,7 +29,7 @@ export function OutcomePopup({
 
   if (!exitable)
     return (
-      <div className="w-full border-2 border-black p-4 relative mb-4 bg-gray-100">
+      <div className="w-full border-2 border-black p-4 relative mb-4 bg-zinc-100">
         <p className="font-pixel">
           {pet.name} looks up at you inquisitively. &quot;{message}&quot;
         </p>
@@ -38,7 +38,7 @@ export function OutcomePopup({
 
   return (
     <div
-      className={`w-full border-2 border-black p-4 relative mb-4 bg-gray-100 transition-all duration-500 transform ${animationClasses}`}
+      className={`w-full border-2 border-black p-4 relative mb-4 bg-zinc-100 transition-all duration-500 transform ${animationClasses}`}
     >
       {exitable && (
         <button

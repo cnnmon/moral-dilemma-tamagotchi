@@ -1,7 +1,7 @@
 import { useCallback, useEffect } from "react";
-import { DilemmaTemplate } from "@/constants/dilemmas";
+import { DilemmaTemplate, dilemmaTemplates } from "@/constants/dilemmas";
 import { useState } from "react";
-import { getRandomItem, hashString } from "./random";
+import { getRandomItem } from "./random";
 import { GameState } from "@/convex/state";
 
 const CURRENT_DILEMMA_KEY = "pet-current-dilemma";
@@ -17,7 +17,7 @@ export function useCurrentDilemma(stateResult: GameState | undefined) {
     localStorage.setItem(CURRENT_DILEMMA_KEY, JSON.stringify(dilemma));
   }, []);
 
-  const loadCurrentDilemma = useCallback((availableDilemmas: DilemmaTemplate[]) => {
+  const loadCurrentDilemma = useCallback((availableDilemmaTitles: string[]) => {
     // either try to load from storage
     const savedDilemma = localStorage.getItem(CURRENT_DILEMMA_KEY);
     if (savedDilemma) {
@@ -37,8 +37,8 @@ export function useCurrentDilemma(stateResult: GameState | undefined) {
     }
 
     // or pick a new one
-    const seed = hashString("abcdef"); // TODO: randomize this
-    const newDilemma = getRandomItem(availableDilemmas, seed);
+    const newDilemmaTitle = getRandomItem(availableDilemmaTitles);
+    const newDilemma = dilemmaTemplates[newDilemmaTitle];
     handleSaveCurrentDilemma(newDilemma);
   }, [handleSaveCurrentDilemma]);
 
@@ -70,7 +70,7 @@ export function useCurrentDilemma(stateResult: GameState | undefined) {
 
     // try to load saved dilemma if we don't have one
     if (!currentDilemma && stateResult.status === "has_dilemmas") {
-      loadCurrentDilemma(stateResult.unseenDilemmas);
+      loadCurrentDilemma(stateResult.unseenDilemmaTitles);
     }
   }, [stateResult, currentDilemma, handleSaveCurrentDilemma, loadCurrentDilemma, isProcessing]);
 

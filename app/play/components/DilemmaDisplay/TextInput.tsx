@@ -108,9 +108,9 @@ export function TextInput({
   const isDisabled = disabled || isSubmitting;
 
   return (
-    <div className="flex flex-col mt-2">
+    <div className="flex flex-col my-2">
       <textarea
-        className={`resize-none border-2 border-black bg-gray-200 outline-none p-2 ${
+        className={`resize-none border-2 border-black bg-zinc-200 outline-none p-2 ${
           isDisabled ? "opacity-50 cursor-not-allowed" : ""
         }`}
         value={response}
@@ -120,11 +120,9 @@ export function TextInput({
         placeholder="speak your truth"
       />
       <div className="flex justify-end">
-        <p className="text-gray-600 text-sm">
+        <p className="text-zinc-400 text-sm mt-[-32px] p-2 absolute">
           {!isSubmitting ? (
-            <>
-              press enter or click <a onClick={handleSubmit}>submit</a>
-            </>
+            <>enter to submit</>
           ) : (
             <span className="opacity-50 cursor-not-allowed pointer-events-none">
               {thinkingFlavorText[flavorTextIndex]}

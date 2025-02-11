@@ -10,7 +10,7 @@ export function hashString(str: string): number {
 }
 
 // get random item using a seed
-export function getRandomItem<T>(items: T[], seed: number): T {
-  const index = Math.abs(seed) % items.length;
+export function getRandomItem<T>(items: T[]): T {
+  const index = Math.floor(Math.random() * items.length);
   return items[index];
 }

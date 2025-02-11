@@ -38,6 +38,11 @@ export default function Play() {
     return <Loading />;
   }
 
+  // if out of dilemmas, note that
+  if (status === "out_of_dilemmas") {
+    return <div>you&apos;ve seen all the dilemmas!</div>;
+  }
+
   // if no current dilemma, show loading
   if (!currentDilemma) {
     return <div>choosing next dilemma...</div>;
@@ -74,7 +79,7 @@ export default function Play() {
           onOutcome={addOutcome}
           onProcessingStart={onDilemmaProcessingStart}
           onProcessingEnd={onDilemmaProcessingEnd}
-          disabled={status === "out_of_dilemmas" || isProcessing}
+          disabled={isProcessing}
         />
       </div>
     </div>

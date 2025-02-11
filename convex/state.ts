@@ -1,8 +1,8 @@
 import { mutation, query } from "./_generated/server";
 import { Doc } from "./_generated/dataModel";
 import { getUserAndPetId } from "./user";
-import { dilemmaTemplates, DilemmaTemplate } from "../constants/dilemmas";
-import { getUnseenDilemmas } from "./lib/getUnseenDilemma";
+import { DilemmaTemplate, dilemmaTemplates } from "../constants/dilemmas";
+import { getPartitionedDilemmas } from "./lib/getPartitionedDilemmas";
 
 export type GameState = 
   | { status: 'not_authenticated' }
@@ -10,7 +10,7 @@ export type GameState =
   | {
       status: 'has_dilemmas',
       seenDilemmas: Doc<"dilemmas">[],
-      unseenDilemmas: DilemmaTemplate[],
+      unseenDilemmaTitles: string[],
       pet: Doc<"pets">
     }
   | {
@@ -45,49 +45,27 @@ export const getActiveGameState = query({
       return { status: 'needs_pet' };
     }
 
+    // check if pet needs evolution
+
     // get all dilemmas from db
     const allDilemmas = await ctx.db.query('dilemmas')
       .withIndex('by_userAndPetId', q => q.eq('userId', userId).eq('petId', petId))
       .collect();
 
-    // get all dilemmas this pet has seen and also resolved
-    // filter dilemmas to get seen and unresolved ones using reduce
-    const { seenDilemmas, unresolvedDilemmas } = allDilemmas.reduce(
-      (acc: { seenDilemmas: Doc<"dilemmas">[]; unresolvedDilemmas: Doc<"dilemmas">[] }, dilemma) => {
-        if (dilemma.resolved) {
-          acc.seenDilemmas.push(dilemma);
-        } else {
-          acc.unresolvedDilemmas.push(dilemma);
-        }
-        return acc;
-      },
-      { seenDilemmas: [], unresolvedDilemmas: [] }
-    );
+    const { seenDilemmas, unseenDilemmaTitles, unresolvedDilemma } = getPartitionedDilemmas(allDilemmas);
 
-    // if any unresolved dilemmas, return the clarifying question
-    if (unresolvedDilemmas.length > 0) {
-      for (const dilemma of unresolvedDilemmas) {
-        // dilemma is still loading, so skip it
-        if (!dilemma.outcome) {
-          continue;
-        }
-
-        const templateDilemma = dilemmaTemplates[dilemma.title];
-        return { 
-          status: 'has_unresolved_dilemma', 
-          seenDilemmas,
-          unresolvedDilemma: templateDilemma,
-          question: dilemma.outcome,
-          pet,
-        };
-      }
+    if (unresolvedDilemma && unresolvedDilemma.outcome) {
+      const dilemma = dilemmaTemplates[unresolvedDilemma.title];
+      return { 
+        status: "has_unresolved_dilemma",
+        seenDilemmas,
+        unresolvedDilemma: dilemma,
+        question: unresolvedDilemma.outcome,
+        pet,
+      };
     }
-
-    // get all unseen dilemmas
-    const seenDilemmaTitles = seenDilemmas.map(d => d.title);
-    const unseenDilemmas = getUnseenDilemmas(seenDilemmaTitles);
     
-    if (!unseenDilemmas || unseenDilemmas.length === 0) {
+    if (!unseenDilemmaTitles || unseenDilemmaTitles.length === 0) {
       return { 
         status: 'out_of_dilemmas',
         seenDilemmas,
@@ -98,7 +76,7 @@ export const getActiveGameState = query({
     return {
       status: 'has_dilemmas',
       seenDilemmas,
-      unseenDilemmas,
+      unseenDilemmaTitles,
       pet,
     };
   },
