@@ -1,9 +1,10 @@
+import React from "react";
 import Image from "next/image";
 
 const VIEWPORT_WIDTH = 573;
 const VIEWPORT_HEIGHT = 230;
 
-export default function Viewport() {
+const Viewport = React.memo(function Viewport() {
   return (
     <div
       style={{
@@ -43,8 +44,8 @@ export default function Viewport() {
         height={VIEWPORT_HEIGHT}
         style={{
           maxWidth: VIEWPORT_WIDTH,
-          height: VIEWPORT_HEIGHT,
           width: "100%",
+          height: VIEWPORT_HEIGHT,
           objectFit: "cover",
         }}
         className="absolute"
@@ -52,4 +53,6 @@ export default function Viewport() {
       />
     </div>
   );
-}
+});
+
+export default Viewport;
