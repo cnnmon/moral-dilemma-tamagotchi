@@ -46,7 +46,7 @@ return JSON:
   "outcome": "<context from {pet}>"
 }
 
-If advice is unclear (e.g., "sure", "i don't know"), ask a clarifying question.
+If advice is unclear (e.g., "sure", "i don't know"), ask a clarifying question in first person.
 return JSON:
 { 
   "ok": false,

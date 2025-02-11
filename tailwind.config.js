@@ -7,10 +7,6 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        background: "var(--color-background)",
-        primary: "var(--color-primary)",
-        "background-color": "var(--color-background-color)",
-        "text-color": "var(--color-text-color)",
       },
     },
   },
