@@ -4,7 +4,13 @@ import Image from "next/image";
 const VIEWPORT_WIDTH = 570;
 const VIEWPORT_HEIGHT = 230;
 
-const Viewport = React.memo(function Viewport() {
+const Viewport = React.memo(function Viewport({
+  clarifyingQuestion,
+  onOutcome,
+}: {
+  clarifyingQuestion: string | null;
+  onOutcome: (outcome: string) => void;
+}) {
   return (
     <div
       style={{
@@ -23,6 +29,11 @@ const Viewport = React.memo(function Viewport() {
         unoptimized
         className="absolute mt-10 z-10"
       />
+      {clarifyingQuestion && (
+        <div className="absolute w-xs bg-zinc-100 z-10 border border-2 p-2 mt-[-80px] text-center">
+          <p className="text-sm">{clarifyingQuestion}</p>
+        </div>
+      )}
       <Image
         src="/background.png"
         alt="background"

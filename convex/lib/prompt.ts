@@ -46,12 +46,19 @@ return JSON:
   "outcome": "<context from {pet}>"
 }
 
-if advice is unclear (e.g., "ok", "idk") and personality is weak, ask a clarifying question in first person where the caretaker is "you".
+if advice is unclear, ask a brief clarifying question in first person where the caretaker is "you".
 return JSON:
 { 
   "ok": false,
-  "outcome": "<clarifying question from {pet}>"
-}`;
+  "outcome": "<clarifying question from {pet} <50 chars max>>"
+}
+e.g. "i don't understand. should i tell my friend the truth?"
+`;
+
+const overallPersonalityRules = `
+- personality is ALWAYS in the third person.
+- update personality based on dilemmas.
+- include specific inferred learnings (e.g. "i feel guilty about workers suffering") rather than specific details from the dilemma itself. slowly combine learnings with existing personality over time.`;
 
 // independent decision override
 const overrideResponse = `
@@ -88,9 +95,7 @@ example personality lines:
 - "likes doing fun things."
 
 personality rules:
-- personality is ALWAYS in the third person.
-- update personality based on dilemmas.
-- include specific learnings. slowly combine learnings with existing personality over time.
+${overallPersonalityRules}
 - note if actions conflict with existing personality or stats but do not resist.
 - growing sense of self.
 - use specific real-world examples to reinforce opinions.
@@ -121,9 +126,7 @@ example personality lines:
 - "prefers to make own choices, even if others disagree."
 
 personality rules:
-- personality is ALWAYS in the third person.
-- update personality based on dilemmas.
-- include specific learnings. slowly combine learnings with existing personality over time.
+${overallPersonalityRules}
 - becoming more opinionated; show more resistance/autonomy if actions conflict with existing personality or stats.
 - use specific real-world examples to reinforce opinions.
 - reinforce learned behaviors gradually; do not override.`;
@@ -155,9 +158,7 @@ example personality lines:
 - "commits crimes if able to get away with it."
 
 personality rules:
-- personality is ALWAYS in the third person.
-- update personality based on dilemmas.
-- include specific learnings. slowly combine learnings with existing personality over time.
+${overallPersonalityRules}
 - strong sense of self; show decisive resistance/autonomy if actions conflict with existing personality or stats.
 - use specific real-world examples to reinforce opinions.
 - reinforce learned behaviors gradually; do not override.`;
