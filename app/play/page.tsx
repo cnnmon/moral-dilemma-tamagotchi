@@ -9,6 +9,7 @@ import { useOutcomes } from "./utils/useOutcomes";
 import { useCurrentDilemma } from "./utils/useCurrentDilemma";
 import Viewport from "./components/Viewport";
 import DilemmaDisplay from "./components/DilemmaDisplay";
+import Stats from "./components/Stats";
 
 export default function Play() {
   const stateResult = useQuery(api.state.getActiveGameState);
@@ -51,16 +52,18 @@ export default function Play() {
   const { pet, seenDilemmas } = stateResult;
 
   return (
-    <div className="flex flex-col items-center gap-2 h-screen w-screen justify-center">
+    <div className="flex flex-col items-center gap-8 h-screen w-screen justify-center">
+      {/* Displays setting buttons */}
+      <Footer />
+
       {/* Displays stats */}
-      <Footer pet={pet} seenDilemmasCount={seenDilemmas.length} />
+      <Stats pet={pet} seenDilemmasCount={seenDilemmas.length} />
 
       {/* Displays outcomes */}
-      <div className="fixed top-0 p-4 w-full max-w-2xl">
+      <div className="fixed top-0 p-4 w-full max-w-xl z-10">
         {outcomes.map((outcome) => (
           <OutcomePopup
             key={outcome.id}
-            pet={pet}
             message={outcome.text}
             exitable={outcome.exitable}
             onClose={() => removeOutcome(outcome.id)}

@@ -1,18 +1,15 @@
 "use client";
 
-import { Doc } from "@/convex/_generated/dataModel";
 import { useState, useEffect } from "react";
 
 interface OutcomePopupProps {
   message: string;
-  pet: Doc<"pets">;
   onClose: () => void;
   exitable: boolean;
 }
 
 export function OutcomePopup({
   message,
-  pet,
   onClose,
   exitable,
 }: OutcomePopupProps) {
@@ -27,18 +24,9 @@ export function OutcomePopup({
     ? "opacity-100 scale-100"
     : "opacity-0 scale-90";
 
-  if (!exitable)
-    return (
-      <div className="w-full border-2 border-black p-4 relative mb-4 bg-zinc-100">
-        <p className="font-pixel">
-          {pet.name} looks up at you inquisitively. &quot;{message}&quot;
-        </p>
-      </div>
-    );
-
   return (
     <div
-      className={`w-full border-2 border-black p-4 relative mb-4 bg-zinc-100 transition-all duration-500 transform ${animationClasses}`}
+      className={`w-full border-2 border-black p-4 relative mb-4 bg-zinc-100 transition-all duration-200 transform ${animationClasses}`}
     >
       {exitable && (
         <button
@@ -51,7 +39,7 @@ export function OutcomePopup({
           ✕
         </button>
       )}
-      <p className="font-pixel pr-6">{message}</p>
+      <p className={`font-pixel ${exitable ? "pr-6" : ""}`}>{message}</p>
     </div>
   );
 }

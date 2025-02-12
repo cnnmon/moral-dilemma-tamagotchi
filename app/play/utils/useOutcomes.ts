@@ -37,7 +37,8 @@ export function useOutcomes(stateResult: GameState | undefined) {
   // add clarifying question outcome if the user has an unresolved dilemma
   useEffect(() => {
     if (stateResult?.status === "has_unresolved_dilemma") {
-      setClarifyingQuestion(stateResult.question);
+      const pet = stateResult.pet;
+      setClarifyingQuestion(`${pet.name} looks up at you inquisitively. "${stateResult.question}"`);
     } else {
       setClarifyingQuestion(null);
     }
@@ -51,10 +52,15 @@ export function useOutcomes(stateResult: GameState | undefined) {
     );
   }, [outcomes, nextId]);
 
-  const outcomesWithClarifyingQuestion = clarifyingQuestion ? [
-    { id: 0, text: clarifyingQuestion, exitable: false },
-    ...outcomes,
-    ]
+  const outcomesWithClarifyingQuestion = clarifyingQuestion
+    ? [
+        {
+          id: 0,
+          text: clarifyingQuestion,
+          exitable: false,
+        },
+        ...outcomes,
+      ]
     : outcomes;
 
   return {
