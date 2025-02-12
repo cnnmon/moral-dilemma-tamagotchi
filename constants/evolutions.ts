@@ -19,6 +19,12 @@ export type Stage2EvolutionId = "monk" | "shepherd" | "arbiter" | "martyr" | "wa
 export type EvolutionId = "baby" | Stage1EvolutionId | Stage2EvolutionId;
 
 // represents a stage in pet evolution
+type Stage0Evolution = {
+  id: "baby";
+  description: string;
+  nextStages: Partial<Record<MoralStatAttribute, Stage1EvolutionId>>;
+}
+
 type Stage1Evolution = {
   id: Stage1EvolutionId;
   description: string;
@@ -30,17 +36,13 @@ type Stage2Evolution = {
   description: string;
 }
 
-type Evolution = {
-  id: "baby";
-  description: string;
-  nextStage: Partial<Record<MoralStatAttribute, Stage1EvolutionId>>;
-} | Stage1Evolution | Stage2Evolution;
+type Evolution = Stage0Evolution | Stage1Evolution | Stage2Evolution;
 
-export const stage0Evolutions: Record<'baby', Evolution> = {
+export const stage0Evolutions: Record<'baby', Stage0Evolution> = {
   baby: {
     id: "baby",
     description: "a naive baby bird, curious about the world",
-    nextStage: {
+    nextStages: {
       "empathetic": "harbinger",
       "virtuous": "devout",
       "just": "watcher",

@@ -3,7 +3,6 @@ import { Doc } from "./_generated/dataModel";
 import { getUserAndPetId } from "./user";
 import { DilemmaTemplate, dilemmaTemplates } from "../constants/dilemmas";
 import { getPartitionedDilemmas } from "./lib/getPartitionedDilemmas";
-import { evolvePetIfNeeded } from "./lib/evolvePetIfNeeded";
 
 export type GameState = 
   | { status: 'not_authenticated' }
@@ -72,12 +71,6 @@ export const getActiveGameState = query({
       };
     }
 
-    // evolve if # of dilemmas have been met
-    const evolution = evolvePetIfNeeded(seenDilemmas.length, pet);
-    if (evolution) {
-      await ctx.db.update(petId, { evolutionId: evolution.evolutionId, age: evolution.age });
-    }
-    
     return {
       status: 'has_dilemmas',
       seenDilemmas,

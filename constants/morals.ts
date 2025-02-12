@@ -45,11 +45,11 @@ type MoralStatsWritten = {
 
 export function getMoralStatsWritten(
   moralStats: MoralDimensionsType,
-  usePrefix: boolean = true
+  forEvolution: boolean = false // if true, only returns the attribute & returns all attributes; used to determine best next evolution
 ): MoralStatsWritten[] {
   const stats = Object.entries(moralStats).reduce(
     (acc, [key, value]) => {
-      if (value === 5) {
+      if (value === 5 && !forEvolution) {
         return acc;
       }
 
@@ -72,7 +72,7 @@ export function getMoralStatsWritten(
 
       acc.push({
         key,
-        description: `${usePrefix ? prefix + " " : ""}${description}`,
+        description: `${!forEvolution ? prefix + " " : ""}${description}`,
         percentage: Math.abs(value - 5) * 20,
       });
 
