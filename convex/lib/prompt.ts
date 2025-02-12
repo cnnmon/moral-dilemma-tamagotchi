@@ -13,11 +13,11 @@ caretaker's advice: "{response}"
 
 moral stats (0-10):
 {
-  compassion: {morals.compassion}, // 0-10 (0-10, 0 = empathy, 10 = indifference): 
+  compassion: {morals.compassion}, // 0-10 (0-10, 0 = empathetic, 10 = indifferent): 
   retribution: {morals.retribution}, // 0-10 (0-10, 0 = justice, 10 = forgiveness):   
-  devotion: {morals.devotion}, // 0-10 (0-10, 0 = loyalty, 10 = personal integrity): 
-  dominance: {morals.dominance}, // 0-10 (0-10, 0 = authority, 10 = autonomy): 
-  purity: {morals.purity}, // 0-10 (0-10, 0 = virtue, 10 = indulgence): 
+  devotion: {morals.devotion}, // 0-10 (0-10, 0 = loyal, 10 = personal integrity): 
+  dominance: {morals.dominance}, // 0-10 (0-10, 0 = authoritarian, 10 = autonomous): 
+  purity: {morals.purity}, // 0-10 (0-10, 0 = virtuous, 10 = indulgent): 
   ego: {morals.ego} // 0-10 (0-10, 0 = self-sacrificing, 10 = self-serving): 
 }
 
@@ -46,14 +46,12 @@ return JSON:
   "outcome": "<context from {pet}>"
 }
 
-if advice is unclear, ask a brief clarifying question in first person where the caretaker is "you".
+if advice is unclear (examples: "ok", "idk", or nonsense), ask a brief clarifying question in first person where the caretaker is "you". DO NOT ask a clarifying question if the advice is bad or conflicting.
 return JSON:
 { 
   "ok": false,
   "outcome": "<clarifying question from {pet} <50 chars max>>"
-}
-e.g. "i don't understand. should i tell my friend the truth?"
-`;
+}`;
 
 const overallPersonalityRules = `
 - personality is ALWAYS in the third person.

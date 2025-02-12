@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 
 const VIEWPORT_WIDTH = 570;
@@ -6,11 +6,15 @@ const VIEWPORT_HEIGHT = 230;
 
 const Viewport = React.memo(function Viewport({
   clarifyingQuestion,
-  onOutcome,
 }: {
   clarifyingQuestion: string | null;
-  onOutcome: (outcome: string) => void;
 }) {
+  const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    setLoaded(true);
+  }, []);
+
   return (
     <div
       style={{
@@ -27,7 +31,7 @@ const Viewport = React.memo(function Viewport({
         width={150}
         height={150}
         unoptimized
-        className="absolute mt-10 z-10"
+        className={`absolute mt-10 z-10 fade-in ${loaded ? "loaded" : ""}`}
       />
       {clarifyingQuestion && (
         <div className="absolute w-xs bg-zinc-100 z-10 border border-2 p-2 mt-[-80px] text-center">

@@ -76,7 +76,6 @@ export default function Play() {
         clarifyingQuestion={
           status === "has_unresolved_dilemma" ? stateResult.question : null
         }
-        onOutcome={addOutcome}
       />
 
       {/* Displays dilemma */}
