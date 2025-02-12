@@ -1,4 +1,4 @@
-import { MoralDimensions, MoralDimensionsType } from "./morals";
+import { MoralStatAttribute } from "./morals";
 
 // evolution time frames
 const evolutionTimeFrame = {
@@ -12,9 +12,9 @@ export function getEvolutionTimeFrame(age: number): number {
 }
 
 // evolution types
-export type Stage1EvolutionId = "harbinger" | "devout" | "watcher" | "loyalist" | "crowned" | "sigma";
+export type Stage1EvolutionId = "harbinger" | "devout" | "watcher" | "loyalist" | "soldier" | "maverick";
 
-export type Stage2EvolutionId = "judge" | "shepherd" | "beacon" | "martyr" | "warden" | "vigilante" | "champion" | "guardian" | "tyrant" | "sovereign" | "hedonist" | "npc";
+export type Stage2EvolutionId = "monk" | "shepherd" | "arbiter" | "martyr" | "warden" | "wayfarer" | "mercenary" | "guardian" | "patrician" | "sovereign" | "siren" | "npc";
 
 export type EvolutionId = "baby" | Stage1EvolutionId | Stage2EvolutionId;
 
@@ -22,176 +22,150 @@ export type EvolutionId = "baby" | Stage1EvolutionId | Stage2EvolutionId;
 type Stage1Evolution = {
   id: Stage1EvolutionId;
   description: string;
-  requirements: Partial<MoralDimensionsType>;
-  nextStages: Stage2EvolutionId[];
+  nextStages: Partial<Record<MoralStatAttribute, Stage2EvolutionId>>;
 } 
 
 type Stage2Evolution = {
   id: Stage2EvolutionId;
   description: string;
-  requirements: Partial<MoralDimensionsType>;
 }
 
 type Evolution = {
   id: "baby";
   description: string;
-  nextStage: Stage1EvolutionId[];
+  nextStage: Partial<Record<MoralStatAttribute, Stage1EvolutionId>>;
 } | Stage1Evolution | Stage2Evolution;
 
-export const stage1EvolutionsByAttribute: Record<MoralDimensions, Stage1EvolutionId> = {
-  [MoralDimensions.compassion]: "harbinger",
-  [MoralDimensions.purity]: "devout",
-  [MoralDimensions.retribution]: "watcher",
-  [MoralDimensions.devotion]: "loyalist",
-  [MoralDimensions.dominance]: "crowned",
-  [MoralDimensions.ego]: "sigma",
+export const stage0Evolutions: Record<'baby', Evolution> = {
+  baby: {
+    id: "baby",
+    description: "a naive baby bird, curious about the world",
+    nextStage: {
+      "empathetic": "harbinger",
+      "virtuous": "devout",
+      "just": "watcher",
+      "loyal": "loyalist",
+      "authoritarian": "soldier",
+      "self-serving": "maverick",
+    }
+  }
 }
 
 export const stage1Evolutions: Record<Stage1EvolutionId, Stage1Evolution> = {
+  // empathetic (compassion) -> evolves based on devotion
   harbinger: {
     id: "harbinger",
-    description: "a judge who is always ready to make a decision",
-    requirements: {
-      [MoralDimensions.compassion]: 1, // empathy
+    description: "a caring envoy who strives to help the world",
+    nextStages: {
+      "integrous": "monk",
+      "loyal": "shepherd",
     },
-    nextStages: ["judge", "shepherd"],
   },
-  devout: {
+
+  // virtuous (purity) -> evolves based on retribution
+  devout: { 
     id: "devout",
-    description: "a martyr who is always ready to make a sacrifice",
-    requirements: {
-      [MoralDimensions.purity]: 1, // virtue
+    description: "a generous soul, seeking purpose in sacrifice",
+    nextStages: {
+      "just": "arbiter",
+      "forgiving": "martyr",
     },
-    nextStages: ["martyr", "warden"],
   },
-  watcher: {
+
+  // forgiveness (retribution) -> evolves based on dominance
+  watcher: { 
     id: "watcher",
-    description: "a warden who is always ready to protect",
-    requirements: {
-      [MoralDimensions.retribution]: 1, // justice
+    description: "a observer who questions their place in justice",
+    nextStages: {
+      "authoritarian": "warden",
+      "autonomous": "wayfarer",
     },
-    nextStages: ["warden", "vigilante"],
   },
-  loyalist: {
+
+  // loyal (devotion) -> evolves based on ego
+  loyalist: { 
     id: "loyalist",
-    description: "a guardian who is always ready to protect",
-    requirements: {
-      [MoralDimensions.devotion]: 1, // loyalty
+    description: "a steadfast ally bound by duty and trust",
+    nextStages: {
+      "self-serving": "mercenary",
+      "self-sacrificing": "guardian",
     },
-    nextStages: ["guardian", "champion"],
   },
-  crowned: {
-    id: "crowned",
-    description: "a tyrant who is always ready to rule",
-    requirements: {
-      [MoralDimensions.dominance]: 1, // authority
+
+  // authoritarian (dominance) -> evolves based on purity
+  soldier: { 
+    id: "soldier",
+    description: "a disciplined enforcer who upholds order and structure",
+    nextStages: {
+      "virtuous": "patrician",
+      "indulgent": "sovereign",
     },
-    nextStages: ["tyrant", "sovereign"],
   },
-  sigma: {
-    id: "sigma",
-    description: "a hedonist who is always ready to indulge",
-    requirements: {
-      [MoralDimensions.ego]: 10, // selfhood
+
+  // self-serving (ego) -> evolves based on compassion
+  maverick: { 
+    id: "maverick",
+    description: "a self-reliant wanderer who seeks purpose",
+    nextStages: {
+      "indifferent": "npc",
+      "empathetic": "siren",
     },
-    nextStages: ["hedonist", "npc"],
   },
 }
 
 export const stage2Evolutions: Record<Stage2EvolutionId, Stage2Evolution> = {
-  // stage 2
-  judge: {
-    id: "judge",
-    description: "an arbiter who embodies integrity",
-    requirements: {
-      [MoralDimensions.devotion]: 10, // integrity
-    },
+  monk: { // empathetic + integrous
+    id: "monk",
+    description: "a beacon of unwavering moral clarity",
   },
-  shepherd: {
+  shepherd: { // empathetic + loyal
     id: "shepherd",
-    description: "a guide who embodies loyalty",
-    requirements: {
-      [MoralDimensions.devotion]: 1, // loyalty
-    },
+    description: "a protector who stands warmly by those in need",
   },
-  beacon: {
-    id: "beacon",
-    description: "a beacon of justice",
-    requirements: {
-      [MoralDimensions.retribution]: 1, // justice
-    },
+  arbiter: { // virtuous + just
+    id: "arbiter",
+    description: "an unyielding judge upholding decisive impartiality",
   },
-  martyr: {
+  martyr: { // virtuous + forgiving
     id: "martyr",
-    description: "a symbol of forgiveness",
-    requirements: {
-      [MoralDimensions.retribution]: 1, // forgiveness
-    },
+    description: "a selfless soul, embracing suffering in the name of absolution",
   },
-  warden: {
+  warden: { // forgiving + authoritarian
     id: "warden",
-    description: "a protector of authority",
-    requirements: {
-      [MoralDimensions.dominance]: 1, // authority
-    },
+    description: "a merciful enforcer who believes in redemption",
   },
-  vigilante: {
-    id: "vigilante",
-    description: "an advocate of autonomy",
-    requirements: {
-      [MoralDimensions.dominance]: 1, // autonomy
-    },
+  wayfarer: { // forgiving + autonomous
+    id: "wayfarer",
+    description: "a free-spirited healer",
   },
-  champion: {
-    id: "champion",
-    description: "a paragon of integrity",
-    requirements: {
-      [MoralDimensions.devotion]: 1, // integrity
-    },
+  mercenary: { // loyal + self-serving
+    id: "mercenary",
+    description: "a fighter who seeks greatness through the help of others",
   },
-  guardian: {
+  guardian: { // loyal + self-sacrificing
     id: "guardian",
-    description: "a defender of justice",
-    requirements: {
-      [MoralDimensions.retribution]: 1, // justice
-    },
+    description: "a devoted shield for their allies",
   },
-  tyrant: {
-    id: "tyrant",
-    description: "a ruler of indulgence",
-    requirements: {
-      [MoralDimensions.purity]: 1, // indulgence
-    },
+  patrician: { // authoritarian + indulgent
+    id: "patrician",
+    description: "a devotee of privilege and structure",
   },
-  sovereign: {
+  sovereign: { // authoritarian + virtuous
     id: "sovereign",
-    description: "a leader of virtue",
-    requirements: {
-      [MoralDimensions.purity]: 1, // virtue
-    },
+    description: "a noble and righteous leader",
   },
-  hedonist: {
-    id: "hedonist",
-    description: "a seeker of indulgence",
-    requirements: {
-      [MoralDimensions.ego]: 1, // indulgence
-    },
+  siren: { // self-serving + indulgent
+    id: "siren",
+    description: "a charismatic figure who draws others in to achieve their own purposes",
   },
-  npc: {
+  npc: { // self-serving + indifferent
     id: "npc",
-    description: "an observer of the world",
-    requirements: {
-      [MoralDimensions.compassion]: 1, // indifference
-    },
+    description: "a passive bystander to life",
   },
 };
 
 const evolutions: Record<EvolutionId, Evolution> = {
-  baby: {
-    id: "baby",
-    description: "a naive baby bird",
-    nextStage: ["harbinger", "devout", "watcher", "loyalist", "crowned", "sigma"],
-  },
+  ...stage0Evolutions,
   ...stage1Evolutions,
   ...stage2Evolutions
 }

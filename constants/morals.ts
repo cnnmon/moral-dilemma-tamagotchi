@@ -8,7 +8,9 @@ export enum MoralDimensions {
   ego = "ego", // 0-10 (0 = self-sacrificing, 10 = self-serving)
 }
 
-export const moralStatsDescriptions = {
+export type MoralStatAttribute = "empathetic" | "indifferent" | "integrous" | "just" | "forgiving" | "loyal" | "integrous" | "authoritarian" | "autonomous" | "virtuous" | "indulgent" | "self-serving" | "self-sacrificing";
+
+export const moralStatAttributes = {
   [MoralDimensions.compassion]: {
     low: "empathetic",
     high: "indifferent",
@@ -22,7 +24,7 @@ export const moralStatsDescriptions = {
     high: "integrous",
   },
   [MoralDimensions.dominance]: {
-    low: "authoritative",
+    low: "authoritarian",
     high: "autonomous",
   },
   [MoralDimensions.purity]: {
@@ -42,7 +44,8 @@ type MoralStatsWritten = {
 };
 
 export function getMoralStatsWritten(
-  moralStats: MoralDimensionsType
+  moralStats: MoralDimensionsType,
+  usePrefix: boolean = true
 ): MoralStatsWritten[] {
   const stats = Object.entries(moralStats).reduce(
     (acc, [key, value]) => {
@@ -59,7 +62,7 @@ export function getMoralStatsWritten(
         prefix = "+";
       }
 
-      const range = moralStatsDescriptions[key as MoralDimensions];
+      const range = moralStatAttributes[key as MoralDimensions];
       let description: string;
       if (value > 5) {
         description = range.high;
@@ -69,7 +72,7 @@ export function getMoralStatsWritten(
 
       acc.push({
         key,
-        description: `${prefix} ${description}`,
+        description: `${usePrefix ? prefix + " " : ""}${description}`,
         percentage: Math.abs(value - 5) * 20,
       });
 
