@@ -1,11 +1,10 @@
 import { MoralDimensions, MoralDimensionsType } from "./morals";
 
 // evolution time frames
-
 const evolutionTimeFrame = {
   0: 2, // 6 dilemmas in age 0 before age 1
   1: 4, // 12 dilemmas in age 1 before age 2
-  2: -1, // you can see all the dilemmas in age 2
+  2: Infinity, // you can see all remaining dilemmas in age 2
 }
 
 export function getEvolutionTimeFrame(age: number): number {
@@ -13,7 +12,6 @@ export function getEvolutionTimeFrame(age: number): number {
 }
 
 // evolution types
-
 export type Stage1EvolutionId = "harbinger" | "devout" | "watcher" | "loyalist" | "crowned" | "sigma";
 
 export type Stage2EvolutionId = "judge" | "shepherd" | "beacon" | "martyr" | "warden" | "vigilante" | "champion" | "guardian" | "tyrant" | "sovereign" | "hedonist" | "npc";
@@ -21,22 +19,35 @@ export type Stage2EvolutionId = "judge" | "shepherd" | "beacon" | "martyr" | "wa
 export type EvolutionId = "baby" | Stage1EvolutionId | Stage2EvolutionId;
 
 // represents a stage in pet evolution
-type Evolution = {
-  id: "baby";
-  description: string;
-  nextStage: Stage1EvolutionId[];
-} | {
+type Stage1Evolution = {
   id: Stage1EvolutionId;
   description: string;
   requirements: Partial<MoralDimensionsType>;
   nextStages: Stage2EvolutionId[];
-} | {
+} 
+
+type Stage2Evolution = {
   id: Stage2EvolutionId;
   description: string;
   requirements: Partial<MoralDimensionsType>;
-};
+}
 
-export const stage1Evolutions: Record<Stage1EvolutionId, Evolution> = {
+type Evolution = {
+  id: "baby";
+  description: string;
+  nextStage: Stage1EvolutionId[];
+} | Stage1Evolution | Stage2Evolution;
+
+export const stage1EvolutionsByAttribute: Record<MoralDimensions, Stage1EvolutionId> = {
+  [MoralDimensions.compassion]: "harbinger",
+  [MoralDimensions.purity]: "devout",
+  [MoralDimensions.retribution]: "watcher",
+  [MoralDimensions.devotion]: "loyalist",
+  [MoralDimensions.dominance]: "crowned",
+  [MoralDimensions.ego]: "sigma",
+}
+
+export const stage1Evolutions: Record<Stage1EvolutionId, Stage1Evolution> = {
   harbinger: {
     id: "harbinger",
     description: "a judge who is always ready to make a decision",
@@ -87,7 +98,7 @@ export const stage1Evolutions: Record<Stage1EvolutionId, Evolution> = {
   },
 }
 
-export const stage2Evolutions: Record<Stage2EvolutionId, Evolution> = {
+export const stage2Evolutions: Record<Stage2EvolutionId, Stage2Evolution> = {
   // stage 2
   judge: {
     id: "judge",
@@ -168,7 +179,7 @@ export const stage2Evolutions: Record<Stage2EvolutionId, Evolution> = {
   },
   npc: {
     id: "npc",
-    description: "an embodiment of indifference",
+    description: "an observer of the world",
     requirements: {
       [MoralDimensions.compassion]: 1, // indifference
     },
