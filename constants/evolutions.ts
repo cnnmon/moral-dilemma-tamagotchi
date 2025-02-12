@@ -2,8 +2,8 @@ import { MoralStatAttribute } from "./morals";
 
 // evolution time frames
 const evolutionTimeFrame = {
-  0: 2, // 6 dilemmas in age 0 before age 1
-  1: 4, // 12 dilemmas in age 1 before age 2
+  0: 6, // 6 dilemmas in age 0 before age 1
+  1: 6, // 6 dilemmas in age 1 before age 2
   2: Infinity, // you can see all remaining dilemmas in age 2
 }
 
@@ -14,7 +14,7 @@ export function getEvolutionTimeFrame(age: number): number {
 // evolution types
 export type Stage1EvolutionId = "harbinger" | "devout" | "watcher" | "loyalist" | "soldier" | "maverick";
 
-export type Stage2EvolutionId = "monk" | "shepherd" | "arbiter" | "martyr" | "warden" | "wayfarer" | "mercenary" | "guardian" | "patrician" | "sovereign" | "siren" | "npc";
+export type Stage2EvolutionId = "monk" | "shepherd" | "arbiter" | "martyr" | "warden" | "wayfarer" | "mercenary" | "guardian" | "patrician" | "sovereign" | "cultleader" | "npc";
 
 export type EvolutionId = "baby" | Stage1EvolutionId | Stage2EvolutionId;
 
@@ -110,7 +110,7 @@ export const stage1Evolutions: Record<Stage1EvolutionId, Stage1Evolution> = {
     description: "a self-reliant wanderer who seeks purpose",
     nextStages: {
       "indifferent": "npc",
-      "empathetic": "siren",
+      "empathetic": "cultleader",
     },
   },
 }
@@ -118,51 +118,51 @@ export const stage1Evolutions: Record<Stage1EvolutionId, Stage1Evolution> = {
 export const stage2Evolutions: Record<Stage2EvolutionId, Stage2Evolution> = {
   monk: { // empathetic + integrous
     id: "monk",
-    description: "a beacon of unwavering moral clarity",
+    description: "a calm and collected figure of unwavering moral clarity",
   },
   shepherd: { // empathetic + loyal
     id: "shepherd",
-    description: "a protector who stands warmly by those in need",
+    description: "a caring protector who stands warmly by those in need",
   },
   arbiter: { // virtuous + just
     id: "arbiter",
-    description: "an unyielding judge upholding decisive impartiality",
+    description: "a decisive judge, fair and firm",
   },
   martyr: { // virtuous + forgiving
     id: "martyr",
-    description: "a selfless soul, embracing suffering in the name of absolution",
+    description: "a selfless soul who takes on the suffering of others",
   },
   warden: { // forgiving + authoritarian
     id: "warden",
-    description: "a merciful enforcer who believes in redemption",
+    description: "a strict but merciful enforcer",
   },
   wayfarer: { // forgiving + autonomous
     id: "wayfarer",
-    description: "a free-spirited healer",
+    description: "a free spirit, healing and helping wherever they go",
   },
   mercenary: { // loyal + self-serving
     id: "mercenary",
-    description: "a fighter who seeks greatness through the help of others",
+    description: "a fighter seeking greatness through others",
   },
   guardian: { // loyal + self-sacrificing
     id: "guardian",
-    description: "a devoted shield for their allies",
+    description: "a devoted protector who will stand between danger and their allies",
   },
   patrician: { // authoritarian + indulgent
     id: "patrician",
-    description: "a devotee of privilege and structure",
+    description: "an enjoyer of structure, privilege, and status",
   },
   sovereign: { // authoritarian + virtuous
     id: "sovereign",
     description: "a noble and righteous leader",
   },
-  siren: { // self-serving + indulgent
-    id: "siren",
-    description: "a charismatic figure who draws others in to achieve their own purposes",
+  cultleader: { // self-serving + empathetic
+    id: "cultleader",
+    description: "a charismatic opportunist who harnesses devotion for personal gain",
   },
   npc: { // self-serving + indifferent
     id: "npc",
-    description: "a passive bystander to life",
+    description: "a passive bystander",
   },
 };
 

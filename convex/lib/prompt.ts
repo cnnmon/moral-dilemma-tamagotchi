@@ -39,14 +39,14 @@ const standardResponse = `return JSON:
 prioritize **real, direct** experiences over abstract moralizing.`;
 
 // clarification handling
-const clarificationCheck = `if the caretaker's advice is a question, answer it.
+const clarificationCheck = `if the caretaker's advice is a question, answer it. if needed, make up specifics about the dilemma.
 return JSON:
 { 
   "ok": false,
   "outcome": "<context from {pet}>"
 }
 
-If advice is unclear (e.g., "sure", "i don't know"), ask a clarifying question in first person, where the caretaker is "you".
+if advice is unclear (e.g., "ok", "idk") and personality is weak, ask a clarifying question in first person where the caretaker is "you".
 return JSON:
 { 
   "ok": false,
@@ -129,6 +129,8 @@ personality rules:
 - reinforce learned behaviors gradually; do not override.`;
 
 export const stage2Prompt = `${basePrompt.replace('{stage}', 'mature')}
+
+${clarificationCheck}
 
 evaluate advice and return JSON:
 
