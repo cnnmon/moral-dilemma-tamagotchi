@@ -48,7 +48,7 @@ export function Textarea({
         placeholder={placeholder}
       />
       <div className="flex justify-end w-full">
-        <p className="text-zinc-400 text-sm mt-[-34px] pr-2 pb-2">
+        <p className="text-zinc-400 text-sm mt-[-32px] pr-2 pb-2">
           {!isSubmitting ? (
             <>enter to submit</>
           ) : (

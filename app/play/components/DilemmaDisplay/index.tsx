@@ -23,7 +23,7 @@ export default function DilemmaDisplay({
         <p>help {pet.name} ! ! ! (；￣Д￣)</p>
       </div>
       <div className="px-3 py-2">
-        <p>{dilemma.text.replace(/{pet}/g, pet.name)}</p>
+        <p className="mb-2">{dilemma.text.replace(/{pet}/g, pet.name)}</p>
         <TextInput
           dilemma={dilemma}
           onOutcome={onOutcome}

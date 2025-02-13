@@ -15,6 +15,7 @@ import type {
 } from "convex/server";
 import type * as dilemmas from "../dilemmas.js";
 import type * as lib_evolvePetIfNeeded from "../lib/evolvePetIfNeeded.js";
+import type * as lib_getAverageMoralStats from "../lib/getAverageMoralStats.js";
 import type * as lib_getPartitionedDilemmas from "../lib/getPartitionedDilemmas.js";
 import type * as lib_processDilemmaResponse from "../lib/processDilemmaResponse.js";
 import type * as lib_prompt from "../lib/prompt.js";
@@ -33,6 +34,7 @@ import type * as user from "../user.js";
 declare const fullApi: ApiFromModules<{
   dilemmas: typeof dilemmas;
   "lib/evolvePetIfNeeded": typeof lib_evolvePetIfNeeded;
+  "lib/getAverageMoralStats": typeof lib_getAverageMoralStats;
   "lib/getPartitionedDilemmas": typeof lib_getPartitionedDilemmas;
   "lib/processDilemmaResponse": typeof lib_processDilemmaResponse;
   "lib/prompt": typeof lib_prompt;

@@ -7,6 +7,7 @@ import { MoralDimensionsType } from "../constants/morals";
 import processDilemmaResponse from "./lib/processDilemmaResponse";
 import { Doc, Id } from "./_generated/dataModel";
 import { evolvePetIfNeeded } from "./lib/evolvePetIfNeeded";
+import { getAverageMoralStats } from "./lib/getAverageMoralStats";
 
 type ProcessedResponse = {
   ok: boolean;
@@ -234,9 +235,11 @@ export const updateDilemmaAndPet = mutation({
         };
       }
 
+      // update moral stats by averaging all seen dilemma moral stats
+      const averageMoralStats = getAverageMoralStats(seenDilemmas);
       await ctx.db.patch(args.petId, {
         ...evolutionAdditions,
-        moralStats: args.updatedMoralStats,
+        moralStats: averageMoralStats,
         personality: args.updatedPersonality,
       });
     }

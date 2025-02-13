@@ -60,7 +60,7 @@ export default function Play() {
       <Stats pet={pet} seenDilemmasCount={seenDilemmas.length} />
 
       {/* Displays outcomes */}
-      <div className="fixed top-0 p-4 w-full max-w-[600px] z-10">
+      <div className="fixed top-0 p-4 w-full max-w-xl z-10">
         {outcomes.map((outcome) => (
           <OutcomePopup
             key={outcome.id}

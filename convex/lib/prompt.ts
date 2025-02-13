@@ -30,7 +30,7 @@ const personalityUpdate = `your personality: {personality}.`;
 const standardResponse = `return JSON:
 {
   "ok": true,
-  "stats": {<gradually updated moral stats, reflect personality>},
+  "stats": {<updated moral stats for this response>},
   "personality": "<refined personality (<200 chars)>",
   "outcome": "<specific lesson or direct experience>",
   "reaction": "<brief, personal, first-person reflection (avoid abstract morals)>"
@@ -61,7 +61,7 @@ return JSON:
   "ok": true,
   "override": true,
   "outcome": "<{pet}'s decision based on beliefs>",
-  "stats": {<gradually reinforced moral stats, reflect personality>},
+  "stats": {<reinforced moral stats>},
   "personality": "<reinforced personality>",
   "reaction": "<justification for rejecting advice (first person)>"
 }`;
