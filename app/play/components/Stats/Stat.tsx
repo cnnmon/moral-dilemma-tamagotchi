@@ -13,9 +13,9 @@ export default function Stat({
 }) {
   const dangerousValue = dangerous ?? value < 25;
   return (
-    <div className={`flex items-center mb-[-4px]`} style={containerStyle}>
+    <div className="flex items-center mb-[-4px]" style={containerStyle}>
       <p className="font-pixel">{label}</p>
-      <div className={`ml-2 border-2 h-3 border-black`} style={barStyle}>
+      <div className="ml-2 border-2 h-3 border-black" style={barStyle}>
         <div
           className={`h-full ${dangerousValue ? "bg-red-500" : "bg-black"}`}
           style={{ width: `${value}%` }}
