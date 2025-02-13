@@ -20,21 +20,17 @@ export function getAverageMoralStats(seenDilemmas: Doc<"dilemmas">[]) {
     }
 
     // sum all
-    for (const key in updatedMoralStats) {
-      if (updatedMoralStats.hasOwnProperty(key)) {
-        const stat = key as keyof MoralDimensionsType;
-        moralStats[stat] += updatedMoralStats[stat];
-      }
+    for (const key of Object.keys(updatedMoralStats)) {
+      moralStats[key as keyof MoralDimensionsType] += updatedMoralStats[key as keyof MoralDimensionsType];
     }
   }
 
   // average
-  for (const key in moralStats) {
-    if (moralStats.hasOwnProperty(key)) {
-      const stat = key as keyof MoralDimensionsType;
-      moralStats[stat] /= seenDilemmas.length;
-    }
+  for (const key of Object.keys(moralStats)) {
+    moralStats[key as keyof MoralDimensionsType] /= (seenDilemmas.length + 1);
   }
+
+  console.log("moralStats", moralStats);
 
   return moralStats;
 }

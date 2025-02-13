@@ -19,7 +19,7 @@ export default function Stats({
   const timeFrame = getEvolutionTimeFrame(pet.age);
 
   return (
-    <div className="md:absolute w-full h-full flex flex-col md:items-end md:p-4 pointer-events-none">
+    <>
       <div className="pointer-events-auto">
         <div className="border-2 border-black p-2 bg-zinc-100 md:max-w-3xs mb-2 w-full">
           {pet.name} is {evolution.description}. {pet.personality}{" "}
@@ -44,6 +44,6 @@ export default function Stats({
       <div className="md:absolute md:bottom-0 md:right-0 pointer-events-auto md:p-4 mt-4 md:mt-0">
         <MoralStats moralStats={pet.moralStats} />
       </div>
-    </div>
+    </>
   );
 }

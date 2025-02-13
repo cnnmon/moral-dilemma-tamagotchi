@@ -56,7 +56,7 @@ export default function Play() {
       <div className="flex flex-col items-center gap-8 justify-center p-4 md:p-0 md:w-xl w-full">
         {/* Displays stats */}
         <motion.div
-          className="md:absolute w-full h-full"
+          className="md:absolute w-full h-full flex flex-col md:items-end md:p-4 pointer-events-none"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.1 }}

@@ -55,11 +55,11 @@ export function getMoralStatsWritten(
 
       let prefix: string;
       if (value > 8 || value < 3) {
-        prefix = "+++";
+        prefix = "++ ";
       } else if (value > 6 || value < 4) {
-        prefix = "++";
+        prefix = "+ ";
       } else {
-        prefix = "+";
+        prefix = " ";
       }
 
       const range = moralStatAttributes[key as MoralDimensions];
@@ -72,7 +72,7 @@ export function getMoralStatsWritten(
 
       acc.push({
         key,
-        description: `${!forEvolution ? prefix + " " : ""}${description}`,
+        description: `${!forEvolution ? prefix : ""}${description}`,
         percentage: Math.abs(value - 5) * 20,
       });
 
