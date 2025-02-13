@@ -51,7 +51,13 @@ function Content() {
         transition={{ duration: 0.3 }}
       >
         <Background backgroundSrcs={["/stove.png"]}>
-          <Image src="/pan.gif" alt="pan" width={180} height={180} />
+          <Image
+            src="/pan.gif"
+            alt="pan"
+            width={180}
+            height={180}
+            className="transform translate-x-23"
+          />
         </Background>
         <Window title="you didn't want the egg">
           <p>aww. well i hope it&apos;s yummy.</p>
@@ -73,12 +79,12 @@ function Content() {
       exit={{ opacity: 0, y: -20 }}
       transition={{ duration: 0.3 }}
     >
-      <Background backgroundSrcs={["/landscape.png"]}>
+      <Background backgroundSrcs={["/uwantahand.png"]}>
         <Image src="/egg.gif" alt="egg" width={180} height={180} />
       </Background>
       <Window title="event! ( ˶°ㅁ°) !!">
         <p>you&apos;ve found an egg. what do you want to name it?</p>
-        <Textarea placeholder="what do you do" handleSubmit={handleSubmit} />
+        <Textarea placeholder="name!" handleSubmit={handleSubmit} />
       </Window>
     </motion.div>
   );
