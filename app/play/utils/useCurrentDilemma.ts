@@ -7,10 +7,11 @@ import { GameState } from "@/convex/state";
 const CURRENT_DILEMMA_KEY = "pet-current-dilemma";
 
 export function useCurrentDilemma(stateResult: GameState | undefined) {
+  const [isProcessing, setIsProcessing] = useState(false);
   const [currentDilemma, setCurrentDilemma] = useState<DilemmaTemplate | null>(
     null
   );
-  const [isProcessing, setIsProcessing] = useState(false);
+  const [isUnresolved, setIsUnresolved] = useState(false);
 
   const handleSaveCurrentDilemma = useCallback((dilemma: DilemmaTemplate) => {
     setCurrentDilemma(dilemma);
@@ -44,6 +45,7 @@ export function useCurrentDilemma(stateResult: GameState | undefined) {
 
   const onDilemmaProcessingStart = () => {
     setIsProcessing(true);
+    setIsUnresolved(false);
   };
 
   const onDilemmaProcessingEnd = () => {
@@ -61,7 +63,10 @@ export function useCurrentDilemma(stateResult: GameState | undefined) {
     // handle unresolved dilemma case
     if (stateResult.status === "has_unresolved_dilemma") {
       handleSaveCurrentDilemma(stateResult.unresolvedDilemma);
-      setIsProcessing(false);
+      if (!isUnresolved) {
+        setIsProcessing(false);
+        setIsUnresolved(true);
+      }
       return;
     }
 
@@ -72,7 +77,8 @@ export function useCurrentDilemma(stateResult: GameState | undefined) {
     if (!currentDilemma && stateResult.status === "has_dilemmas") {
       loadCurrentDilemma(stateResult.unseenDilemmaTitles);
     }
-  }, [stateResult, currentDilemma, handleSaveCurrentDilemma, loadCurrentDilemma, isProcessing]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [stateResult, currentDilemma]);
 
   return {
     currentDilemma,

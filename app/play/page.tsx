@@ -44,11 +44,6 @@ export default function Play() {
     return <div>you&apos;ve seen all the dilemmas!</div>;
   }
 
-  // if no current dilemma, show loading
-  if (!currentDilemma) {
-    return <div>choosing next dilemma...</div>;
-  }
-
   const { pet, seenDilemmas } = stateResult;
 
   return (
@@ -95,7 +90,7 @@ export default function Play() {
             onOutcome={addOutcome}
             onProcessingStart={onDilemmaProcessingStart}
             onProcessingEnd={onDilemmaProcessingEnd}
-            disabled={isProcessing}
+            disabled={isProcessing} // disable the button when processing
           />
         </motion.div>
       </div>

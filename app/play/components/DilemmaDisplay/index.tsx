@@ -2,6 +2,7 @@ import { DilemmaTemplate } from "@/constants/dilemmas";
 import { TextInput } from "./TextInput";
 import { Doc } from "@/convex/_generated/dataModel";
 import Window from "@/components/Window";
+
 export default function DilemmaDisplay({
   pet,
   dilemma,
@@ -11,12 +12,16 @@ export default function DilemmaDisplay({
   disabled,
 }: {
   pet: Doc<"pets">;
-  dilemma: DilemmaTemplate;
+  dilemma: DilemmaTemplate | null;
   onOutcome: (message: string) => void;
   onProcessingStart: () => void;
   onProcessingEnd: () => void;
   disabled: boolean;
 }) {
+  if (!dilemma) {
+    return null;
+  }
+
   return (
     <Window title={`help ${pet.name} ! ! ! (；￣Д￣)`}>
       <p>{dilemma.text.replace(/{pet}/g, pet.name)}</p>
