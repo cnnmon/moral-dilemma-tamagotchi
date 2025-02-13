@@ -36,7 +36,7 @@ export function Textarea({
   }, [isSubmitting]);
 
   return (
-    <div className="w-full">
+    <div className="w-full mt-2">
       <textarea
         className={`w-full resize-none border-2 border-black bg-zinc-200 outline-none p-2 ${
           isDisabled ? "opacity-50 cursor-not-allowed" : ""

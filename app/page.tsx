@@ -38,14 +38,13 @@ export default function SignInPage() {
         signUpForceRedirectUrl="/play"
       >
         <motion.div
+          className="absolute"
           animate={{
-            scale: [1, 1.02, 1], // gentle pulsing
+            y: [0, -10], // pan upwards and back
           }}
           transition={{
-            duration: 7,
+            duration: 2,
             delay: 0.2,
-            repeat: Infinity,
-            repeatType: "loop",
           }}
         >
           <Image

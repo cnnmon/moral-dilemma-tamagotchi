@@ -26,7 +26,7 @@ export default function Stats({
         </div>
       </div>
 
-      <div className="pointer-events-auto flex">
+      <div className="pointer-events-auto flex gap-4 justify-between">
         <div className="md:absolute md:bottom-0 md:left-0 md:p-4">
           <TransparencyGridIcon className="mb-1" />
           <p>
