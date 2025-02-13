@@ -13,10 +13,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <>
-      <ClerkProvider dynamic>
-        <ConvexClientProvider>{children}</ConvexClientProvider>
-      </ClerkProvider>
-    </>
+    <ClerkProvider dynamic>
+      <ConvexClientProvider>{children}</ConvexClientProvider>
+    </ClerkProvider>
   );
 }

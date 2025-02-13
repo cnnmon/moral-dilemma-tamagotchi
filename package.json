@@ -16,6 +16,7 @@
     "@next/eslint-plugin-next": "~15.1.0",
     "convex": "^1.17.0",
     "eslint-plugin-react-hooks": "^5.1.0-beta-26f2496093-20240514",
+    "framer-motion": "^12.4.2",
     "next": "15.1.0",
     "openai": "^4.82.0",
     "react": "^19",

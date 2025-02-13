@@ -2,39 +2,22 @@
 
 import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
-import { useState } from "react";
-
+import { Textarea } from "@/components/Textarea";
+import Image from "next/image";
 export default function CreatePage() {
-  const [name, setName] = useState("");
   const createPet = useMutation(api.pets.createPet);
 
+  const handleSubmit = async (response: string) => {
+    localStorage.clear(); // clear local storage
+    await createPet({ name: response });
+    window.location.href = "/play";
+  };
+
   return (
-    <div className="flex flex-col items-center gap-4">
-      <h1 className="text-2xl font-bold">name your pet</h1>
-      <form
-        className="flex flex-col gap-4"
-        onSubmit={async (e) => {
-          e.preventDefault();
-          localStorage.clear(); // clear local storage
-          await createPet({ name });
-          window.location.href = "/play";
-        }}
-      >
-        <input
-          className="border-2 border-black p-2"
-          value={name}
-          onChange={(e) => {
-            setName(e.target.value);
-          }}
-          placeholder="pet name"
-        />
-        <button
-          type="submit"
-          className="bg-black text-white p-2 hover:bg-zinc-800"
-        >
-          create pet
-        </button>
-      </form>
+    <div className="flex flex-col items-center gap-4 w-full bg-red-500">
+      <Image src="/egg.gif" alt="egg" width={100} height={100} />
+
+      <Textarea placeholder="what do you do" handleSubmit={handleSubmit} />
     </div>
   );
 }

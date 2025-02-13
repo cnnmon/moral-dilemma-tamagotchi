@@ -4,10 +4,11 @@ import { api } from "@/convex/_generated/api";
 import { useMutation } from "convex/react";
 import { SignOutButton } from "@clerk/nextjs";
 
-function SettingButtons() {
+export function Footer() {
   const resetGame = useMutation(api.state.resetGame);
+  return null;
   return (
-    <div className="fixed bottom-0 flex items-center right-0 px-4 py-2 gap-2">
+    <div className="md:fixed bottom-0 flex items-center right-0 px-4 py-2 gap-2">
       <a
         className="cursor-pointer"
         onClick={() => {
@@ -27,15 +28,5 @@ function SettingButtons() {
         <a className="cursor-pointer">log out</a>
       </SignOutButton>
     </div>
-  );
-}
-
-export function Footer() {
-  return (
-    <>
-      <div className="fixed bottom-0 flex items-center right-0 px-4 py-2 gap-2">
-        <SettingButtons />
-      </div>
-    </>
   );
 }

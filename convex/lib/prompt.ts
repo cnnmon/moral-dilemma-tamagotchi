@@ -39,24 +39,20 @@ const standardResponse = `return JSON:
 prioritize **real, direct** experiences over abstract moralizing.`;
 
 // clarification handling
-const clarificationCheck = `if the caretaker's advice is a question, answer it. if needed, make up specifics about the dilemma.
-return JSON:
-{ 
-  "ok": false,
-  "outcome": "<context from {pet}>"
-}
-
-if advice is unclear (examples: "ok", "idk", or nonsense), ask a brief clarifying question in first person where the caretaker is "you". DO NOT ask a clarifying question if the advice is bad or conflicting.
+const clarificationCheck = `if advice is unclear (examples: short responses without reason "ok" or nonsense), ask a brief clarifying question in first person where caretaker is "you".
 return JSON:
 { 
   "ok": false,
   "outcome": "<clarifying question from {pet} <50 chars max>>"
-}`;
+}
+  
+DO NOT ask a question just because the advice is morally bad.`;
 
 const overallPersonalityRules = `
 - personality is ALWAYS in the third person.
 - update personality based on dilemmas.
-- include specific inferred learnings (e.g. "i feel guilty about workers suffering") rather than specific details from the dilemma itself. slowly combine learnings with existing personality over time.`;
+- include specific inferred learnings (e.g. "i feel guilty about workers suffering") rather than specific details from the dilemma itself. slowly combine learnings with existing personality over time.
+- let personality become machiavellian or "morally bad" if evolved as such.`;
 
 // independent decision override
 const overrideResponse = `

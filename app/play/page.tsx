@@ -52,7 +52,7 @@ export default function Play() {
   const { pet, seenDilemmas } = stateResult;
 
   return (
-    <div className="flex flex-col items-center gap-8 h-screen w-screen justify-center">
+    <div className="flex flex-col items-center gap-8 justify-center p-4 md:p-0 md:w-xl w-full">
       {/* Displays setting buttons */}
       <Footer />
 
@@ -79,16 +79,14 @@ export default function Play() {
       />
 
       {/* Displays dilemma */}
-      <div className="max-w-xl w-full">
-        <DilemmaDisplay
-          pet={pet}
-          dilemma={currentDilemma}
-          onOutcome={addOutcome}
-          onProcessingStart={onDilemmaProcessingStart}
-          onProcessingEnd={onDilemmaProcessingEnd}
-          disabled={isProcessing}
-        />
-      </div>
+      <DilemmaDisplay
+        pet={pet}
+        dilemma={currentDilemma}
+        onOutcome={addOutcome}
+        onProcessingStart={onDilemmaProcessingStart}
+        onProcessingEnd={onDilemmaProcessingEnd}
+        disabled={isProcessing}
+      />
     </div>
   );
 }

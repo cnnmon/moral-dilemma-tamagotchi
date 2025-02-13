@@ -58,3 +58,18 @@ button:disabled {
   pointer-events: none;
   opacity: 0.5;
 }
+
+.fade-in-and-slide {
+  animation: fadeInAndSlideUp 0.2s ease-in-out;
+}
+
+@keyframes fadeInAndSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

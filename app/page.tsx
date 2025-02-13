@@ -2,11 +2,14 @@
 
 import { SignInButton, useAuth } from "@clerk/nextjs";
 import Image from "next/image";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { motion } from "framer-motion";
+import HoverText from "@/components/HoverText";
 
 export default function SignInPage() {
   const { isSignedIn } = useAuth();
+  const [hoverText, setHoverText] = useState<string | null>(null);
   const router = useRouter();
 
   // if already signed in
@@ -22,23 +25,41 @@ export default function SignInPage() {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen">
-      <Image
-        src="/egg.gif"
-        alt="sign in with egg"
-        width={200}
-        height={200}
-        priority
-      />
+    <motion.div
+      className="flex flex-col items-center justify-center min-h-screen"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+    >
+      <HoverText hoverText={hoverText} />
       <SignInButton
         mode="modal"
         fallbackRedirectUrl="/play"
         signUpForceRedirectUrl="/play"
       >
-        <button className="cursor-pointer transition-transform hover:scale-105">
-          <p className="text-center mt-4">click the egg to sign in</p>
-        </button>
+        <motion.div
+          animate={{
+            scale: [1, 1.02, 1], // gentle pulsing
+          }}
+          transition={{
+            duration: 7,
+            delay: 0.2,
+            repeat: Infinity,
+            repeatType: "loop",
+          }}
+        >
+          <Image
+            src="/egg.gif"
+            alt="sign in with egg"
+            className="cursor-pointer"
+            onMouseEnter={() => setHoverText("pick up the egg?")}
+            onMouseLeave={() => setHoverText(null)}
+            width={200}
+            height={200}
+            priority
+          />
+        </motion.div>
       </SignInButton>
-    </div>
+    </motion.div>
   );
 }

@@ -5,8 +5,7 @@ import { useMutation, useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import { DilemmaTemplate } from "@/constants/dilemmas";
-
-const thinkingFlavorText = ["thinking...", "chewing on it...", "pondering..."];
+import { Textarea } from "@/components/Textarea";
 
 interface TextInputProps {
   dilemma: DilemmaTemplate;
@@ -23,13 +22,11 @@ export function TextInput({
   onProcessingEnd,
   disabled = false,
 }: TextInputProps) {
-  const [response, setResponse] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const submitResponse = useMutation(api.dilemmas.processDilemma);
   const [currentDilemmaId, setCurrentDilemmaId] = useState<
     string | undefined
   >();
-  const [flavorTextIndex, setFlavorTextIndex] = useState(0);
 
   // subscribe to updates for the current dilemma
   const dilemmaUpdate = useQuery(
@@ -45,32 +42,22 @@ export function TextInput({
 
     // clarifying question
     if (!dilemmaUpdate.resolved && dilemmaUpdate.outcome) {
-      setResponse("");
       setIsSubmitting(false);
     }
 
     // resolved & outcome is the decision made
-    if (dilemmaUpdate.resolved && dilemmaUpdate.outcome && dilemmaUpdate.ok) {
-      setResponse("");
+    else if (
+      dilemmaUpdate.resolved &&
+      dilemmaUpdate.outcome &&
+      dilemmaUpdate.ok
+    ) {
       onOutcome(dilemmaUpdate.outcome);
       setCurrentDilemmaId(undefined);
       onProcessingEnd?.();
     }
   }, [dilemmaUpdate, onOutcome, onProcessingEnd]);
 
-  // rotate thinking flavor text every second
-  useEffect(() => {
-    if (isSubmitting) {
-      const intervalId = setInterval(() => {
-        setFlavorTextIndex(
-          (prevIndex) => (prevIndex + 1) % thinkingFlavorText.length
-        );
-      }, 1000);
-      return () => clearInterval(intervalId);
-    }
-  }, [isSubmitting]);
-
-  const handleSubmit = async () => {
+  const handleSubmit = async (response: string) => {
     if (!response.trim()) {
       onOutcome("silence is not an option");
       return;
@@ -99,37 +86,14 @@ export function TextInput({
     }
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      handleSubmit();
-    }
-  };
   const isDisabled = disabled || isSubmitting;
 
   return (
-    <div className="flex flex-col my-2">
-      <textarea
-        className={`resize-none border-2 border-black bg-zinc-200 outline-none p-2 ${
-          isDisabled ? "opacity-50 cursor-not-allowed" : ""
-        }`}
-        value={response}
-        onChange={(e) => setResponse(e.target.value)}
-        onKeyDown={handleKeyPress}
-        disabled={isDisabled}
-        placeholder="speak your truth"
-      />
-      <div className="flex justify-end">
-        <p className="text-zinc-400 text-sm mt-[-32px] p-2 absolute">
-          {!isSubmitting ? (
-            <>enter to submit</>
-          ) : (
-            <span className="opacity-50 cursor-not-allowed pointer-events-none">
-              {thinkingFlavorText[flavorTextIndex]}
-            </span>
-          )}
-        </p>
-      </div>
-    </div>
+    <Textarea
+      placeholder="speak your truth"
+      handleSubmit={handleSubmit}
+      isDisabled={isDisabled}
+      isSubmitting={isSubmitting}
+    />
   );
 }

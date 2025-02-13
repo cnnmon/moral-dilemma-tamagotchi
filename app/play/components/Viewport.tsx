@@ -31,7 +31,7 @@ const Viewport = React.memo(function Viewport({
         width={150}
         height={150}
         unoptimized
-        className={`absolute mt-10 z-10 fade-in ${loaded ? "loaded" : ""}`}
+        className={`absolute mt-10 z-10 ${loaded ? "loaded" : ""}`}
       />
       {clarifyingQuestion && (
         <div className="absolute w-xs bg-zinc-100 z-10 border border-2 p-2 mt-[-80px] text-center">
@@ -44,8 +44,6 @@ const Viewport = React.memo(function Viewport({
         width={VIEWPORT_WIDTH}
         height={VIEWPORT_HEIGHT}
         style={{
-          maxWidth: VIEWPORT_WIDTH,
-          width: "100%",
           height: VIEWPORT_HEIGHT,
           objectFit: "cover",
         }}
