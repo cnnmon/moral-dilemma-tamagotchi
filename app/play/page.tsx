@@ -7,12 +7,18 @@ import Loading from "./components/Loading";
 import { useOutcomes } from "./utils/useOutcomes";
 import { useCurrentDilemma } from "./utils/useCurrentDilemma";
 import Viewport from "./components/Viewport";
-import DilemmaDisplay from "./components/DilemmaDisplay";
+import Dialog from "./components/Dialog";
 import Stats from "./components/Stats";
 import { AnimatePresence, motion } from "framer-motion";
+import useBaseStats from "./utils/useBaseStats";
+import Actions from "./components/Actions";
+import HoverText from "@/components/HoverText";
+import { useState } from "react";
 
 export default function Play() {
+  const [hoverText, setHoverText] = useState<string | null>(null);
   const stateResult = useQuery(api.state.getActiveGameState);
+  const { baseStats, incrementStat } = useBaseStats(stateResult);
   const { outcomes, addOutcome, removeOutcome } = useOutcomes();
   const {
     currentDilemma,
@@ -48,18 +54,25 @@ export default function Play() {
 
   return (
     <AnimatePresence mode="wait">
-      <div className="flex flex-col items-center gap-8 justify-center p-4 md:p-0 md:w-xl w-full">
-        {/* Displays stats */}
+      <div className="flex flex-col items-center justify-center p-4 sm:p-0 sm:w-xl w-full">
+        <HoverText hoverText={hoverText} />
+
+        {/* Stats */}
         <motion.div
-          className="md:absolute w-full h-full flex flex-col md:items-end md:p-4 pointer-events-none"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
+          key="stats"
+          className="sm:absolute w-full h-full flex flex-col sm:items-end sm:p-4 pointer-events-none"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.1 }}
         >
-          <Stats pet={pet} seenDilemmasCount={seenDilemmas.length} />
+          <Stats
+            pet={pet}
+            baseStats={baseStats}
+            seenDilemmasCount={seenDilemmas.length}
+          />
         </motion.div>
 
-        {/* Displays outcomes */}
+        {/* Outcomes */}
         <div className="fixed top-0 p-4 w-full max-w-xl z-10">
           {outcomes.map((outcome) => (
             <OutcomePopup
@@ -71,28 +84,44 @@ export default function Play() {
           ))}
         </div>
 
-        {/* Displays the pet & background */}
-        <Viewport
-          clarifyingQuestion={
-            status === "has_unresolved_dilemma" ? stateResult.question : null
-          }
-        />
+        {/* Viewport & dilemma */}
+        <div className="flex flex-col gap-4">
+          <motion.div
+            key="viewport"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
+            className="flex flex-col gap-2"
+          >
+            <Viewport
+              clarifyingQuestion={
+                status === "has_unresolved_dilemma"
+                  ? stateResult.question
+                  : null
+              }
+            />
+          </motion.div>
 
-        {/* Displays dilemma */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.5 }}
-        >
-          <DilemmaDisplay
-            pet={pet}
-            dilemma={currentDilemma}
-            onOutcome={addOutcome}
-            onProcessingStart={onDilemmaProcessingStart}
-            onProcessingEnd={onDilemmaProcessingEnd}
-            disabled={isProcessing} // disable the button when processing
-          />
-        </motion.div>
+          {/* Actions */}
+          <Actions setHoverText={setHoverText} incrementStat={incrementStat} />
+
+          <motion.div
+            key="dialog"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.5 }}
+            className="flex flex-col gap-4"
+          >
+            <Dialog
+              pet={pet}
+              dilemma={currentDilemma}
+              onOutcome={addOutcome}
+              onProcessingStart={onDilemmaProcessingStart}
+              onProcessingEnd={onDilemmaProcessingEnd}
+              disabled={isProcessing} // disable the button when processing
+            />
+          </motion.div>
+        </div>
       </div>
     </AnimatePresence>
   );

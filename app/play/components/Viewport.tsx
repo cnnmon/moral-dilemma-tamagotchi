@@ -21,6 +21,7 @@ const Viewport = React.memo(function Viewport({
     >
       {clarifyingQuestion && (
         <motion.div
+          key="clarifying-question"
           className="absolute w-xs bg-zinc-100 z-10 border border-2 p-2 mt-[-80px] text-center"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}

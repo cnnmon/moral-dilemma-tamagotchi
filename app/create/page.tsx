@@ -44,7 +44,7 @@ function Content() {
     return (
       <motion.div
         key="cooking"
-        className="flex flex-col items-center gap-4 w-full md:w-xl p-4 md:p-0"
+        className="flex flex-col items-center gap-4 w-full sm:w-xl p-4 sm:p-0"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -20 }}
@@ -72,8 +72,8 @@ function Content() {
 
   return (
     <motion.div
-      key="egg"
-      className="flex flex-col items-center gap-4 w-full md:w-xl p-4 md:p-0"
+      key="create-page"
+      className="flex flex-col items-center gap-4 w-full sm:w-xl p-4 sm:p-0"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}

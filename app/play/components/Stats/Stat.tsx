@@ -17,7 +17,7 @@ export default function Stat({
       <p className="font-pixel">{label}</p>
       <div className="ml-2 border-2 h-3 border-black" style={barStyle}>
         <div
-          className={`h-full ${dangerousValue ? "bg-red-500" : "bg-black"}`}
+          className={`h-full ${dangerousValue ? "bg-red-500" : "bg-black"} transition-all duration-100`}
           style={{ width: `${value}%` }}
         ></div>
       </div>

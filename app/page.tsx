@@ -25,40 +25,45 @@ export default function SignInPage() {
   }
 
   return (
-    <motion.div
-      className="flex flex-col items-center justify-center min-h-screen"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.5 }}
-    >
+    <>
       <HoverText hoverText={hoverText} />
-      <SignInButton
-        mode="modal"
-        fallbackRedirectUrl="/play"
-        signUpForceRedirectUrl="/play"
+
+      <motion.div
+        key="sign-in-page"
+        className="flex flex-col items-center justify-center min-h-screen"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5 }}
       >
-        <motion.div
-          className="absolute"
-          animate={{
-            y: [0, -10], // pan upwards and back
-          }}
-          transition={{
-            duration: 2,
-            delay: 0.2,
-          }}
+        <SignInButton
+          mode="modal"
+          fallbackRedirectUrl="/play"
+          signUpForceRedirectUrl="/play"
         >
-          <Image
-            src="/egg.gif"
-            alt="sign in with egg"
-            className="cursor-pointer"
-            onMouseEnter={() => setHoverText("pick up the egg?")}
-            onMouseLeave={() => setHoverText(null)}
-            width={200}
-            height={200}
-            priority
-          />
-        </motion.div>
-      </SignInButton>
-    </motion.div>
+          <motion.div
+            key="sign-in-button"
+            className="absolute"
+            animate={{
+              y: [0, -10], // pan upwards and back
+            }}
+            transition={{
+              duration: 2,
+              delay: 0.2,
+            }}
+          >
+            <Image
+              src="/egg.gif"
+              alt="sign in with egg"
+              className="cursor-pointer"
+              onMouseEnter={() => setHoverText("pick up the egg?")}
+              onMouseLeave={() => setHoverText(null)}
+              width={200}
+              height={200}
+              priority
+            />
+          </motion.div>
+        </SignInButton>
+      </motion.div>
+    </>
   );
 }

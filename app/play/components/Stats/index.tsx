@@ -7,12 +7,15 @@ import {
 } from "@/constants/evolutions";
 import { MoralStats } from "./MoralStats";
 import { TransparencyGridIcon } from "@radix-ui/react-icons";
+import { BaseStatsType } from "@/constants/base";
 
 export default function Stats({
   pet,
+  baseStats,
   seenDilemmasCount,
 }: {
   pet: Doc<"pets">;
+  baseStats: BaseStatsType;
   seenDilemmasCount: number;
 }) {
   const evolution = getEvolution(pet.evolutionId as EvolutionId);
@@ -21,27 +24,27 @@ export default function Stats({
   return (
     <>
       <div className="pointer-events-auto">
-        <div className="border-2 border-black p-2 bg-zinc-100 md:max-w-3xs mb-2 w-full">
+        <div className="border-2 border-black p-2 bg-zinc-100 sm:max-w-3xs mb-2 w-full">
           {pet.name} is {evolution.description}. {pet.personality}{" "}
         </div>
       </div>
 
       <div className="pointer-events-auto flex gap-4 justify-between">
-        <div className="md:absolute md:bottom-0 md:left-0 md:p-4">
+        <div className="sm:absolute sm:bottom-0 sm:left-0 sm:p-4">
           <TransparencyGridIcon className="mb-1" />
           <p>
             [<b>level {pet.age}</b>: {evolution.id}]
           </p>
           <p>
             {pet.age < 2
-              ? `${seenDilemmasCount} / ${timeFrame} dilemmas until next evolution . . .`
+              ? `${seenDilemmasCount} / ${timeFrame} dilemmas til next evolution . . .`
               : "maturity achieved"}
           </p>
         </div>
-        <BaseStats pet={pet} />
+        <BaseStats baseStats={baseStats} />
       </div>
 
-      <div className="md:absolute md:bottom-0 md:right-0 pointer-events-auto md:p-4 mt-4 md:mt-0">
+      <div className="sm:absolute sm:bottom-0 sm:right-0 pointer-events-auto sm:p-4 mt-4 sm:mt-0 pb-2">
         <MoralStats moralStats={pet.moralStats} />
       </div>
     </>

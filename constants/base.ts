@@ -1,9 +1,9 @@
 // base stats for pet health and wellbeing
-export enum BaseStats {
+export enum BaseStatKeys {
   health = "health",
   hunger = "hunger",
   happiness = "happiness",
   sanity = "sanity",
 }
 
-export type BaseStatsType = Record<BaseStats, number>;
+export type BaseStatsType = Record<BaseStatKeys, number>;
