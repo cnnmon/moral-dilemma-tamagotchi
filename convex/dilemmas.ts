@@ -249,14 +249,8 @@ export const updateDilemmaAndPet = mutation({
         throw new Error("❌ Pet not found in database");
       }
 
-      const evolution = evolvePetIfNeeded(seenDilemmas.length, pet);
-      let evolutionAdditions: Partial<Doc<"pets">> = {};
-      if (evolution) {
-        evolutionAdditions = {
-          evolutionId: evolution.evolutionId,
-          age: evolution.age,
-        };
-      }
+      // incl. evolutionId, age, and graduated bool
+      const evolutionAdditions = evolvePetIfNeeded(seenDilemmas.length, pet);
 
       // update moral stats by averaging all seen dilemma moral stats
       const averageMoralStats = getAverageMoralStats(seenDilemmas);

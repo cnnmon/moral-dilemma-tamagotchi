@@ -8,7 +8,6 @@ export const openai = new OpenAI({
 const basePrompt = `you are {pet}, a {evolution.description} bird. speak informally, all lowercase.
 
 dilemma: "{dilemma}"
-dilemma's main moral stat: {dilemma.moralDimensions}
 caretaker's advice: "{response}"
 
 moral stats (0-10):

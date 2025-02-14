@@ -17,8 +17,11 @@ export function OutcomePopup({
 
   useEffect(() => {
     setVisible(true);
-    return () => setVisible(false);
-  }, []);
+    setTimeout(onClose, 5000);
+    return () => {
+      setVisible(false);
+    };
+  }, [onClose]);
 
   const animationClasses = visible
     ? "opacity-100 scale-100"

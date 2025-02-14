@@ -7,6 +7,7 @@ import { Id } from "@/convex/_generated/dataModel";
 import { DilemmaTemplate } from "@/constants/dilemmas";
 import { Textarea } from "@/components/Textarea";
 import { BaseStatsType } from "@/constants/base";
+
 interface InputProps {
   dilemma: DilemmaTemplate;
   onOutcome: (message: string) => void;

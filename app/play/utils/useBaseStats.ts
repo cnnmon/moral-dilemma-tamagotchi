@@ -6,10 +6,10 @@ import { VIEWPORT_HEIGHT, VIEWPORT_WIDTH } from "@/components/Background";
 
 const POO_STORAGE_KEY = "poos";
 
-const DECREMENT_INTERVAL_MS = 2000;
-const BASE_STATS_DECREMENT_VALUE = 0.5;
+const DECREMENT_INTERVAL_MS = 5000;
+const BASE_STATS_DECREMENT_VALUE = 0.3;
 const MAX_POOS = 10;
-const POO_CHANCE = 0.08;
+const POO_CHANCE = 0.05;
 
 function spawnPoo() {
   return {
@@ -20,10 +20,12 @@ function spawnPoo() {
 }
 
 export default function useBaseStats({
+  rip,
   stateResult,
   setAnimation,
   setRip,
 }: {
+  rip: boolean;
   stateResult: GameState | undefined;
   setAnimation: (animation: Animation) => void;
   setRip: (rip: boolean) => void;
@@ -47,6 +49,17 @@ export default function useBaseStats({
 
   // on mount, set the base stats to saved base stats
   useEffect(() => {
+    if (rip) {
+      setBaseStats({
+        health: 0,
+        hunger: 0,
+        happiness: 0,
+        sanity: 0,
+      });
+      setBaseStatsLoaded(true);
+      return;
+    }
+
     if (stateResult?.status === "has_dilemmas") {
       setBaseStats(stateResult?.pet.baseStats);
       setBaseStatsLoaded(true);

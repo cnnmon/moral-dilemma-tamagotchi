@@ -15,16 +15,21 @@ import Actions from "./components/Actions";
 import HoverText from "@/components/HoverText";
 import { useState } from "react";
 import { Animation } from "@/constants/sprites";
+import { ObjectKey } from "@/constants/objects";
 
 export default function Play() {
   const [animation, setAnimation] = useState<Animation>(Animation.IDLE);
   const [hoverText, setHoverText] = useState<string | null>(null);
+  const [cursorObject, setCursorObject] = useState<ObjectKey | null>(null);
   const [rip, setRip] = useState(false);
+  const [dilemmaOpen, setDilemmaOpen] = useState(false);
+
   const stateResult = useQuery(api.state.getActiveGameState);
   const { baseStats, incrementStat, poos, cleanupPoo } = useBaseStats({
     stateResult,
     setAnimation,
     setRip,
+    rip,
   });
   const { outcomes, addOutcome, removeOutcome } = useOutcomes();
   const {
@@ -57,7 +62,7 @@ export default function Play() {
   // if out of dilemmas, note that
   const { pet, seenDilemmas } = stateResult;
 
-  if (status === "out_of_dilemmas") {
+  if (status === "out_of_dilemmas" || pet.graduated) {
     return (
       <div>
         {pet.name} has graduated!
@@ -73,13 +78,17 @@ export default function Play() {
 
   return (
     <AnimatePresence mode="wait">
-      <div className="flex flex-col items-center justify-center p-4 md:p-0 md:w-xl w-full">
-        <HoverText hoverText={hoverText} />
+      <div className="flex flex-col items-center justify-center p-4 pt-[15%] sm:p-0 sm:w-xl w-full">
+        <HoverText hoverText={hoverText} cursorObject={cursorObject} />
+
+        <p className="fixed top-0 left-0 text-sm text-zinc-500 p-4">
+          <a href="/create">outside</a> &gt; home &gt; {pet.name}
+        </p>
 
         {/* Stats */}
         <motion.div
           key="stats"
-          className="md:absolute w-full h-full flex flex-col md:items-end md:p-4 pointer-events-none"
+          className="sm:absolute w-full h-full flex flex-col sm:items-end sm:p-4 pointer-events-none"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.1 }}
@@ -104,7 +113,7 @@ export default function Play() {
         </div>
 
         {/* Viewport & dilemma */}
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-4 w-full">
           <motion.div
             key="viewport"
             initial={{ opacity: 0 }}
@@ -113,8 +122,13 @@ export default function Play() {
           >
             <Viewport
               pet={pet}
+              cursorObject={cursorObject}
               poos={poos}
               cleanupPoo={cleanupPoo}
+              incrementStat={(stat) => {
+                incrementStat(stat);
+                setCursorObject(null);
+              }}
               rip={rip}
               animation={animation}
               clarifyingQuestion={
@@ -127,8 +141,9 @@ export default function Play() {
 
           {/* Actions */}
           <Actions
+            setCursorObject={setCursorObject}
             setHoverText={setHoverText}
-            incrementStat={incrementStat}
+            openDilemma={() => setDilemmaOpen(true)}
             rip={rip}
           />
 
@@ -138,18 +153,21 @@ export default function Play() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.5 }}
             className="flex flex-col gap-4"
-          >
-            <Dialog
-              pet={pet}
-              baseStats={baseStats}
-              rip={rip}
-              dilemma={currentDilemma}
-              onOutcome={addOutcome}
-              onProcessingStart={onDilemmaProcessingStart}
-              onProcessingEnd={onDilemmaProcessingEnd}
-              disabled={isProcessing} // disable the button when processing
-            />
-          </motion.div>
+          ></motion.div>
+        </div>
+        <div className="sm:absolute left-0 z-40 max-w-sm px-8">
+          <Dialog
+            isOpen={dilemmaOpen}
+            setIsOpen={setDilemmaOpen}
+            petName={pet.name}
+            baseStats={baseStats}
+            rip={rip}
+            dilemma={currentDilemma}
+            onOutcome={addOutcome}
+            onProcessingStart={onDilemmaProcessingStart}
+            onProcessingEnd={onDilemmaProcessingEnd}
+            disabled={isProcessing}
+          />
         </div>
       </div>
     </AnimatePresence>

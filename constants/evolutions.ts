@@ -16,7 +16,7 @@ export type Stage1EvolutionId = "harbinger" | "devout" | "watcher" | "loyalist" 
 
 export type Stage2EvolutionId = "monk" | "shepherd" | "arbiter" | "martyr" | "warden" | "wayfarer" | "mercenary" | "guardian" | "patrician" | "sovereign" | "cultleader" | "npc";
 
-export type EvolutionId = "baby" | Stage1EvolutionId | Stage2EvolutionId;
+export type EvolutionId = "baby" | Stage1EvolutionId | Stage2EvolutionId | "graduated";
 
 // represents a stage in pet evolution
 type Stage0Evolution = {

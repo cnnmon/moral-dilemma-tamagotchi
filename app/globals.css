@@ -38,12 +38,14 @@ h1 {
 a {
   font-weight: 500;
   text-decoration: underline;
-  text-underline-offset: 4px;
+  text-underline-offset: 1px;
   cursor: pointer;
 }
 
 a:hover {
   text-decoration: none;
+  background-color: black;
+  color: white;
 }
 
 button {
@@ -72,4 +74,9 @@ button:disabled {
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+.no-drag {
+  user-select: none;
+  pointer-events: none;
 }

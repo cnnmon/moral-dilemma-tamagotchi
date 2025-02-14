@@ -41,6 +41,7 @@ type MoralStatsWritten = {
   key: string;
   description: string;
   percentage: number;
+  value: number;
 };
 
 export function getMoralStatsWritten(
@@ -70,10 +71,13 @@ export function getMoralStatsWritten(
         description = range.low;
       }
 
+      const percentage = Math.abs(value - 5) * 20;
+
       acc.push({
         key,
-        description: `${!forEvolution ? prefix : ""}${description}`,
-        percentage: Math.abs(value - 5) * 20,
+        description: `${!forEvolution ? prefix : ""}${description} ${Math.round(percentage * 100) / 100}%`,
+        percentage,
+        value,
       });
 
       return acc;
@@ -82,7 +86,7 @@ export function getMoralStatsWritten(
   );
 
   // sort by intensity value
-  return stats.sort((a, b) => b.percentage - a.percentage);
+  return stats.sort((a, b) => Math.abs(b.value - 5) - Math.abs(a.value - 5));
 }
 
 export type MoralDimensionsType = Record<MoralDimensions, number>;

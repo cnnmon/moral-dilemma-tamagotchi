@@ -1,4 +1,5 @@
 import { getMoralStatsWritten, MoralDimensionsType } from "@/constants/morals";
+import { motion, AnimatePresence } from "framer-motion";
 
 export function MoralStats({
   moralStats,
@@ -6,28 +7,44 @@ export function MoralStats({
   moralStats: MoralDimensionsType;
 }) {
   const moralStatsWritten = getMoralStatsWritten(moralStats);
+
   return (
-    <div className="flex gap-2">
-      <p>traits:</p>
-      {moralStatsWritten.length ? (
-        moralStatsWritten.map(({ key, description, percentage }) => (
-          <span
-            key={key}
-            title={`${percentage}%`}
-            className={`${
-              percentage > 60
-                ? "text-black"
-                : percentage > 30
-                  ? "text-zinc-500"
-                  : "text-zinc-400"
-            }`}
+    <div className="flex flex-col text-right">
+      <AnimatePresence mode="popLayout">
+        {moralStatsWritten.length ? (
+          moralStatsWritten.map(({ key, description, percentage }) => (
+            <motion.span
+              key={key}
+              layout
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.3 }}
+              title={`${percentage}%`}
+              className={`${
+                percentage >= 50
+                  ? "text-black"
+                  : percentage >= 25
+                    ? "text-zinc-700"
+                    : percentage >= 10
+                      ? "text-zinc-500"
+                      : "text-zinc-400"
+              }`}
+            >
+              {description}
+            </motion.span>
+          ))
+        ) : (
+          <motion.span
+            layout
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="text-zinc-400 animate-pulse"
           >
-            {description}
-          </span>
-        ))
-      ) : (
-        <span className="text-zinc-400 animate-pulse">moral uncertainty</span>
-      )}
+            moral uncertainty
+          </motion.span>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

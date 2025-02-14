@@ -1,4 +1,4 @@
-import { BaseStatsType, BaseStatKeys } from "@/constants/base";
+import { ObjectKey } from "@/constants/objects";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { useMemo } from "react";
@@ -9,33 +9,45 @@ const HEIGHT = 40;
 export default function Actions({
   rip,
   setHoverText,
-  incrementStat,
+  setCursorObject,
+  openDilemma,
 }: {
   rip: boolean;
   setHoverText: (text: string | null) => void;
-  incrementStat: (stat: keyof BaseStatsType) => void;
+  setCursorObject: (object: ObjectKey | null) => void;
+  openDilemma: () => void;
 }) {
   const ActionButton = useMemo(
     () =>
       function ActionButton({
         src,
         alt,
-        stat,
+        onClick,
         disabled,
       }: {
         src: string;
         alt: string;
-        stat: BaseStatKeys;
+        onClick: () => void;
         disabled: boolean;
       }) {
         return (
           <div
-            className={`flex-1 flex items-center justify-center p-2 transition-all bg-zinc-100 duration-300 mt-[-2px] ml-[-2px] border-2 ${disabled ? "opacity-50 cursor-not-allowed" : "hover:scale-105 hover:bg-zinc-200 cursor-pointer"}`}
+            className="flex w-full items-center justify-center p-2 transition-all duration-300 mt-[-2px] ml-[-2px] hover:scale-110"
+            style={{
+              opacity: disabled ? 0.5 : 1,
+              cursor: disabled ? "not-allowed" : "pointer",
+            }}
             onMouseEnter={() => !disabled && setHoverText(alt)}
             onMouseLeave={() => !disabled && setHoverText(null)}
-            onClick={() => !disabled && incrementStat(stat)}
+            onClick={() => !disabled && onClick()}
           >
-            <Image src={src} alt={alt} width={WIDTH} height={HEIGHT} />
+            <Image
+              className="no-drag"
+              src={src}
+              alt={alt}
+              width={WIDTH}
+              height={HEIGHT}
+            />
           </div>
         );
       },
@@ -44,31 +56,43 @@ export default function Actions({
   );
 
   return (
-    <div className="md:absolute md:left-0 md:ml-8 flex flex-col w-full md:w-auto">
+    <div className="flex w-full border-2">
       <motion.div
         key="actions"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, delay: 0.2 }}
-        className="flex md:flex-col w-auto"
+        className="flex w-full"
       >
         <ActionButton
           src="/actions/heal.png"
           alt="heal"
           disabled={rip}
-          stat={BaseStatKeys.health}
+          onClick={() => {
+            setCursorObject("bandaid");
+          }}
         />
         <ActionButton
           src="/actions/feed.png"
           alt="feed"
           disabled={rip}
-          stat={BaseStatKeys.hunger}
+          onClick={() => {
+            setCursorObject("burger");
+          }}
         />
         <ActionButton
           src="/actions/play.png"
           alt="play"
           disabled={rip}
-          stat={BaseStatKeys.happiness}
+          onClick={() => {
+            setCursorObject("ball");
+          }}
+        />
+        <ActionButton
+          src="/actions/talk.png"
+          alt="talk"
+          disabled={rip}
+          onClick={() => openDilemma()}
         />
       </motion.div>
     </div>

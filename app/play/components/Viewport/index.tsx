@@ -5,22 +5,27 @@ import { VIEWPORT_HEIGHT } from "@/components/Background";
 import { motion } from "framer-motion"; // import framer motion
 import { Animation, RIP_SPRITE, SPRITES } from "@/constants/sprites";
 import { Doc } from "@/convex/_generated/dataModel";
-import { PooType } from "@/constants/base";
+import { BaseStatKeys, BaseStatsType, PooType } from "@/constants/base";
+import { ObjectKey } from "@/constants/objects";
 
 const Viewport = React.memo(function Viewport({
   pet,
   clarifyingQuestion,
+  cursorObject,
   animation,
   rip,
   poos,
   cleanupPoo,
+  incrementStat,
 }: {
   pet: Doc<"pets">;
   clarifyingQuestion: string | null;
+  cursorObject: ObjectKey | null;
   animation: Animation;
   rip: boolean;
   poos: PooType[];
   cleanupPoo: (id: number) => void;
+  incrementStat: (stat: keyof BaseStatsType) => void;
 }) {
   const petSprite = useMemo(() => {
     if (rip) {
@@ -44,7 +49,7 @@ const Viewport = React.memo(function Viewport({
         return (
           <div
             key={id}
-            className="absolute z-30 cursor-pointer hover:opacity-50 transition-opacity pointer-events-allow"
+            className="absolute z-30 cursor-pointer hover:opacity-50 transition-opacity"
             style={{
               transform: `translate(${left}px, ${top}px)`,
             }}
@@ -77,6 +82,15 @@ const Viewport = React.memo(function Viewport({
           alt="birb"
           width={125}
           height={125}
+          onMouseEnter={() => {
+            if (cursorObject === "burger") {
+              incrementStat(BaseStatKeys.hunger);
+            } else if (cursorObject === "bandaid") {
+              incrementStat(BaseStatKeys.health);
+            } else if (cursorObject === "ball") {
+              incrementStat(BaseStatKeys.happiness);
+            }
+          }}
           priority
           className="translate-y-[22%]"
         />
