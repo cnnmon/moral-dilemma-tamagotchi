@@ -5,17 +5,22 @@ import { VIEWPORT_HEIGHT } from "@/components/Background";
 import { motion } from "framer-motion"; // import framer motion
 import { Animation, RIP_SPRITE, SPRITES } from "@/constants/sprites";
 import { Doc } from "@/convex/_generated/dataModel";
+import { PooType } from "@/constants/base";
 
 const Viewport = React.memo(function Viewport({
   pet,
   clarifyingQuestion,
   animation,
   rip,
+  poos,
+  cleanupPoo,
 }: {
   pet: Doc<"pets">;
   clarifyingQuestion: string | null;
   animation: Animation;
   rip: boolean;
+  poos: PooType[];
+  cleanupPoo: (id: number) => void;
 }) {
   const petSprite = useMemo(() => {
     if (rip) {
@@ -27,13 +32,34 @@ const Viewport = React.memo(function Viewport({
   return (
     <div
       style={{
-        width: "100%",
         maxWidth: VIEWPORT_WIDTH,
         height: VIEWPORT_HEIGHT,
         zIndex: -5,
       }}
       className="flex items-center justify-center"
     >
+      {poos.map(({ id, x, y }) => {
+        const left = x;
+        const top = y + 10;
+        return (
+          <div
+            key={id}
+            className="absolute z-30 cursor-pointer hover:opacity-50 transition-opacity pointer-events-allow"
+            style={{
+              transform: `translate(${left}px, ${top}px)`,
+            }}
+            onClick={() => cleanupPoo(id)}
+          >
+            <Image
+              src="/poo.gif"
+              width={VIEWPORT_WIDTH / 15}
+              height={VIEWPORT_HEIGHT / 15}
+              className="visual"
+              alt="poo"
+            />
+          </div>
+        );
+      })}
       {clarifyingQuestion && (
         <motion.div
           key="clarifying-question"

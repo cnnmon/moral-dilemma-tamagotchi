@@ -64,7 +64,8 @@ return JSON:
   "stats": {<reinforced moral stats>},
   "personality": "<reinforced personality>",
   "reaction": "<justification for rejecting advice (first person)>"
-}`;
+}
+e.g. "actually, i think i should do what's right" "no, i'll do [blank] instead."`;
 
 // stage-based prompts
 export const babyPrompt = `${basePrompt.replace('{stage}', 'baby')}

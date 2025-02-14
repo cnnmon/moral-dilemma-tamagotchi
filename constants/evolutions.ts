@@ -2,9 +2,9 @@ import { MoralStatAttribute } from "./morals";
 
 // evolution time frames
 const evolutionTimeFrame = {
-  0: 2, // 6 dilemmas in age 0 before age 1
-  1: 4, // 12 dilemmas in age 0 + 1 before age 2
-  2: Infinity, // you can see all remaining dilemmas in age 2
+  0: 2, // 2 dilemmas in age 0 until age 1 evolution
+  1: 4, // 2 more dilemmas in age 1 until age 2 evollution
+  2: 6, // 2 more dilemmas until graduation
 }
 
 export function getEvolutionTimeFrame(age: number): number {

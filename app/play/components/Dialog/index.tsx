@@ -2,6 +2,7 @@ import { DilemmaTemplate } from "@/constants/dilemmas";
 import { Input } from "./Input";
 import { Doc } from "@/convex/_generated/dataModel";
 import Window from "@/components/Window";
+import { BaseStatsType } from "@/constants/base";
 
 export default function Dialog({
   pet,
@@ -11,6 +12,7 @@ export default function Dialog({
   onProcessingStart,
   onProcessingEnd,
   disabled,
+  baseStats,
 }: {
   pet: Doc<"pets">;
   rip: boolean;
@@ -19,6 +21,7 @@ export default function Dialog({
   onProcessingStart: () => void;
   onProcessingEnd: () => void;
   disabled: boolean;
+  baseStats: BaseStatsType;
 }) {
   if (!dilemma) {
     return null;
@@ -48,6 +51,7 @@ export default function Dialog({
         onProcessingStart={onProcessingStart}
         onProcessingEnd={onProcessingEnd}
         disabled={disabled}
+        baseStats={baseStats}
       />
     </Window>
   );

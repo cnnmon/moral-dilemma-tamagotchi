@@ -36,7 +36,7 @@ export default function Stats({
           <p>
             {pet.age < 2
               ? `${seenDilemmasCount} / ${timeFrame} dilemmas til next evolution . . .`
-              : "maturity achieved"}
+              : `${seenDilemmasCount} / ${timeFrame} dilemmas til graduation . . .`}
           </p>
         </div>
         <BaseStats baseStats={baseStats} />

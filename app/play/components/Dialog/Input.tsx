@@ -6,13 +6,14 @@ import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import { DilemmaTemplate } from "@/constants/dilemmas";
 import { Textarea } from "@/components/Textarea";
-
+import { BaseStatsType } from "@/constants/base";
 interface InputProps {
   dilemma: DilemmaTemplate;
   onOutcome: (message: string) => void;
   onProcessingStart?: () => void;
   onProcessingEnd?: () => void;
   disabled?: boolean;
+  baseStats: BaseStatsType;
 }
 
 export function Input({
@@ -20,6 +21,7 @@ export function Input({
   onOutcome,
   onProcessingStart,
   onProcessingEnd,
+  baseStats,
   disabled = false,
 }: InputProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -73,6 +75,7 @@ export function Input({
           title: dilemma.id,
           text: dilemma.text,
         },
+        newBaseStats: baseStats,
         responseText: response.trim(),
       });
 

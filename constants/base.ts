@@ -7,3 +7,9 @@ export enum BaseStatKeys {
 }
 
 export type BaseStatsType = Record<BaseStatKeys, number>;
+
+export type PooType = {
+  x: number;
+  y: number;
+  id: number;
+};

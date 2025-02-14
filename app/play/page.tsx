@@ -21,7 +21,7 @@ export default function Play() {
   const [hoverText, setHoverText] = useState<string | null>(null);
   const [rip, setRip] = useState(false);
   const stateResult = useQuery(api.state.getActiveGameState);
-  const { baseStats, incrementStat, incrementSanity } = useBaseStats({
+  const { baseStats, incrementStat, poos, cleanupPoo } = useBaseStats({
     stateResult,
     setAnimation,
     setRip,
@@ -34,7 +34,6 @@ export default function Play() {
     isProcessing,
   } = useCurrentDilemma({
     stateResult,
-    incrementSanity,
   });
 
   if (stateResult === undefined) {
@@ -56,11 +55,21 @@ export default function Play() {
   }
 
   // if out of dilemmas, note that
-  if (status === "out_of_dilemmas") {
-    return <div>you&apos;ve seen all the dilemmas!</div>;
-  }
-
   const { pet, seenDilemmas } = stateResult;
+
+  if (status === "out_of_dilemmas") {
+    return (
+      <div>
+        {pet.name} has graduated!
+        <p>{pet.personality}</p>
+        <p>{JSON.stringify(pet.moralStats)}</p>
+        <p>{JSON.stringify(pet.baseStats)}</p>
+        <p className="max-h-40 overflow-y-auto">
+          {JSON.stringify(seenDilemmas)}
+        </p>
+      </div>
+    );
+  }
 
   return (
     <AnimatePresence mode="wait">
@@ -101,10 +110,11 @@ export default function Play() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5 }}
-            className="flex flex-col gap-2"
           >
             <Viewport
               pet={pet}
+              poos={poos}
+              cleanupPoo={cleanupPoo}
               rip={rip}
               animation={animation}
               clarifyingQuestion={
@@ -131,6 +141,7 @@ export default function Play() {
           >
             <Dialog
               pet={pet}
+              baseStats={baseStats}
               rip={rip}
               dilemma={currentDilemma}
               onOutcome={addOutcome}

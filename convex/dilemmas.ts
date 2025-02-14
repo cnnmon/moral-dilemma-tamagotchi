@@ -41,6 +41,12 @@ export const processDilemma = mutation({
       text: v.string(),
     }),
     responseText: v.string(),
+    newBaseStats: v.object({
+      health: v.number(),
+      hunger: v.number(),
+      happiness: v.number(),
+      sanity: v.number(),
+    }),
   },
   handler: async (
     ctx,
@@ -103,6 +109,7 @@ export const processDilemma = mutation({
       dilemmaId,
       dilemmaTitle: args.dilemma.title,
       petId: pet._id,
+      newBaseStats: args.newBaseStats,
     });
     console.log("🤖 LLM processing scheduled!");
 
@@ -119,6 +126,12 @@ export const generateResponse = internalAction({
     dilemmaTitle: v.string(),
     responseText: v.string(),
     userId: v.string(),
+    newBaseStats: v.object({
+      health: v.number(),
+      hunger: v.number(),
+      happiness: v.number(),
+      sanity: v.number(),
+    }),
   },
   handler: async (ctx, args): Promise<ProcessedResponse> => {
     const pet = await ctx.runQuery(api.pets.getPetById, { petId: args.petId });
@@ -159,6 +172,7 @@ export const generateResponse = internalAction({
         updatedPersonality: parsedResponse.personality,
         resolved: true,
         overridden: true,
+        newBaseStats: args.newBaseStats,
       });
     } else {
       // if the response is not overridden, update the dilemma
@@ -171,6 +185,7 @@ export const generateResponse = internalAction({
           | undefined,
         updatedPersonality: parsedResponse.personality,
         resolved: true,
+        newBaseStats: args.newBaseStats,
       });
     }
     return parsedResponse;
@@ -183,6 +198,14 @@ export const updateDilemmaAndPet = mutation({
     dilemmaId: v.id("dilemmas"),
     petId: v.id("pets"),
     outcome: v.string(),
+    newBaseStats: v.optional(
+      v.object({
+        health: v.number(),
+        hunger: v.number(),
+        happiness: v.number(),
+        sanity: v.number(),
+      })
+    ),
     updatedMoralStats: v.optional(
       v.object({
         compassion: v.number(),
@@ -237,8 +260,17 @@ export const updateDilemmaAndPet = mutation({
 
       // update moral stats by averaging all seen dilemma moral stats
       const averageMoralStats = getAverageMoralStats(seenDilemmas);
+      const updatedBaseStats = {
+        ...pet.baseStats,
+        ...(args.newBaseStats && {
+          ...args.newBaseStats,
+          sanity: Math.min(args.newBaseStats.sanity + 5, 10),
+        }),
+      };
+
       await ctx.db.patch(args.petId, {
         ...evolutionAdditions,
+        baseStats: updatedBaseStats,
         moralStats: averageMoralStats,
         personality: args.updatedPersonality,
       });
