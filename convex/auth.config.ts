@@ -5,7 +5,7 @@ export const authConfig = {
       // or with `process.env.CLERK_JWT_ISSUER_DOMAIN`
       // and configure CLERK_JWT_ISSUER_DOMAIN on the Convex Dashboard
       // See https://docs.convex.dev/auth/clerk#configuring-dev-and-prod-instances
-      domain: "https://vital-tiger-20.clerk.accounts.dev",
+      domain: `${process.env.CLERK_JWT_ISSUER_DOMAIN}`,
       applicationID: "convex",
     },
   ],
