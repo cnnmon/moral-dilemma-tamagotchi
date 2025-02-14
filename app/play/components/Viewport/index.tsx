@@ -1,14 +1,29 @@
-import React from "react";
+import React, { useMemo } from "react";
 import Image from "next/image";
 import { Background, VIEWPORT_WIDTH } from "@/components/Background";
 import { VIEWPORT_HEIGHT } from "@/components/Background";
 import { motion } from "framer-motion"; // import framer motion
+import { Animation, RIP_SPRITE, SPRITES } from "@/constants/sprites";
+import { Doc } from "@/convex/_generated/dataModel";
 
 const Viewport = React.memo(function Viewport({
+  pet,
   clarifyingQuestion,
+  animation,
+  rip,
 }: {
+  pet: Doc<"pets">;
   clarifyingQuestion: string | null;
+  animation: Animation;
+  rip: boolean;
 }) {
+  const petSprite = useMemo(() => {
+    if (rip) {
+      return RIP_SPRITE;
+    }
+    return SPRITES[pet.age as keyof typeof SPRITES][animation];
+  }, [rip, pet.age, animation]);
+
   return (
     <div
       style={{
@@ -32,12 +47,12 @@ const Viewport = React.memo(function Viewport({
       )}
       <Background backgroundSrcs={["/background.png", "/trees.gif"]}>
         <Image
-          src="/birb_smol.gif"
+          src={petSprite}
           alt="birb"
-          width={150}
-          height={150}
-          unoptimized
-          className="mt-10"
+          width={125}
+          height={125}
+          priority
+          className="translate-y-[22%]"
         />
       </Background>
     </div>

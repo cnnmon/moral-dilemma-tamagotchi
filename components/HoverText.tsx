@@ -20,7 +20,7 @@ export default function HoverText({ hoverText }: { hoverText: string | null }) {
   return (
     <div
       key={hoverText}
-      className="absolute px-2 border-2 bg-zinc-100 flex justify-center items-center"
+      className="absolute px-2 border-2 bg-zinc-100 flex justify-center items-center z-20"
       style={{
         top: mousePosition.y,
         left: mousePosition.x,

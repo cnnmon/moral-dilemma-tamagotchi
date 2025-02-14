@@ -54,9 +54,9 @@ export function getMoralStatsWritten(
       }
 
       let prefix: string;
-      if (value > 8 || value < 3) {
+      if (value > 7 || value < 3) {
         prefix = "++ ";
-      } else if (value > 6 || value < 4) {
+      } else if (value > 5.5 || value < 4.5) {
         prefix = "+ ";
       } else {
         prefix = " ";

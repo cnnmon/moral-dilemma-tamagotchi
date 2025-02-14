@@ -6,7 +6,13 @@ import { GameState } from "@/convex/state";
 
 const CURRENT_DILEMMA_KEY = "pet-current-dilemma";
 
-export function useCurrentDilemma(stateResult: GameState | undefined) {
+export function useCurrentDilemma({
+  stateResult,
+  incrementSanity,
+}: {
+  stateResult: GameState | undefined;
+  incrementSanity: () => void;
+}) {
   const [isProcessing, setIsProcessing] = useState(false);
   const [currentDilemma, setCurrentDilemma] = useState<DilemmaTemplate | null>(
     null
@@ -50,11 +56,14 @@ export function useCurrentDilemma(stateResult: GameState | undefined) {
 
   const onDilemmaProcessingEnd = () => {
     setIsProcessing(false);
+
     // clear current dilemma from storage to allow picking next one
     localStorage.removeItem(CURRENT_DILEMMA_KEY);
     setCurrentDilemma(null);
-  };
 
+    // increase sanity for response
+    incrementSanity();
+  };
 
   // handle dilemma selection and storage
   useEffect(() => {

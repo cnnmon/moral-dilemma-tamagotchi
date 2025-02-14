@@ -1,11 +1,20 @@
 import { BaseStatsType } from "@/constants/base";
 import { GameState } from "@/convex/state";
+import { Animation } from "@/constants/sprites";
 import { useEffect, useState } from "react";
 
 const DECREMENT_INTERVAL_MS = 3000;
-const BASE_STATS_DECREMENT_VALUE = 0.5;
+const BASE_STATS_DECREMENT_VALUE = 0.4;
 
-export default function useBaseStats(stateResult: GameState | undefined) {
+export default function useBaseStats({
+  stateResult,
+  setAnimation,
+  setRip,
+}: {
+  stateResult: GameState | undefined;
+  setAnimation: (animation: Animation) => void;
+  setRip: (rip: boolean) => void;
+}) {
   const [baseStatsLoaded, setBaseStatsLoaded] = useState(false);
   const [baseStats, setBaseStats] = useState<BaseStatsType>({
     health: 5,
@@ -35,8 +44,8 @@ export default function useBaseStats(stateResult: GameState | undefined) {
 
         // check if any stat has reached zero -> game over
         if (newStats.health <= 0 || newStats.hunger <= 0 || newStats.happiness <= 0 || newStats.sanity <= 0) {
-          console.log("Game Over: One or more base stats have reached zero.");
           clearInterval(interval);
+          setRip(true);
         }
 
         return newStats;
@@ -47,7 +56,22 @@ export default function useBaseStats(stateResult: GameState | undefined) {
 
   }, [baseStatsLoaded]);
 
+  const incrementSanity = () => {
+    // no happy animation
+    setBaseStats((prevStats: BaseStatsType) => ({
+      ...prevStats,
+      sanity: Math.min(prevStats.sanity + 3, 10),
+    }));
+  };
+
   const incrementStat = (stat: keyof BaseStatsType) => {
+    // temporary happy animation
+    setAnimation(Animation.HAPPY);
+    setTimeout(() => {
+      setAnimation(Animation.IDLE);
+    }, 3000);
+
+    // increment stat
     setBaseStats((prevStats: BaseStatsType) => ({
       ...prevStats,
       [stat]: Math.min(prevStats[stat] + 3, 10),
@@ -57,5 +81,6 @@ export default function useBaseStats(stateResult: GameState | undefined) {
   return {
     baseStats,
     incrementStat,
+    incrementSanity,
   };
 }

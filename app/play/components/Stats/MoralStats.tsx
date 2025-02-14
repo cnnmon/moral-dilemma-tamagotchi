@@ -7,7 +7,8 @@ export function MoralStats({
 }) {
   const moralStatsWritten = getMoralStatsWritten(moralStats);
   return (
-    <div>
+    <div className="flex gap-2">
+      <p>traits:</p>
       {moralStatsWritten.length ? (
         moralStatsWritten.map(({ key, description, percentage }) => (
           <span
@@ -19,13 +20,13 @@ export function MoralStats({
                 : percentage > 30
                   ? "text-zinc-500"
                   : "text-zinc-400"
-            } mr-2`}
+            }`}
           >
             {description}
           </span>
         ))
       ) : (
-        <span className="text-zinc-400">moral uncertainty</span>
+        <span className="text-zinc-400 animate-pulse">moral uncertainty</span>
       )}
     </div>
   );

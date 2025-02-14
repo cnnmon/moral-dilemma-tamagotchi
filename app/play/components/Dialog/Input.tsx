@@ -7,7 +7,7 @@ import { Id } from "@/convex/_generated/dataModel";
 import { DilemmaTemplate } from "@/constants/dilemmas";
 import { Textarea } from "@/components/Textarea";
 
-interface TextInputProps {
+interface InputProps {
   dilemma: DilemmaTemplate;
   onOutcome: (message: string) => void;
   onProcessingStart?: () => void;
@@ -15,13 +15,13 @@ interface TextInputProps {
   disabled?: boolean;
 }
 
-export function TextInput({
+export function Input({
   dilemma,
   onOutcome,
   onProcessingStart,
   onProcessingEnd,
   disabled = false,
-}: TextInputProps) {
+}: InputProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const submitResponse = useMutation(api.dilemmas.processDilemma);
   const [currentDilemmaId, setCurrentDilemmaId] = useState<

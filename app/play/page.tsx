@@ -14,18 +14,28 @@ import useBaseStats from "./utils/useBaseStats";
 import Actions from "./components/Actions";
 import HoverText from "@/components/HoverText";
 import { useState } from "react";
+import { Animation } from "@/constants/sprites";
 
 export default function Play() {
+  const [animation, setAnimation] = useState<Animation>(Animation.IDLE);
   const [hoverText, setHoverText] = useState<string | null>(null);
+  const [rip, setRip] = useState(false);
   const stateResult = useQuery(api.state.getActiveGameState);
-  const { baseStats, incrementStat } = useBaseStats(stateResult);
+  const { baseStats, incrementStat, incrementSanity } = useBaseStats({
+    stateResult,
+    setAnimation,
+    setRip,
+  });
   const { outcomes, addOutcome, removeOutcome } = useOutcomes();
   const {
     currentDilemma,
     onDilemmaProcessingStart,
     onDilemmaProcessingEnd,
     isProcessing,
-  } = useCurrentDilemma(stateResult);
+  } = useCurrentDilemma({
+    stateResult,
+    incrementSanity,
+  });
 
   if (stateResult === undefined) {
     return <Loading />;
@@ -54,13 +64,13 @@ export default function Play() {
 
   return (
     <AnimatePresence mode="wait">
-      <div className="flex flex-col items-center justify-center p-4 sm:p-0 sm:w-xl w-full">
+      <div className="flex flex-col items-center justify-center p-4 md:p-0 md:w-xl w-full">
         <HoverText hoverText={hoverText} />
 
         {/* Stats */}
         <motion.div
           key="stats"
-          className="sm:absolute w-full h-full flex flex-col sm:items-end sm:p-4 pointer-events-none"
+          className="md:absolute w-full h-full flex flex-col md:items-end md:p-4 pointer-events-none"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.1 }}
@@ -73,7 +83,7 @@ export default function Play() {
         </motion.div>
 
         {/* Outcomes */}
-        <div className="fixed top-0 p-4 w-full max-w-xl z-10">
+        <div className="fixed top-0 p-4 w-full max-w-lg z-10">
           {outcomes.map((outcome) => (
             <OutcomePopup
               key={outcome.id}
@@ -94,6 +104,9 @@ export default function Play() {
             className="flex flex-col gap-2"
           >
             <Viewport
+              pet={pet}
+              rip={rip}
+              animation={animation}
               clarifyingQuestion={
                 status === "has_unresolved_dilemma"
                   ? stateResult.question
@@ -103,7 +116,11 @@ export default function Play() {
           </motion.div>
 
           {/* Actions */}
-          <Actions setHoverText={setHoverText} incrementStat={incrementStat} />
+          <Actions
+            setHoverText={setHoverText}
+            incrementStat={incrementStat}
+            rip={rip}
+          />
 
           <motion.div
             key="dialog"
@@ -114,6 +131,7 @@ export default function Play() {
           >
             <Dialog
               pet={pet}
+              rip={rip}
               dilemma={currentDilemma}
               onOutcome={addOutcome}
               onProcessingStart={onDilemmaProcessingStart}
