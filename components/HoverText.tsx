@@ -7,7 +7,7 @@ export default function HoverText({
   cursorObject,
 }: {
   hoverText: string | null;
-  cursorObject: ObjectKey | null;
+  cursorObject?: ObjectKey | null;
 }) {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
