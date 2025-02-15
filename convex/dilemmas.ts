@@ -5,7 +5,7 @@ import { getUserAndPetId } from "./user";
 import { dilemmaTemplates } from "../constants/dilemmas";
 import { MoralDimensionsType } from "../constants/morals";
 import processDilemmaResponse from "./lib/processDilemmaResponse";
-import { Doc, Id } from "./_generated/dataModel";
+import { Id } from "./_generated/dataModel";
 import { evolvePetIfNeeded } from "./lib/evolvePetIfNeeded";
 import { getAverageMoralStats } from "./lib/getAverageMoralStats";
 

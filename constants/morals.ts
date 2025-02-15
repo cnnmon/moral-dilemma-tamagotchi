@@ -1,35 +1,35 @@
 // moral stats range from 0-10
 export enum MoralDimensions {
-  compassion = "compassion", // 0-10 (0 = empathy, 10 = indifference)
-  retribution = "retribution", // 0-10 (0 = justice, 10 = forgiveness)
-  devotion = "devotion", // 0-10 (0 = loyalty, 10 = integrity)
-  dominance = "dominance", // 0-10 (0 = authority, 10 = autonomy)
-  purity = "purity", // 0-10 (0 = virtue, 10 = indulgence)
-  ego = "ego", // 0-10 (0 = self-sacrificing, 10 = self-serving)
+  compassion = "compassion", 
+  retribution = "retribution",
+  devotion = "devotion",
+  dominance = "dominance",
+  purity = "purity",
+  ego = "ego",
 }
 
-export type MoralStatAttribute = "empathetic" | "indifferent" | "integrous" | "just" | "forgiving" | "loyal" | "integrous" | "authoritarian" | "autonomous" | "virtuous" | "indulgent" | "self-serving" | "self-sacrificing";
+export type MoralStatAttribute = "logic" | "emotion" | "forgiving" | "punishing" | "integrous" | "loyal" | "autonomous" | "authoritarian" | "indulgent" | "virtuous" | "self-serving" | "self-sacrificing";
 
-export const moralStatAttributes = {
+export const attributes: Record<MoralDimensions, { low: MoralStatAttribute; high: MoralStatAttribute }> = {
   [MoralDimensions.compassion]: {
-    low: "empathetic",
-    high: "indifferent",
+    low: "logic",
+    high: "emotion",
   },
   [MoralDimensions.retribution]: {
-    low: "just",
-    high: "forgiving",
+    low: "forgiving",
+    high: "punishing",
   },
   [MoralDimensions.devotion]: {
-    low: "loyal",
-    high: "integrous",
+    low: "integrous",
+    high: "loyal",
   },
   [MoralDimensions.dominance]: {
-    low: "authoritarian",
-    high: "autonomous",
+    low: "autonomous",
+    high: "authoritarian",
   },
   [MoralDimensions.purity]: {
-    low: "virtuous",
-    high: "indulgent",
+    low: "indulgent",
+    high: "virtuous",
   },
   [MoralDimensions.ego]: {
     low: "self-sacrificing",
@@ -63,7 +63,7 @@ export function getMoralStatsWritten(
         prefix = " ";
       }
 
-      const range = moralStatAttributes[key as MoralDimensions];
+      const range = attributes[key as MoralDimensions];
       let description: string;
       if (value > 5) {
         description = range.high;
@@ -75,7 +75,7 @@ export function getMoralStatsWritten(
 
       acc.push({
         key,
-        description: `${!forEvolution ? prefix : ""}${description} ${Math.round(percentage * 100) / 100}%`,
+        description: `${!forEvolution ? prefix : ""}${description}`,
         percentage,
         value,
       });

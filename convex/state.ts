@@ -25,6 +25,11 @@ export type GameState =
       question: string,
       pet: Doc<"pets">
     }
+  | {
+      status: 'graduated',
+      seenDilemmas: Doc<"dilemmas">[],
+      pet: Doc<"pets">
+    }
 
 // get an active pet & dilemmas
 export const getActiveGameState = query({
@@ -51,6 +56,14 @@ export const getActiveGameState = query({
       .collect();
 
     const { seenDilemmas, unseenDilemmaTitles, unresolvedDilemma } = getPartitionedDilemmas(allDilemmas);
+
+    if (pet.graduated) {
+      return {
+        status: 'graduated',
+        seenDilemmas,
+        pet,
+      };
+    }
 
     if (unresolvedDilemma && unresolvedDilemma.outcome) {
       const dilemma = dilemmaTemplates[unresolvedDilemma.title];

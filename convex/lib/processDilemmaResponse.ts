@@ -35,7 +35,6 @@ function getPrompt(pet: Doc<"pets">, dilemma: DilemmaTemplate, responseText: str
   const evolution = getEvolution(pet.evolutionId as EvolutionId);
   const formattedPrompt = prompt
     .replace('{dilemma}', dilemma.text)
-    .replace('{dilemma.moralDimensions}', dilemma.relatedStats.join(', '))
     .replace('{response}', responseText)
     .replace('{personality}', pet.personality)
     .replace('{morals.compassion}', pet.moralStats.compassion.toString())

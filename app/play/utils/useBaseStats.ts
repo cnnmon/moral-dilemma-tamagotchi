@@ -49,6 +49,8 @@ export default function useBaseStats({
 
   // on mount, set the base stats to saved base stats
   useEffect(() => {
+    if (!stateResult || stateResult.status === "graduated") return;
+
     if (rip) {
       setBaseStats({
         health: 0,
@@ -64,10 +66,12 @@ export default function useBaseStats({
       setBaseStats(stateResult?.pet.baseStats);
       setBaseStatsLoaded(true);
     }
-  }, [stateResult]);
+  }, [stateResult, rip]);
 
   useEffect(() => {
     const interval = setInterval(() => {
+      if (!stateResult || stateResult.status === "graduated") return;
+
       // decrement stats
       setBaseStats((prevStats: BaseStatsType) => {
         const newStats = {

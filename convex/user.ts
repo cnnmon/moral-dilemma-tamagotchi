@@ -25,7 +25,7 @@ export async function getUserAndPetId(
   const latestPet = await ctx.db
     .query('pets')
     .withIndex('by_userId', q => q.eq('userId', userId))
-    .filter(q => q.eq(q.field('graduated'), false))
+    //.filter(q => q.eq(q.field('graduated'), false))
     .order('desc')
     .first();
 

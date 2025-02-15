@@ -36,7 +36,6 @@ export function evolvePetIfNeeded(seenDilemmasCount: number, pet: Doc<"pets">): 
   console.log("🐦 moralStatsWritten", JSON.stringify(moralStatsWritten));
 
   let newEvolutionId: EvolutionId | undefined;
-  let graduated: boolean = false;
   switch (pet.age) {
     case 0:
       newEvolutionId = evolveFromBabyToStage1(moralStatsWritten);
@@ -47,8 +46,11 @@ export function evolvePetIfNeeded(seenDilemmasCount: number, pet: Doc<"pets">): 
       console.log("🐦 stage 1 newEvolutionId", newEvolutionId);
       break;
     case 2:
-      graduated = true;
-      break;
+      console.log("🐦 stage 2 graduated", true);
+      return {
+        ...pet,
+        graduated: true,
+      }
     default:
       throw new Error(`Unexpected age value of ${pet.age}`);
   }
@@ -61,6 +63,5 @@ export function evolvePetIfNeeded(seenDilemmasCount: number, pet: Doc<"pets">): 
     ...pet,
     evolutionId: newEvolutionId,
     age: pet.age + 1,
-    graduated,
   }
 }

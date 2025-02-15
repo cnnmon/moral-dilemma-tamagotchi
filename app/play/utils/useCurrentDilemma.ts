@@ -62,7 +62,7 @@ export function useCurrentDilemma({
 
   // handle dilemma selection and storage
   useEffect(() => {
-    if (!stateResult) return;
+    if (!stateResult || stateResult.status === "graduated") return;
 
     // handle unresolved dilemma case
     if (stateResult.status === "has_unresolved_dilemma") {

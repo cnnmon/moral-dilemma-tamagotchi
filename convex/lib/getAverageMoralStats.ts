@@ -12,6 +12,14 @@ const DEFAULT_AVERAGE_STATS = {
 
 export function getAverageMoralStats(seenDilemmas: Doc<"dilemmas">[]) {
   const moralStats = { ...DEFAULT_AVERAGE_STATS };
+  const statCounts = {
+    compassion: 1,
+    retribution: 1, 
+    devotion: 1,
+    dominance: 1,
+    purity: 1,
+    ego: 1
+  };
 
   for (const dilemma of seenDilemmas) {
     const updatedMoralStats = dilemma.updatedMoralStats;
@@ -21,17 +29,20 @@ export function getAverageMoralStats(seenDilemmas: Doc<"dilemmas">[]) {
 
     // sum all
     for (const key of Object.keys(updatedMoralStats)) {
-      moralStats[key as keyof MoralDimensionsType] += updatedMoralStats[key as keyof MoralDimensionsType];
+      const value = updatedMoralStats[key as keyof MoralDimensionsType];
+      if (value === 5) {
+        continue;
+      }
+
+      moralStats[key as keyof MoralDimensionsType] += value;
+      statCounts[key as keyof MoralDimensionsType]++;
     }
   }
 
   // average
   for (const key of Object.keys(moralStats)) {
-    moralStats[key as keyof MoralDimensionsType] /= (seenDilemmas.length + 1);
+    moralStats[key as keyof MoralDimensionsType] /= statCounts[key as keyof MoralDimensionsType];
   }
-
-  console.log("moralStats", moralStats);
 
   return moralStats;
 }
-

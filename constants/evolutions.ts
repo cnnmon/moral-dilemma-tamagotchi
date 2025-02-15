@@ -1,10 +1,10 @@
-import { MoralStatAttribute } from "./morals";
+import { MoralDimensions, MoralStatAttribute, attributes } from "./morals";
 
 // evolution time frames
 const evolutionTimeFrame = {
-  0: 2, // 2 dilemmas in age 0 until age 1 evolution
-  1: 4, // 2 more dilemmas in age 1 until age 2 evollution
-  2: 6, // 2 more dilemmas until graduation
+  0: 4, // 2 dilemmas in age 0 until age 1 evolution
+  1: 7, // 2 more dilemmas in age 1 until age 2 evollution
+  2: 10, // 2 more dilemmas until graduation
 }
 
 export function getEvolutionTimeFrame(age: number): number {
@@ -16,7 +16,7 @@ export type Stage1EvolutionId = "harbinger" | "devout" | "watcher" | "loyalist" 
 
 export type Stage2EvolutionId = "monk" | "shepherd" | "arbiter" | "martyr" | "warden" | "wayfarer" | "mercenary" | "guardian" | "patrician" | "sovereign" | "cultleader" | "npc";
 
-export type EvolutionId = "baby" | Stage1EvolutionId | Stage2EvolutionId | "graduated";
+export type EvolutionId = "baby" | "graduated" | Stage1EvolutionId | Stage2EvolutionId;
 
 // represents a stage in pet evolution
 type Stage0Evolution = {
@@ -36,19 +36,24 @@ type Stage2Evolution = {
   description: string;
 }
 
-type Evolution = Stage0Evolution | Stage1Evolution | Stage2Evolution;
+type Stage3Evolution = {  
+  id: "graduated";
+  description: string;
+}
+
+type Evolution = Stage0Evolution | Stage1Evolution | Stage2Evolution | Stage3Evolution;
 
 export const stage0Evolutions: Record<'baby', Stage0Evolution> = {
   baby: {
     id: "baby",
     description: "a naive baby bird, curious about the world",
     nextStages: {
-      "empathetic": "harbinger",
-      "virtuous": "devout",
-      "just": "watcher",
-      "loyal": "loyalist",
-      "authoritarian": "soldier",
-      "self-serving": "maverick",
+      [attributes[MoralDimensions.compassion].low]: "harbinger",
+      [attributes[MoralDimensions.purity].low]: "devout",
+      [attributes[MoralDimensions.retribution].low]: "watcher",
+      [attributes[MoralDimensions.devotion].low]: "loyalist",
+      [attributes[MoralDimensions.dominance].low]: "soldier",
+      [attributes[MoralDimensions.ego].high]: "maverick",
     }
   }
 }
@@ -59,8 +64,8 @@ export const stage1Evolutions: Record<Stage1EvolutionId, Stage1Evolution> = {
     id: "harbinger",
     description: "a caring envoy who strives to help the world",
     nextStages: {
-      "integrous": "monk",
-      "loyal": "shepherd",
+      [attributes[MoralDimensions.devotion].low]: "monk",
+      [attributes[MoralDimensions.devotion].high]: "shepherd",
     },
   },
 
@@ -69,8 +74,8 @@ export const stage1Evolutions: Record<Stage1EvolutionId, Stage1Evolution> = {
     id: "devout",
     description: "a generous soul, seeking purpose in sacrifice",
     nextStages: {
-      "just": "arbiter",
-      "forgiving": "martyr",
+      [attributes[MoralDimensions.retribution].high]: "arbiter",
+      [attributes[MoralDimensions.retribution].low]: "martyr",
     },
   },
 
@@ -79,8 +84,8 @@ export const stage1Evolutions: Record<Stage1EvolutionId, Stage1Evolution> = {
     id: "watcher",
     description: "a observer who questions their place in justice",
     nextStages: {
-      "authoritarian": "warden",
-      "autonomous": "wayfarer",
+      [attributes[MoralDimensions.dominance].high]: "warden",
+      [attributes[MoralDimensions.dominance].low]: "wayfarer",
     },
   },
 
@@ -89,8 +94,8 @@ export const stage1Evolutions: Record<Stage1EvolutionId, Stage1Evolution> = {
     id: "loyalist",
     description: "a steadfast ally bound by duty and trust",
     nextStages: {
-      "self-serving": "mercenary",
-      "self-sacrificing": "guardian",
+      [attributes[MoralDimensions.ego].high]: "mercenary",
+      [attributes[MoralDimensions.ego].low]: "guardian",
     },
   },
 
@@ -99,8 +104,8 @@ export const stage1Evolutions: Record<Stage1EvolutionId, Stage1Evolution> = {
     id: "soldier",
     description: "a disciplined enforcer who upholds order and structure",
     nextStages: {
-      "virtuous": "patrician",
-      "indulgent": "sovereign",
+      [attributes[MoralDimensions.purity].high]: "sovereign",
+      [attributes[MoralDimensions.purity].low]: "patrician",
     },
   },
 
@@ -109,8 +114,8 @@ export const stage1Evolutions: Record<Stage1EvolutionId, Stage1Evolution> = {
     id: "maverick",
     description: "a self-reliant wanderer who seeks purpose",
     nextStages: {
-      "indifferent": "npc",
-      "empathetic": "cultleader",
+      [attributes[MoralDimensions.compassion].low]: "npc",
+      [attributes[MoralDimensions.compassion].high]: "cultleader",
     },
   },
 }
@@ -169,7 +174,11 @@ export const stage2Evolutions: Record<Stage2EvolutionId, Stage2Evolution> = {
 const evolutions: Record<EvolutionId, Evolution> = {
   ...stage0Evolutions,
   ...stage1Evolutions,
-  ...stage2Evolutions
+  ...stage2Evolutions,
+  graduated: {
+    id: "graduated",
+    description: "a mature bird of their own making",
+  },
 }
 
 export function getEvolution(id: EvolutionId): Evolution {

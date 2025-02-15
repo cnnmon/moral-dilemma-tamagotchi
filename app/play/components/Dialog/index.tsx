@@ -54,12 +54,15 @@ export default function Dialog({
       dilemmaUpdate.outcome &&
       dilemmaUpdate.ok
     ) {
+      console.log("🚀 Resolved dilemma:", dilemmaUpdate.outcome);
       onOutcome(dilemmaUpdate.outcome);
       setCurrentDilemmaId(undefined);
       setSelectedChoice(null);
       onProcessingEnd?.();
+      setIsOpen(false);
     }
-  }, [dilemmaUpdate, onOutcome, onProcessingEnd]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dilemmaUpdate]);
 
   if (!dilemma) {
     return null;
@@ -87,7 +90,7 @@ export default function Dialog({
           text: dilemmaText,
         },
         newBaseStats: baseStats,
-        responseText: dilemma.responses[selectedChoice].text + "\n" + response,
+        responseText: dilemma.responses[selectedChoice].text + ". " + response,
       });
 
       // store the dilemma id to subscribe to updates
@@ -123,7 +126,9 @@ export default function Dialog({
         dilemmaText={dilemmaText}
         selectedChoice={selectedChoice}
         setSelectedChoice={setSelectedChoice}
-        choices={dilemma.responses}
+        choices={dilemma.responses.map((response) => ({
+          text: response.text.replace(/{pet}/g, petName),
+        }))}
         handleSubmit={handleSubmit}
       />
     </Window>

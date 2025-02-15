@@ -22,7 +22,7 @@ export default function HoverText({
   }, []);
 
   return (
-    <div className="z-40">
+    <div className="z-40 pointer-events-none">
       {cursorObject && (
         <Image
           src={OBJECTS[cursorObject]}

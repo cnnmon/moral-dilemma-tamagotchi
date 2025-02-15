@@ -18,31 +18,35 @@ export default function Choices({
   setSelectedChoice: (choice: number) => void;
 }) {
   return (
-    <div className="flex flex-col gap-1">
+    <div className="flex flex-col gap-2">
       <p>{dilemmaText}</p>
-      {choices.map((choice, index) => (
-        <a
-          key={index}
-          style={{
-            opacity: selectedChoice !== null ? 0.5 : 1,
-            backgroundColor: selectedChoice === index ? "black" : undefined,
-            color: selectedChoice === index ? "white" : undefined,
-            cursor: selectedChoice !== null ? "not-allowed" : "pointer",
-            pointerEvents: selectedChoice !== null ? "none" : "auto",
-          }}
-          onClick={() => {
-            if (selectedChoice !== null && selectedChoice !== index) {
-              return;
-            }
-
-            if (selectedChoice === null) {
-              setSelectedChoice(index);
-            }
-          }}
-        >
-          <span>{choice.text}</span>
-        </a>
-      ))}
+      <div className="flex flex-col gap-1">
+        {choices.map((choice, index) => (
+          <button
+            key={index}
+            className="group relative w-full transition-all underline underline-offset-2 h-8"
+            style={{
+              opacity: selectedChoice === index ? 1 : 0.5,
+              backgroundColor:
+                selectedChoice === index ? "black" : "transparent",
+              color: selectedChoice === index ? "white" : "black",
+            }}
+            disabled={disabled}
+            onClick={() => setSelectedChoice(index)}
+          >
+            <span
+              className={`
+            absolute left-0 top-1/2 -translate-y-1/2 opacity-0 transition-opacity pl-1
+            group-hover:opacity-100
+            ${selectedChoice === index ? "opacity-100" : ""}
+          `}
+            >
+              &gt;
+            </span>
+            <span>{choice.text}</span>
+          </button>
+        ))}
+      </div>
       {selectedChoice !== null && (
         <Textarea
           placeholder={placeholderText}
