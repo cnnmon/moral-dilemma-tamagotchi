@@ -39,6 +39,7 @@ export default function Stats({
               : `${seenDilemmasCount} / ${timeFrame} dilemmas til graduation . . .`}
           </p>
         </div>
+
         <BaseStats baseStats={baseStats} />
       </div>
 

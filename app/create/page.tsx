@@ -8,6 +8,7 @@ import { Background } from "@/components/Background";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Choices from "@/components/Choices";
+import Menu from "@/components/Menu";
 
 function Content() {
   const createPet = useMutation(api.pets.createPet);
@@ -52,7 +53,7 @@ function Content() {
 
   return (
     <>
-      <p className="absolute top-0 left-0 p-4 text-sm text-zinc-500">outside</p>
+      <Menu />
       <motion.div
         key="create-page"
         className="flex flex-col items-center gap-4 w-full sm:w-xl p-4 sm:p-0"
