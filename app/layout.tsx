@@ -4,6 +4,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 import { ConvexClientProvider } from "./ConvexClientProvider";
 import { Toaster } from "sonner";
 import localFont from "next/font/local";
+import Menu from "@/components/Menu";
 
 const pixel = localFont({
   src: "./bitmap.otf",
@@ -26,7 +27,10 @@ export default function RootLayout({
       >
         <div className="w-full max-w-md flex flex-col items-center justify-center">
           <ClerkProvider dynamic>
-            <ConvexClientProvider>{children}</ConvexClientProvider>
+            <ConvexClientProvider>
+              <Menu />
+              {children}
+            </ConvexClientProvider>
           </ClerkProvider>
         </div>
         <Toaster />

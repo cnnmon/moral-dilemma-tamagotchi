@@ -17,7 +17,6 @@ import { useState } from "react";
 import { Animation } from "@/constants/sprites";
 import { ObjectKey } from "@/constants/objects";
 import Graduation from "./components/Graduation";
-import Menu from "@/components/Menu";
 
 export default function Play() {
   const [animation, setAnimation] = useState<Animation>(Animation.IDLE);
@@ -67,7 +66,6 @@ export default function Play() {
   if (status === "out_of_dilemmas" || status === "graduated") {
     return (
       <>
-        <Menu pet={pet} />
         <Graduation pet={pet} seenDilemmas={seenDilemmas} />
       </>
     );
@@ -77,9 +75,6 @@ export default function Play() {
     <AnimatePresence mode="wait">
       <div className="flex flex-col items-center justify-center p-4 pt-[15%] sm:p-0 sm:w-xl w-full">
         <HoverText hoverText={hoverText} cursorObject={cursorObject} />
-
-        <Menu pet={pet} />
-
         {/* Stats */}
         <motion.div
           key="stats"

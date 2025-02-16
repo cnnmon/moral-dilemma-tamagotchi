@@ -93,6 +93,7 @@ export const getActiveGameState = query({
   },
 });
 
+// unused
 export const resetGame = mutation({
   args: {},
   handler: async (ctx) => {

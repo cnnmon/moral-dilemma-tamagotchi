@@ -71,12 +71,12 @@ const Viewport = React.memo(function Viewport({
           className="absolute w-xs bg-zinc-100 z-10 border border-2 p-2 mt-[-80px] text-center"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ duration: 0.3 }}
+          transition={{ duration: 0.3, delay: 0.1 }}
         >
           <p className="text-sm">{clarifyingQuestion}</p>
         </motion.div>
       )}
-      <Background backgroundSrcs={["/background.png", "/trees.gif"]}>
+      <Background hasOverlay backgroundSrcs={["/background.png", "/trees.gif"]}>
         <Image
           src={petSprite}
           alt="birb"

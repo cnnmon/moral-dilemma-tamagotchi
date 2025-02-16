@@ -7,9 +7,11 @@ export const VIEWPORT_HEIGHT = 230;
 
 export function Background({
   backgroundSrcs,
+  hasOverlay = false,
   children,
 }: {
   backgroundSrcs: string[];
+  hasOverlay?: boolean;
   children: React.ReactNode;
 }) {
   // state to track loaded images
@@ -25,7 +27,7 @@ export function Background({
           alt="background"
           width={VIEWPORT_WIDTH}
           height={VIEWPORT_HEIGHT}
-          loading="lazy"
+          priority={true}
           style={{
             height: VIEWPORT_HEIGHT,
             width: `min(calc(100% - 30px), ${VIEWPORT_WIDTH}px)`,
@@ -53,8 +55,27 @@ export function Background({
           className="flex items-center justify-center"
           style={{
             maxWidth: VIEWPORT_WIDTH,
+            height: VIEWPORT_HEIGHT,
           }}
         >
+          {hasOverlay && (
+            <Image
+              src="/walnut.png"
+              alt="background"
+              width={VIEWPORT_WIDTH}
+              height={VIEWPORT_HEIGHT}
+              priority={true}
+              className="absolute w-full"
+              style={{
+                height: VIEWPORT_HEIGHT,
+                width: `min(calc(100% - 30px), ${VIEWPORT_WIDTH}px)`,
+                objectFit: "cover",
+                zIndex: 10,
+                mixBlendMode: "multiply",
+                filter: "brightness(1.2)",
+              }}
+            />
+          )}
           {memoizedBackgroundImages}
           <div className="z-10">{children}</div>
         </motion.div>

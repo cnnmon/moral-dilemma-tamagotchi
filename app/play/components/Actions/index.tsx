@@ -53,7 +53,7 @@ const HealButton = memo(function HealButton({
   return (
     <ActionButton
       src="/actions/heal.png"
-      alt="heal"
+      alt="+ health"
       disabled={rip}
       onClick={() => setCursorObject("bandaid")}
       setHoverText={setHoverText}
@@ -73,7 +73,7 @@ const FeedButton = memo(function FeedButton({
   return (
     <ActionButton
       src="/actions/feed.png"
-      alt="feed"
+      alt="+ hunger"
       disabled={rip}
       onClick={() => setCursorObject("burger")}
       setHoverText={setHoverText}
@@ -93,7 +93,7 @@ const PlayButton = memo(function PlayButton({
   return (
     <ActionButton
       src="/actions/play.png"
-      alt="play"
+      alt="+ happiness"
       disabled={rip}
       onClick={() => setCursorObject("ball")}
       setHoverText={setHoverText}
@@ -115,7 +115,7 @@ const TalkButton = memo(function TalkButton({
   return (
     <ActionButton
       src="/actions/talk.png"
-      alt="talk"
+      alt="+ sanity"
       disabled={rip || isProcessing}
       onClick={openDilemma}
       setHoverText={setHoverText}

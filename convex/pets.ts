@@ -61,3 +61,15 @@ export const createPet = mutation({
     });
   },
 }); 
+
+// test only
+export const graduatePet = mutation({
+  args: {
+    petId: v.id('pets'),
+  },
+  handler: async (ctx, args) => {
+    return ctx.db.patch(args.petId, {
+      graduated: true,
+    });
+  },
+}); 
