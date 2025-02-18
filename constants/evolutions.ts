@@ -184,3 +184,92 @@ const evolutions: Record<EvolutionId, Evolution> = {
 export function getEvolution(id: EvolutionId): Evolution {
   return evolutions[id];
 }
+
+
+type EvolutionPath = {
+  stage: string;
+  id: string;
+  description: string;
+  statUsed?: {
+    dimension: MoralDimensions;
+    value: 'high' | 'low';
+    name: MoralStatAttribute;
+  };
+}
+
+function getStatUsed(statKey: MoralStatAttribute): {
+  dimension: MoralDimensions;
+  value: 'high' | 'low';
+  name: MoralStatAttribute;
+} {
+  const dimension = Object.entries(attributes).find(([, attr]) => 
+    attr.high === statKey || attr.low === statKey
+  )?.[0] as MoralDimensions;
+  const value = attributes[dimension].high === statKey ? 'high' : 'low';
+  console.log(dimension, value, attributes[dimension][value]);
+  return {
+    dimension,
+    value,
+    name: attributes[dimension][value]
+  }
+}
+
+export function getEvolutions(finalEvolutionId: Stage2EvolutionId): EvolutionPath[] {
+  // add stage 2 evolution
+  const stage2Evolution = stage2Evolutions[finalEvolutionId];
+
+  // find and add stage 1 evolution
+  let stage1Evolution: Stage1Evolution | undefined;
+  let stage2StatKey: MoralStatAttribute | undefined;
+  
+  for (const stage1Id in stage1Evolutions) {
+    const evolution = stage1Evolutions[stage1Id as Stage1EvolutionId];
+    const entries = Object.entries(evolution.nextStages);
+    for (const [statKey, evolveId] of entries) {
+      if (evolveId === finalEvolutionId) {
+        stage1Evolution = evolution;
+        stage2StatKey = statKey as MoralStatAttribute;
+        break;
+      }
+    }
+    if (stage1Evolution) break;
+  }
+
+  if (!stage1Evolution || !stage2StatKey) {
+    throw new Error(`no previous evolution found for ${finalEvolutionId}`);
+  }
+
+  // find stage 0 stat used
+  let stage1StatKey: MoralStatAttribute | undefined;
+  const entries = Object.entries(stage0Evolutions.baby.nextStages);
+  for (const [statKey, evolveId] of entries) {
+    if (evolveId === stage1Evolution.id) {
+      stage1StatKey = statKey as MoralStatAttribute;
+      break;
+    }
+  }
+
+  if (!stage1StatKey) {
+    throw new Error(`no stage 0 stat found for ${stage1Evolution.id}`);
+  }
+
+  return [
+    {
+      stage: "stage 2",
+      id: stage2Evolution.id, 
+      description: stage2Evolution.description,
+      statUsed: getStatUsed(stage2StatKey)
+    },
+    {
+      stage: "stage 1",
+      id: stage1Evolution.id,
+      description: stage1Evolution.description,
+      statUsed: getStatUsed(stage1StatKey)
+    },
+    {
+      stage: "stage 0",
+      id: "baby",
+      description: stage0Evolutions.baby.description
+    }
+  ]
+}

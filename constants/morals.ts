@@ -8,12 +8,24 @@ export enum MoralDimensions {
   ego = "ego",
 }
 
-export type MoralStatAttribute = "logic" | "emotion" | "forgiving" | "punishing" | "integrous" | "loyal" | "autonomous" | "authoritarian" | "indulgent" | "virtuous" | "self-serving" | "self-sacrificing";
+export type MoralStatAttribute =
+  | "logical"
+  | "emotional"
+  | "forgiving"
+  | "punishing"
+  | "integrous"
+  | "loyal"
+  | "autonomous"
+  | "authoritarian"
+  | "indulgent"
+  | "virtuous"
+  | "self-serving"
+  | "self-sacrificing";
 
 export const attributes: Record<MoralDimensions, { low: MoralStatAttribute; high: MoralStatAttribute }> = {
   [MoralDimensions.compassion]: {
-    low: "logic",
-    high: "emotion",
+    low: "logical",
+    high: "emotional",
   },
   [MoralDimensions.retribution]: {
     low: "forgiving",
@@ -56,11 +68,11 @@ export function getMoralStatsWritten(
 
       let prefix: string;
       if (value > 7 || value < 3) {
-        prefix = "++ ";
-      } else if (value > 5.5 || value < 4.5) {
-        prefix = "+ ";
+        prefix = "highly ";
+      } else if (value > 6 || value < 4) {
+        prefix = "moderately ";
       } else {
-        prefix = " ";
+        prefix = "mildly ";
       }
 
       const range = attributes[key as MoralDimensions];

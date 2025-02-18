@@ -8,6 +8,7 @@ export default function Choices({
   disabled = false,
   selectedChoice,
   setSelectedChoice,
+  showTextbox = true,
 }: {
   dilemmaText: string;
   choices: { text: string }[];
@@ -16,6 +17,7 @@ export default function Choices({
   disabled?: boolean;
   selectedChoice: number | null;
   setSelectedChoice: (choice: number) => void;
+  showTextbox?: boolean;
 }) {
   return (
     <div className="flex flex-col gap-2">
@@ -47,7 +49,7 @@ export default function Choices({
           </button>
         ))}
       </div>
-      {selectedChoice !== null && (
+      {selectedChoice !== null && showTextbox && (
         <Textarea
           placeholder={placeholderText}
           handleSubmit={(response) => handleSubmit(response)}

@@ -14,7 +14,7 @@ export default function About() {
           </p>
           <p>
             made with moral uncertainty by{" "}
-            <a href="https://tiffanywang.me/">tiffany</a>
+            <a href="https://tiffanywang.me/">chadd</a>
           </p>
           <p className="flex gap-2">
             <a href="https://github.com/cnnmon/moral-dilemma-tamagotchi">

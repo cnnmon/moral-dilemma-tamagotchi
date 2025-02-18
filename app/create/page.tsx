@@ -42,7 +42,10 @@ function Content() {
         <br />
         <Window title="you didn't want the egg">
           <p>well... i hope you&apos;re happy with yourself.</p>
-          <a className="cursor-pointer" onClick={() => setSelectedChoice(null)}>
+          <a
+            className="cursor-pointer no-drag"
+            onClick={() => setSelectedChoice(null)}
+          >
             im sorry i didn&apos;t mean it
           </a>
         </Window>

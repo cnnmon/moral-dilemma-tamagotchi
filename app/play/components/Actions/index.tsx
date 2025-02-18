@@ -21,9 +21,8 @@ const ActionButton = memo(function ActionButton({
 }) {
   return (
     <div
-      className="flex w-full items-center justify-center p-2 transition-all duration-300 mt-[-2px] ml-[-2px] hover:scale-110"
+      className="flex justify-center items-center w-full md:w-13 h-13 p-2 group"
       style={{
-        opacity: disabled ? 0.5 : 1,
         cursor: disabled ? "not-allowed" : "pointer",
       }}
       onMouseEnter={() => !disabled && setHoverText(alt)}
@@ -31,7 +30,12 @@ const ActionButton = memo(function ActionButton({
       onClick={() => !disabled && onClick()}
     >
       <Image
-        className="no-drag"
+        className={`no-drag ${
+          !disabled && "group-hover:scale-110 transition-all duration-300"
+        }`}
+        style={{
+          opacity: disabled ? 0.5 : 1,
+        }}
         src={src}
         alt={alt}
         width={WIDTH}
@@ -41,87 +45,31 @@ const ActionButton = memo(function ActionButton({
   );
 });
 
-const HealButton = memo(function HealButton({
-  rip,
-  setHoverText,
-  setCursorObject,
-}: {
-  rip: boolean;
-  setHoverText: (text: string | null) => void;
-  setCursorObject: (object: ObjectKey | null) => void;
-}) {
-  return (
-    <ActionButton
-      src="/actions/heal.png"
-      alt="+ health"
-      disabled={rip}
-      onClick={() => setCursorObject("bandaid")}
-      setHoverText={setHoverText}
-    />
-  );
-});
-
-const FeedButton = memo(function FeedButton({
-  rip,
-  setHoverText,
-  setCursorObject,
-}: {
-  rip: boolean;
-  setHoverText: (text: string | null) => void;
-  setCursorObject: (object: ObjectKey | null) => void;
-}) {
-  return (
-    <ActionButton
-      src="/actions/feed.png"
-      alt="+ hunger"
-      disabled={rip}
-      onClick={() => setCursorObject("burger")}
-      setHoverText={setHoverText}
-    />
-  );
-});
-
-const PlayButton = memo(function PlayButton({
-  rip,
-  setHoverText,
-  setCursorObject,
-}: {
-  rip: boolean;
-  setHoverText: (text: string | null) => void;
-  setCursorObject: (object: ObjectKey | null) => void;
-}) {
-  return (
-    <ActionButton
-      src="/actions/play.png"
-      alt="+ happiness"
-      disabled={rip}
-      onClick={() => setCursorObject("ball")}
-      setHoverText={setHoverText}
-    />
-  );
-});
-
-const TalkButton = memo(function TalkButton({
-  rip,
-  isProcessing,
-  setHoverText,
-  openDilemma,
-}: {
-  rip: boolean;
-  isProcessing: boolean;
-  setHoverText: (text: string | null) => void;
-  openDilemma: () => void;
-}) {
-  return (
-    <ActionButton
-      src="/actions/talk.png"
-      alt="+ sanity"
-      disabled={rip || isProcessing}
-      onClick={openDilemma}
-      setHoverText={setHoverText}
-    />
-  );
-});
+const ACTIONS = [
+  {
+    src: "/actions/heal.png",
+    alt: "+ health",
+    object: "bandaid" as ObjectKey,
+    type: "cursor",
+  },
+  {
+    src: "/actions/feed.png",
+    alt: "+ hunger",
+    object: "burger" as ObjectKey,
+    type: "cursor",
+  },
+  {
+    src: "/actions/play.png",
+    alt: "+ happiness",
+    object: "ball" as ObjectKey,
+    type: "cursor",
+  },
+  {
+    src: "/actions/talk.png",
+    alt: "+ sanity",
+    type: "dilemma",
+  },
+];
 
 export default function Actions({
   rip,
@@ -137,36 +85,27 @@ export default function Actions({
   isProcessing: boolean;
 }) {
   return (
-    <div className="flex w-full border-2">
-      <motion.div
-        key="actions"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, delay: 0.2 }}
-        className="flex w-full"
-      >
-        <HealButton
-          rip={rip}
+    <motion.div
+      key="actions"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, delay: 0.2 }}
+      className="flex flex-row items-center z-10 border-2 bg-zinc-100 md:flex-col justify-between"
+    >
+      {ACTIONS.map((action) => (
+        <ActionButton
+          key={action.src}
+          src={action.src}
+          alt={action.alt}
+          disabled={rip || (action.type === "dilemma" && isProcessing)}
+          onClick={() =>
+            action.type === "cursor"
+              ? setCursorObject(action.object as ObjectKey)
+              : openDilemma()
+          }
           setHoverText={setHoverText}
-          setCursorObject={setCursorObject}
         />
-        <FeedButton
-          rip={rip}
-          setHoverText={setHoverText}
-          setCursorObject={setCursorObject}
-        />
-        <PlayButton
-          rip={rip}
-          setHoverText={setHoverText}
-          setCursorObject={setCursorObject}
-        />
-        <TalkButton
-          rip={rip}
-          isProcessing={isProcessing}
-          setHoverText={setHoverText}
-          openDilemma={openDilemma}
-        />
-      </motion.div>
-    </div>
+      ))}
+    </motion.div>
   );
 }

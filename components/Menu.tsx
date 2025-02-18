@@ -13,7 +13,7 @@ export default function Menu({ pet }: { pet?: Doc<"pets"> }) {
   const currentPet = useQuery(api.pets.getActivePet);
 
   useEffect(() => {
-    setCurrentPath(window.location.pathname.split("/")[1]);
+    setCurrentPath(window.location.pathname.slice(1));
   }, []);
 
   return (

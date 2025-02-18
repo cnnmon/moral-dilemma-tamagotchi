@@ -99,9 +99,6 @@ export const stage1Prompt = `${basePrompt.replace('{stage}', 'adolescent')}
 
 ${clarificationCheck}
 
-if advice contradicts {pet}'s personality strongly or remains unclear, override the decision. if so, shift personality and morals toward autonomy.
-${overrideResponse}
-
 if advice is reasonable, assess moral impact and learnings.
 ${standardResponse}
 
@@ -121,7 +118,7 @@ example personality lines (add to existing personality):
 
 personality rules:
 ${overallPersonalityRules}
-- becoming more opinionated; show more resistance/autonomy if actions conflict with existing personality or stats.
+- becoming more opinionated; show more resistance via clarifying questions if actions conflict with existing personality or stats.
 - use specific real-world examples to reinforce opinions.
 - reinforce learned behaviors gradually; do not override.`;
 

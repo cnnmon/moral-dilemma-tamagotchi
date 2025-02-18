@@ -112,12 +112,22 @@ export default function Play() {
         </div>
 
         {/* Viewport & dilemma */}
-        <div className="flex flex-col gap-4 w-full">
+        <div className="flex flex-col md:flex-row gap-4">
+          {/* Actions */}
+          <Actions
+            setCursorObject={setCursorObject}
+            setHoverText={setHoverText}
+            openDilemma={() => setDilemmaOpen(true)}
+            isProcessing={isProcessing}
+            rip={rip}
+          />
+
           <motion.div
             key="viewport"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5 }}
+            className="w-full"
           >
             <Viewport
               pet={pet}
@@ -137,15 +147,6 @@ export default function Play() {
               }
             />
           </motion.div>
-
-          {/* Actions */}
-          <Actions
-            setCursorObject={setCursorObject}
-            setHoverText={setHoverText}
-            openDilemma={() => setDilemmaOpen(true)}
-            isProcessing={isProcessing}
-            rip={rip}
-          />
         </div>
         <div className="pt-4 sm:p-0 sm:absolute sm:right-0 z-40 sm:max-w-sm sm:pr-8">
           <AnimatePresence>

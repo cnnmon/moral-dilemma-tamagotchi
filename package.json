@@ -21,6 +21,7 @@
     "next": "15.1.0",
     "openai": "^4.82.0",
     "react": "^19",
+    "react-confetti": "^6.2.2",
     "react-dom": "^19",
     "recharts": "^2.15.1",
     "sonner": "^1.7.4",

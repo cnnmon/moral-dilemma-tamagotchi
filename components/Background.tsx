@@ -46,7 +46,7 @@ export function Background({
 
   return (
     <AnimatePresence key="bg">
-      <div className="w-full">
+      <div className="w-full flex items-center justify-center">
         <motion.div
           key="background-container"
           initial={{ opacity: 0 }}

@@ -37,9 +37,9 @@ const Viewport = React.memo(function Viewport({
   return (
     <div
       style={{
+        width: VIEWPORT_WIDTH,
         maxWidth: VIEWPORT_WIDTH,
         height: VIEWPORT_HEIGHT,
-        zIndex: -5,
       }}
       className="flex items-center justify-center"
     >

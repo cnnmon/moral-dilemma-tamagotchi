@@ -103,16 +103,7 @@ export default function Dialog({
   };
 
   if (rip) {
-    return (
-      <Window title={`${petName} has died (◞‸◟；)`}>
-        <p>
-          rip. maybe you should have taken better care of {petName} instead of
-          answering all those dilemmas...
-        </p>
-        <a onClick={() => window.location.reload()}>try again with {petName}</a>{" "}
-        or <a href="/create">adopt a new pet</a>
-      </Window>
-    );
+    return null;
   }
 
   return (
