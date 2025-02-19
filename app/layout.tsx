@@ -13,6 +13,9 @@ const pixel = localFont({
 export const metadata: Metadata = {
   title: "principal",
   description: "moral dilemma tamagotchi",
+  icons: {
+    icon: "/icon.svg",
+  },
 };
 
 export default function RootLayout({
