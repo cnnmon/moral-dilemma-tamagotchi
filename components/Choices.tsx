@@ -21,7 +21,7 @@ export default function Choices({
         {choices.map((choice, index) => (
           <button
             key={index}
-            className="group relative w-full transition-all underline underline-offset-2 h-6"
+            className="group relative w-full transition-all underline underline-offset-2 h-8"
             style={{
               opacity: selectedChoice === index ? 1 : 0.5,
               backgroundColor:

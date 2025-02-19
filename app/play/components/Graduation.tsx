@@ -248,7 +248,7 @@ export default function Graduation({
         transition={{ duration: 0.5 }}
       >
         want to try again?{" "}
-        <a href="/play" className="text-indigo-600">
+        <a href="/create" className="text-indigo-600">
           adopt a new pet
         </a>
       </motion.div>

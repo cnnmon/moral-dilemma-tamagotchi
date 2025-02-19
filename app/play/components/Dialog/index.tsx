@@ -1,5 +1,4 @@
 import { DilemmaTemplate } from "@/constants/dilemmas";
-import Window from "@/components/Window";
 import { BaseStatsType } from "@/constants/base";
 import Choices from "@/components/Choices";
 import { useMutation, useQuery } from "convex/react";
@@ -7,7 +6,7 @@ import { api } from "@/convex/_generated/api";
 import { useEffect } from "react";
 import { Id } from "@/convex/_generated/dataModel";
 import { useState } from "react";
-import { Textarea } from "@/components/Textarea";
+import WindowTextarea from "@/components/WindowTextarea";
 
 export default function Dialog({
   rip,
@@ -113,7 +112,7 @@ export default function Dialog({
 
   return (
     <div className="flex w-full h-50">
-      <Window
+      <WindowTextarea
         title={`help ${petName} ! ! ! (；￣Д￣)`}
         isOpen={isOpen}
         setIsOpen={(isOpen) => {
@@ -122,6 +121,10 @@ export default function Dialog({
             setSelectedChoice(null);
           }
         }}
+        isTextareaOpen={selectedChoice !== null}
+        placeholder={`as ${petName}'s caretaker, explain your choice...`}
+        handleSubmit={handleSubmit}
+        isDisabled={disabled}
       >
         <Choices
           disabled={disabled}
@@ -133,25 +136,7 @@ export default function Dialog({
           }))}
           handleSubmit={handleSubmit}
         />
-      </Window>
-      <div className="absolute bottom-0 left-0 w-full flex justify-center items-center">
-        <div
-          className="w-full max-w-2xl p-8 transition-all duration-300"
-          style={{
-            opacity: isOpen && selectedChoice !== null ? 1 : 0,
-            transform:
-              isOpen && selectedChoice !== null
-                ? "translateY(0)"
-                : "translateY(-5px)",
-          }}
-        >
-          <Textarea
-            placeholder={`as ${petName}'s caretaker, explain your choice...`}
-            handleSubmit={(response) => handleSubmit(response)}
-            isDisabled={disabled}
-          />
-        </div>
-      </div>
+      </WindowTextarea>
     </div>
   );
 }

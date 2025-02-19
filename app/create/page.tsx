@@ -8,6 +8,7 @@ import { Background } from "@/components/Background";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Choices from "@/components/Choices";
+import WindowTextarea from "@/components/WindowTextarea";
 
 function Content() {
   const createPet = useMutation(api.pets.createPet);
@@ -67,7 +68,19 @@ function Content() {
           <Image src="/egg.gif" alt="egg" width={180} height={180} />
         </Background>
         <br />
-        <Window title="event! ( ˶°ㅁ°) !!">
+        <WindowTextarea
+          title="event! ( ˶°ㅁ°) ! ! !"
+          isOpen={true}
+          setIsOpen={(isOpen) => {
+            if (!isOpen) {
+              setSelectedChoice(null);
+            }
+          }}
+          isTextareaOpen={selectedChoice !== null}
+          placeholder="give it a cool name like uh... chadd."
+          handleSubmit={handleSubmit}
+          isDisabled={false}
+        >
           <Choices
             setSelectedChoice={setSelectedChoice}
             dilemmaText="you've found an egg. it seems sentient."
@@ -83,7 +96,7 @@ function Content() {
             ]}
             placeholderText="give it a cool name like uh... chadd."
           />
-        </Window>
+        </WindowTextarea>
       </motion.div>
     </>
   );
