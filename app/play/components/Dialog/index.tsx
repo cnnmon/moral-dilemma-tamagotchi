@@ -7,6 +7,7 @@ import { useEffect } from "react";
 import { Id } from "@/convex/_generated/dataModel";
 import { useState } from "react";
 import WindowTextarea from "@/components/WindowTextarea";
+import Window from "@/components/Window";
 
 export default function Dialog({
   rip,
@@ -105,7 +106,13 @@ export default function Dialog({
   if (rip) {
     return (
       <div className="flex w-full h-full">
-        <p>rip</p>
+        <Window title={`${petName} has died :(`}>
+          <p>maybe you should take better care of them next time...</p>
+          <div className="flex gap-2">
+            <a href="/play">try again?</a>
+            <a href="/create">new pet</a>
+          </div>
+        </Window>
       </div>
     );
   }

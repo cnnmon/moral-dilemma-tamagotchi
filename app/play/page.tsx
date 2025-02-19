@@ -82,7 +82,7 @@ export default function Play() {
       <HoverText hoverText={hoverText} cursorObject={cursorObject} />
 
       <AnimatePresence mode="wait">
-        <div className="flex flex-col gap-2 items-center justify-center sm:w-2xl w-full py-[20%] sm:p-0">
+        <div className="flex flex-col gap-2 items-center justify-center sm:w-2xl w-full py-[20%] sm:p-0 p-4">
           {/* Stats */}
           <motion.div
             key="stats"
@@ -129,7 +129,7 @@ export default function Play() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5 }}
-            className="flex w-full justify-center items-center pt-[-10%]"
+            className="flex w-full justify-center items-center pt-[-20%]"
           >
             <Viewport
               pet={pet}
@@ -150,14 +150,27 @@ export default function Play() {
             />
           </motion.div>
 
-          <div className="flex w-full flex-col sm:flex-row justify-between sm:p-0 gap-2">
-            <Actions
-              setCursorObject={setCursorObject}
-              setHoverText={setHoverText}
-              openDilemma={() => setDilemmaOpen(true)}
-              isProcessing={isProcessing}
-              rip={rip}
-            />
+          <div className="flex sm:flex-row flex-col w-full justify-between sm:p-0 gap-2">
+            <div className="flex flex-col gap-2">
+              <Actions
+                setCursorObject={setCursorObject}
+                setHoverText={setHoverText}
+                openDilemma={() => setDilemmaOpen(true)}
+                isProcessing={isProcessing}
+                rip={rip}
+              />
+              <motion.div
+                key="viewport"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: 0.5 }}
+                className="pointer-events-auto"
+              >
+                <div className="border-2 border-black p-2 bg-zinc-100 sm:max-w-3xs text-sm mb-2 w-full">
+                  {pet.name} is {evolution.description}. {pet.personality}{" "}
+                </div>
+              </motion.div>
+            </div>
             <AnimatePresence>
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
