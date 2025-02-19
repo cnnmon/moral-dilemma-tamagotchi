@@ -25,7 +25,7 @@ export default function WindowTextarea({
       <Window title={title} isOpen={isOpen} setIsOpen={setIsOpen}>
         {children}
       </Window>
-      <div className="absolute bottom-0 left-0 w-full flex justify-center items-center">
+      <div className="fixed bottom-0 left-0 w-full flex justify-center items-center z-100">
         <div
           className="w-full max-w-2xl p-8 transition-all duration-300"
           style={{

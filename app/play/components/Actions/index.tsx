@@ -23,12 +23,11 @@ const ActionButton = memo(function ActionButton({
 }) {
   return (
     <div
-      className={`flex justify-center items-center w-full md:w-14 h-11 group transition-opacity duration-300 ${
+      className={`flex justify-center items-center w-full sm:w-14 sm:h-14 h-11 group transition-opacity duration-300 ${
         !disabled && "hover:bg-zinc-200"
-      }`}
+      } ${isLast ? "border-0" : "border-r-2"}`}
       style={{
         cursor: disabled ? "not-allowed" : "pointer",
-        borderRight: isLast ? "none" : "2px solid black",
       }}
       onMouseEnter={() => !disabled && setHoverText(alt)}
       onMouseLeave={() => !disabled && setHoverText(null)}
@@ -95,7 +94,7 @@ export default function Actions({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: 0.2 }}
-      className="flex w-full sm:w-fit h-fit border-2 bg-zinc-100"
+      className="flex sm:w-fit h-fit border-2 bg-zinc-100"
     >
       {ACTIONS.map((action, index) => (
         <ActionButton

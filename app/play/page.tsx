@@ -78,69 +78,79 @@ export default function Play() {
   const timeFrame = getEvolutionTimeFrame(pet.age);
 
   return (
-    <AnimatePresence mode="wait">
-      <div className="flex flex-col gap-2 items-center justify-center sm:w-2xl w-full p-4 pt-8 sm:p-0">
-        <HoverText hoverText={hoverText} cursorObject={cursorObject} />
-        {/* Stats */}
-        <motion.div
-          key="stats"
-          className="sm:absolute w-full h-full flex flex-col sm:items-end sm:p-4 pointer-events-none"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.1 }}
-        >
-          <Stats pet={pet} baseStats={baseStats} />
-        </motion.div>
+    <>
+      <HoverText hoverText={hoverText} cursorObject={cursorObject} />
 
-        {/* Outcomes */}
-        <div className="fixed top-0 p-4 w-full max-w-lg z-10">
-          <AnimatePresence>
-            {outcomes.map((outcome) => (
-              <motion.div
-                key={outcome.id}
-                initial={{ opacity: 0, y: -20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.2 }}
-              >
-                <OutcomePopup
-                  message={outcome.text}
-                  exitable={outcome.exitable}
-                  onClose={() => removeOutcome(outcome.id)}
-                />
-              </motion.div>
-            ))}
-          </AnimatePresence>
-        </div>
+      <AnimatePresence mode="wait">
+        <div className="flex flex-col gap-2 items-center justify-center sm:w-2xl w-full py-[20%] sm:p-0">
+          {/* Stats */}
+          <motion.div
+            key="stats"
+            className="sm:absolute w-full h-full flex flex-col sm:items-end sm:p-4 pointer-events-none"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+          >
+            <Stats pet={pet} baseStats={baseStats} />
+            <p className="flex items-center text-zinc-500">
+              <b>level {pet.age}</b>—{evolution.id}
+            </p>
+            <p>
+              {pet.age < 2
+                ? `${seenDilemmas.length} / ${timeFrame} dilemmas til next evolution`
+                : `${seenDilemmas.length} / ${timeFrame} dilemmas til graduation`}
+            </p>
+          </motion.div>
 
-        {/* Viewport & dilemma */}
-        <motion.div
-          key="viewport"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.5 }}
-          className="flex w-full justify-center items-center"
-        >
-          <Viewport
-            pet={pet}
-            cursorObject={cursorObject}
-            poos={poos}
-            cleanupPoo={cleanupPoo}
-            incrementStat={(stat) => {
-              incrementStat(stat);
-              setCursorObject(null);
-            }}
-            rip={rip}
-            animation={animation}
-            clarifyingQuestion={
-              status === "has_unresolved_dilemma" ? stateResult.question : null
-            }
-          />
-        </motion.div>
+          {/* Outcomes */}
+          <div className="fixed top-0 p-4 w-full max-w-lg z-10">
+            <AnimatePresence>
+              {outcomes.map((outcome) => (
+                <motion.div
+                  key={outcome.id}
+                  initial={{ opacity: 0, y: -20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <OutcomePopup
+                    message={outcome.text}
+                    exitable={outcome.exitable}
+                    onClose={() => removeOutcome(outcome.id)}
+                  />
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          </div>
 
-        <div className="flex w-full flex-col sm:flex-row justify-between sm:p-0 gap-2">
-          {/* Actions */}
-          <div className="flex flex-col gap-2">
+          {/* Viewport & dilemma */}
+          <motion.div
+            key="viewport"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
+            className="flex w-full justify-center items-center pt-[-10%]"
+          >
+            <Viewport
+              pet={pet}
+              cursorObject={cursorObject}
+              poos={poos}
+              cleanupPoo={cleanupPoo}
+              incrementStat={(stat) => {
+                incrementStat(stat);
+                setCursorObject(null);
+              }}
+              rip={rip}
+              animation={animation}
+              clarifyingQuestion={
+                status === "has_unresolved_dilemma"
+                  ? stateResult.question
+                  : null
+              }
+            />
+          </motion.div>
+
+          <div className="flex w-full flex-col sm:flex-row justify-between sm:p-0 gap-2">
             <Actions
               setCursorObject={setCursorObject}
               setHoverText={setHoverText}
@@ -148,45 +158,31 @@ export default function Play() {
               isProcessing={isProcessing}
               rip={rip}
             />
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.3 }}
-            >
-              <p className="flex items-center text-zinc-500">
-                <b>level {pet.age}</b>—{evolution.id}
-              </p>
-              <p>
-                {pet.age < 2
-                  ? `${seenDilemmas.length} / ${timeFrame} dilemmas til next evolution`
-                  : `${seenDilemmas.length} / ${timeFrame} dilemmas til graduation`}
-              </p>
-            </motion.div>
+            <AnimatePresence>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 20 }}
+                transition={{ duration: 0.2 }}
+                className="flex w-full"
+              >
+                <Dialog
+                  isOpen={dilemmaOpen}
+                  setIsOpen={setDilemmaOpen}
+                  petName={pet.name}
+                  baseStats={baseStats}
+                  rip={rip}
+                  dilemma={currentDilemma}
+                  onOutcome={addOutcome}
+                  onProcessingStart={onDilemmaProcessingStart}
+                  onProcessingEnd={onDilemmaProcessingEnd}
+                  disabled={isProcessing}
+                />
+              </motion.div>
+            </AnimatePresence>
           </div>
-          <AnimatePresence>
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 20 }}
-              transition={{ duration: 0.2 }}
-              className="flex w-full"
-            >
-              <Dialog
-                isOpen={dilemmaOpen}
-                setIsOpen={setDilemmaOpen}
-                petName={pet.name}
-                baseStats={baseStats}
-                rip={rip}
-                dilemma={currentDilemma}
-                onOutcome={addOutcome}
-                onProcessingStart={onDilemmaProcessingStart}
-                onProcessingEnd={onDilemmaProcessingEnd}
-                disabled={isProcessing}
-              />
-            </motion.div>
-          </AnimatePresence>
         </div>
-      </div>
-    </AnimatePresence>
+      </AnimatePresence>
+    </>
   );
 }
