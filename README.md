@@ -1,5 +1,4 @@
-
-![principal2-small](https://github.com/user-attachments/assets/af1dc215-22a6-4f7f-8d7e-ae5f3da43075)
+![principal-feb18-2](https://github.com/user-attachments/assets/843f5f33-d079-4316-8352-15ffc44138e1)
 
 (this is a wip!)
 
