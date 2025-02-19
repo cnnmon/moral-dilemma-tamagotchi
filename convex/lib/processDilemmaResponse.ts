@@ -6,13 +6,13 @@ import { Doc } from '../_generated/dataModel';
 interface ProcessDilemmaParams {
   pet: Doc<"pets">;
   dilemma: DilemmaTemplate;
+  selectedChoice: string;
   responseText: string;
-  clarifyingQuestion?: string;
 }
 
 // get prompt based on pet's stage
 // trust in caretaker decreases as pet's stage increases
-function getPrompt(pet: Doc<"pets">, dilemma: DilemmaTemplate, responseText: string) {
+function getPrompt(pet: Doc<"pets">, dilemma: DilemmaTemplate, selectedChoice: string, responseText: string) {
   const age = pet.age;
   let prompt: string | undefined;
 
@@ -35,7 +35,8 @@ function getPrompt(pet: Doc<"pets">, dilemma: DilemmaTemplate, responseText: str
   const evolution = getEvolution(pet.evolutionId as EvolutionId);
   const formattedPrompt = prompt
     .replace('{dilemma}', dilemma.text)
-    .replace('{response}', responseText)
+    .replace('{choice}', selectedChoice)
+    .replace('{reason}', responseText)
     .replace('{personality}', pet.personality)
     .replace('{morals.compassion}', pet.moralStats.compassion.toString())
     .replace('{morals.retribution}', pet.moralStats.retribution.toString())
@@ -53,9 +54,10 @@ function getPrompt(pet: Doc<"pets">, dilemma: DilemmaTemplate, responseText: str
 export default async function processDilemmaResponse({
   pet,
   dilemma,
+  selectedChoice,
   responseText,
 }: ProcessDilemmaParams): Promise<unknown> {
-  const formattedPrompt = getPrompt(pet, dilemma, responseText);
+  const formattedPrompt = getPrompt(pet, dilemma, selectedChoice, responseText);
   console.log('🤖 Formatted prompt:', formattedPrompt);
 
   // call openai api

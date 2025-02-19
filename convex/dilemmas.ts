@@ -40,6 +40,7 @@ export const processDilemma = mutation({
       title: v.string(),
       text: v.string(),
     }),
+    selectedChoice: v.string(),
     responseText: v.string(),
     newBaseStats: v.object({
       health: v.number(),
@@ -92,7 +93,7 @@ export const processDilemma = mutation({
         userId: pet.userId,
         petId,
         title: args.dilemma.title,
-        responseText: args.responseText,
+        responseText: args.selectedChoice + ". " + args.responseText,
         // these will be updated when the action completes
         outcome: undefined,
         updatedMoralStats: undefined,
@@ -104,6 +105,7 @@ export const processDilemma = mutation({
 
     // schedule action to generate response from llm
     await ctx.scheduler.runAfter(0, internal.dilemmas.generateResponse, {
+      selectedChoice: args.selectedChoice,
       responseText: args.responseText,
       userId: pet.userId,
       dilemmaId,
@@ -121,6 +123,7 @@ export const processDilemma = mutation({
 // process response with openai
 export const generateResponse = internalAction({
   args: {
+    selectedChoice: v.string(),
     petId: v.id("pets"),
     dilemmaId: v.id("dilemmas"),
     dilemmaTitle: v.string(),
@@ -144,6 +147,7 @@ export const generateResponse = internalAction({
     const generatedResponse = await processDilemmaResponse({
       pet,
       dilemma: templateDilemma,
+      selectedChoice: args.selectedChoice,
       responseText: args.responseText,
     });
 

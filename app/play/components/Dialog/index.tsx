@@ -91,7 +91,8 @@ export default function Dialog({
           text: dilemmaText,
         },
         newBaseStats: baseStats,
-        responseText: dilemma.responses[selectedChoice].text + ". " + response,
+        selectedChoice: dilemma.responses[selectedChoice].text,
+        responseText: response,
       });
 
       // store the dilemma id to subscribe to updates
