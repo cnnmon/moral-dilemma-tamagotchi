@@ -88,7 +88,7 @@ export default function Graduation({
         transition={{ duration: 0.5 }}
       >
         <Window title={`evolutions`}>
-          <div className="space-y-6 p-2 text-left">
+          <div className="space-y-6 text-left">
             {evolutions.map((evolution, index) => {
               const stage = 3 - index;
               const isFinal = stage === 3;
@@ -122,10 +122,7 @@ export default function Graduation({
         transition={{ duration: 0.5 }}
       >
         <Window title="morality">
-          <div className="flex flex-col gap-4 p-2 w-full">
-            <p className="text-sm italic text-zinc-500 w-40">
-              after answering so many dilemmas, {pet.name} is ...
-            </p>
+          <div className="flex flex-col gap-4 w-full">
             {Object.entries(pet.moralStats).map(([key, value], index) => {
               const dimension = key as MoralDimensions;
               const trait = attributes[dimension];

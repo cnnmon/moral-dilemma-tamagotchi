@@ -1,15 +1,13 @@
 "use client";
 
-import { Doc } from "@/convex/_generated/dataModel";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { api } from "@/convex/_generated/api";
 import { useQuery } from "convex/react";
 
-export default function Menu({ pet }: { pet?: Doc<"pets"> }) {
+export default function Menu() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [currentPath, setCurrentPath] = useState("");
-
   const currentPet = useQuery(api.pets.getActivePet);
 
   useEffect(() => {
@@ -17,7 +15,7 @@ export default function Menu({ pet }: { pet?: Doc<"pets"> }) {
   }, []);
 
   return (
-    <div className="fixed top-0 left-0 text-sm text-zinc-500 p-4">
+    <div className="fixed top-0 left-0 text-sm text-zinc-500 p-4 z-50">
       <div className="relative">
         <a
           onClick={() => setMenuOpen(!menuOpen)}
@@ -59,7 +57,11 @@ export default function Menu({ pet }: { pet?: Doc<"pets"> }) {
             animate={{ opacity: 1 }}
             transition={{ duration: 0.3, delay: 0.1 }}
           >
-            {` > ${currentPath}${pet ? ` > ${pet.name}` : ""}`}
+            {` > ${currentPath}${
+              currentPet && currentPath === "play"
+                ? ` > ${currentPet.name}`
+                : ""
+            }`}
           </motion.span>
         </AnimatePresence>
       </div>

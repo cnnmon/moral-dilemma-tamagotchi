@@ -1,14 +1,9 @@
-import { Textarea } from "./Textarea";
-
 export default function Choices({
   dilemmaText,
   choices,
-  placeholderText = "why?",
-  handleSubmit,
   disabled = false,
   selectedChoice,
   setSelectedChoice,
-  showTextbox = true,
 }: {
   dilemmaText: string;
   choices: { text: string }[];
@@ -26,7 +21,7 @@ export default function Choices({
         {choices.map((choice, index) => (
           <button
             key={index}
-            className="group relative w-full transition-all underline underline-offset-2 h-8"
+            className="group relative w-full transition-all underline underline-offset-2 h-6"
             style={{
               opacity: selectedChoice === index ? 1 : 0.5,
               backgroundColor:
@@ -37,11 +32,7 @@ export default function Choices({
             onClick={() => setSelectedChoice(index)}
           >
             <span
-              className={`
-            absolute left-0 top-1/2 -translate-y-1/2 opacity-0 transition-opacity pl-1
-            group-hover:opacity-100
-            ${selectedChoice === index ? "opacity-100" : ""}
-          `}
+              className={`absolute left-0 top-1/2 -translate-y-1/2 opacity-0 transition-opacity pl-1 group-hover:opacity-100 ${selectedChoice === index ? "opacity-100" : ""}`}
             >
               &gt;
             </span>
@@ -49,13 +40,6 @@ export default function Choices({
           </button>
         ))}
       </div>
-      {selectedChoice !== null && showTextbox && (
-        <Textarea
-          placeholder={placeholderText}
-          handleSubmit={(response) => handleSubmit(response)}
-          isDisabled={disabled}
-        />
-      )}
     </div>
   );
 }

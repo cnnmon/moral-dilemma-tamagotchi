@@ -1,24 +1,17 @@
 import { Doc } from "@/convex/_generated/dataModel";
 import { BaseStats } from "./BaseStats";
-import {
-  EvolutionId,
-  getEvolution,
-  getEvolutionTimeFrame,
-} from "@/constants/evolutions";
+import { EvolutionId, getEvolution } from "@/constants/evolutions";
 import { MoralStats } from "./MoralStats";
 import { BaseStatsType } from "@/constants/base";
 
 export default function Stats({
   pet,
   baseStats,
-  seenDilemmasCount,
 }: {
   pet: Doc<"pets">;
   baseStats: BaseStatsType;
-  seenDilemmasCount: number;
 }) {
   const evolution = getEvolution(pet.evolutionId as EvolutionId);
-  const timeFrame = getEvolutionTimeFrame(pet.age);
 
   return (
     <>
@@ -28,18 +21,7 @@ export default function Stats({
         </div>
       </div>
 
-      <div className="pointer-events-auto flex gap-4 justify-between">
-        <div className="sm:absolute sm:bottom-0 sm:left-0 sm:p-4">
-          <p className="flex items-center">
-            [<b>level {pet.age}</b>: {evolution.id}]
-          </p>
-          <p>
-            {pet.age < 2
-              ? `${seenDilemmasCount} / ${timeFrame} dilemmas til next evolution . . .`
-              : `${seenDilemmasCount} / ${timeFrame} dilemmas til graduation . . .`}
-          </p>
-        </div>
-
+      <div className="sm:absolute sm:left-0 sm:top-10 sm:px-4 pointer-events-auto flex gap-4 justify-between">
         <BaseStats baseStats={baseStats} />
       </div>
 

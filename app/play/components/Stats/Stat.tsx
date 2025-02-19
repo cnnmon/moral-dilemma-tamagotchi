@@ -3,7 +3,7 @@ export default function Stat({
   value, // out of 100
   dangerous,
   barStyle = { width: "100px" },
-  containerStyle = { justifyContent: "end" },
+  containerStyle = { justifyContent: "start" },
 }: {
   label: string;
   value: number;
@@ -13,9 +13,12 @@ export default function Stat({
 }) {
   const dangerousValue = dangerous ?? value < 25;
   return (
-    <div className="flex items-center mb-[-4px]" style={containerStyle}>
-      <p className="font-pixel">{label}</p>
-      <div className="ml-2 border-2 h-3 border-black" style={barStyle}>
+    <div
+      className="flex w-full justify-start items-center mb-[-4px]"
+      style={containerStyle}
+    >
+      <p className="font-pixel w-18">{label}</p>
+      <div className="border-2 h-3 border-black" style={barStyle}>
         <div
           className={`h-full ${dangerousValue ? "bg-red-500" : "bg-black"} transition-all duration-100`}
           style={{ width: `${value}%` }}

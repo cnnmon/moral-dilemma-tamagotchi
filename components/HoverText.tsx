@@ -27,7 +27,7 @@ export default function HoverText({
         <Image
           src={OBJECTS[cursorObject]}
           alt={cursorObject}
-          className="absolute z-50"
+          className="absolute"
           width={50}
           height={50}
           style={{

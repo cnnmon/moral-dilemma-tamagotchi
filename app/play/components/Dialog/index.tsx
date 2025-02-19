@@ -7,6 +7,7 @@ import { api } from "@/convex/_generated/api";
 import { useEffect } from "react";
 import { Id } from "@/convex/_generated/dataModel";
 import { useState } from "react";
+import { Textarea } from "@/components/Textarea";
 
 export default function Dialog({
   rip,
@@ -103,25 +104,54 @@ export default function Dialog({
   };
 
   if (rip) {
-    return null;
+    return (
+      <div className="flex w-full h-full">
+        <p>rip</p>
+      </div>
+    );
   }
 
   return (
-    <Window
-      title={`help ${petName} ! ! ! (；￣Д￣)`}
-      isOpen={isOpen}
-      setIsOpen={setIsOpen}
-    >
-      <Choices
-        disabled={disabled}
-        dilemmaText={dilemmaText}
-        selectedChoice={selectedChoice}
-        setSelectedChoice={setSelectedChoice}
-        choices={dilemma.responses.map((response) => ({
-          text: response.text.replace(/{pet}/g, petName),
-        }))}
-        handleSubmit={handleSubmit}
-      />
-    </Window>
+    <div className="flex w-full h-50">
+      <Window
+        title={`help ${petName} ! ! ! (；￣Д￣)`}
+        isOpen={isOpen}
+        setIsOpen={(isOpen) => {
+          setIsOpen(isOpen);
+          if (!isOpen) {
+            setSelectedChoice(null);
+          }
+        }}
+      >
+        <Choices
+          disabled={disabled}
+          dilemmaText={dilemmaText}
+          selectedChoice={selectedChoice}
+          setSelectedChoice={setSelectedChoice}
+          choices={dilemma.responses.map((response) => ({
+            text: response.text.replace(/{pet}/g, petName),
+          }))}
+          handleSubmit={handleSubmit}
+        />
+      </Window>
+      <div className="absolute bottom-0 left-0 w-full flex justify-center items-center">
+        <div
+          className="w-full max-w-2xl p-8 transition-all duration-300"
+          style={{
+            opacity: isOpen && selectedChoice !== null ? 1 : 0,
+            transform:
+              isOpen && selectedChoice !== null
+                ? "translateY(0)"
+                : "translateY(-5px)",
+          }}
+        >
+          <Textarea
+            placeholder={`as ${petName}'s caretaker, explain your choice...`}
+            handleSubmit={(response) => handleSubmit(response)}
+            isDisabled={disabled}
+          />
+        </div>
+      </div>
+    </div>
   );
 }

@@ -80,8 +80,8 @@ const Viewport = React.memo(function Viewport({
         <Image
           src={petSprite}
           alt="birb"
-          width={125}
-          height={125}
+          width={VIEWPORT_WIDTH / 4.5}
+          height={VIEWPORT_HEIGHT / 4.5}
           onMouseEnter={() => {
             if (cursorObject === "burger") {
               incrementStat(BaseStatKeys.hunger);

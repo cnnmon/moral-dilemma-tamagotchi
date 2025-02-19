@@ -3,8 +3,8 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import { memo } from "react";
 
-const WIDTH = 40;
-const HEIGHT = 40;
+const WIDTH = 35;
+const HEIGHT = 35;
 
 const ActionButton = memo(function ActionButton({
   src,
@@ -12,18 +12,23 @@ const ActionButton = memo(function ActionButton({
   onClick,
   disabled,
   setHoverText,
+  isLast,
 }: {
   src: string;
   alt: string;
   onClick: () => void;
   disabled: boolean;
   setHoverText: (text: string | null) => void;
+  isLast: boolean;
 }) {
   return (
     <div
-      className="flex justify-center items-center w-full md:w-13 h-13 p-2 group"
+      className={`flex justify-center items-center w-full md:w-14 h-11 group transition-opacity duration-300 ${
+        !disabled && "hover:bg-zinc-200"
+      }`}
       style={{
         cursor: disabled ? "not-allowed" : "pointer",
+        borderRight: isLast ? "none" : "2px solid black",
       }}
       onMouseEnter={() => !disabled && setHoverText(alt)}
       onMouseLeave={() => !disabled && setHoverText(null)}
@@ -31,7 +36,7 @@ const ActionButton = memo(function ActionButton({
     >
       <Image
         className={`no-drag ${
-          !disabled && "group-hover:scale-110 transition-all duration-300"
+          !disabled && "group-hover:scale-120 transition-all duration-300"
         }`}
         style={{
           opacity: disabled ? 0.5 : 1,
@@ -90,9 +95,9 @@ export default function Actions({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: 0.2 }}
-      className="flex flex-row items-center z-10 border-2 bg-zinc-100 md:flex-col justify-between"
+      className="flex w-full sm:w-fit h-fit border-2 bg-zinc-100"
     >
-      {ACTIONS.map((action) => (
+      {ACTIONS.map((action, index) => (
         <ActionButton
           key={action.src}
           src={action.src}
@@ -104,6 +109,7 @@ export default function Actions({
               : openDilemma()
           }
           setHoverText={setHoverText}
+          isLast={index === ACTIONS.length - 1}
         />
       ))}
     </motion.div>

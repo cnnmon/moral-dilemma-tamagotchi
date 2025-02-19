@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 
 const thinkingFlavorText = ["thinking...", "chewing on it...", "pondering..."];
+const MAX_LENGTH = 280;
 
 export function Textarea({
   placeholder,
@@ -42,15 +43,23 @@ export function Textarea({
           isDisabled ? "opacity-50 cursor-not-allowed" : ""
         }`}
         value={value}
-        onChange={(e) => setValue(e.target.value)}
+        onChange={(e) => {
+          if (e.target.value.length <= MAX_LENGTH) {
+            setValue(e.target.value);
+          }
+        }}
         onKeyDown={handleKeyPress}
         disabled={isDisabled}
         placeholder={placeholder}
+        maxLength={MAX_LENGTH}
       />
-      <div className="flex justify-end w-full">
-        <p className="text-zinc-400 text-sm mt-[-32px] pr-2 pb-2">
+      <div className="flex justify-between w-full text-zinc-400 text-xs mt-[-28px] px-2">
+        <p>
+          {value.length}/{MAX_LENGTH}
+        </p>
+        <p>
           {!isSubmitting ? (
-            <>enter to submit</>
+            <span>enter to submit</span>
           ) : (
             <span className="opacity-50 cursor-not-allowed pointer-events-none">
               {thinkingFlavorText[flavorTextIndex]}

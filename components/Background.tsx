@@ -2,8 +2,8 @@ import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { useMemo, useState } from "react";
 
-export const VIEWPORT_WIDTH = 570;
-export const VIEWPORT_HEIGHT = 230;
+export const VIEWPORT_WIDTH = 570 * 1.15;
+export const VIEWPORT_HEIGHT = 230 * 1.15;
 
 export function Background({
   backgroundSrcs,
