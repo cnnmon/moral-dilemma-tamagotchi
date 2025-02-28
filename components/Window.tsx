@@ -14,6 +14,7 @@ export default function Window({
       className="w-full border-2 border-black bg-zinc-100 transition-all duration-300 h-fit"
       style={{
         opacity: isOpen ? 1 : 0,
+        pointerEvents: isOpen ? "auto" : "none",
         transform: isOpen ? "translateY(0)" : "translateY(-20px)",
       }}
     >

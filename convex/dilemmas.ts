@@ -10,11 +10,14 @@ import { evolvePetIfNeeded } from "./lib/evolvePetIfNeeded";
 import { getAverageMoralStats } from "./lib/getAverageMoralStats";
 
 type ProcessedResponse = {
-  ok: boolean;
+  ok: true;
   override?: boolean;
-  outcome?: string;
-  stats?: Partial<MoralDimensionsType>;
-  personality?: string;
+  outcome: string;
+  stats: Partial<MoralDimensionsType>;
+  personality: string;
+} | {
+  ok: false;
+  outcome: string;
 };
 
 // get a saved dilemma by id
@@ -109,6 +112,7 @@ export const processDilemma = mutation({
       responseText: args.responseText,
       userId: pet.userId,
       dilemmaId,
+      existingOutcome: existingDilemma?.outcome,
       dilemmaTitle: args.dilemma.title,
       petId: pet._id,
       newBaseStats: args.newBaseStats,
@@ -128,6 +132,7 @@ export const generateResponse = internalAction({
     dilemmaId: v.id("dilemmas"),
     dilemmaTitle: v.string(),
     responseText: v.string(),
+    existingOutcome: v.optional(v.string()),
     userId: v.string(),
     newBaseStats: v.object({
       health: v.number(),
@@ -141,23 +146,43 @@ export const generateResponse = internalAction({
     if (!pet) {
       throw new Error("❌ No pet exists for " + args.userId);
     }
-
-    // process dilemma with the response text
-    const templateDilemma = dilemmaTemplates[args.dilemmaTitle];
-    const generatedResponse = await processDilemmaResponse({
-      pet,
-      dilemma: templateDilemma,
-      selectedChoice: args.selectedChoice,
-      responseText: args.responseText,
-    });
-
     // parse response by hand
-    const parsedResponse = JSON.parse(generatedResponse as string);
-    console.log("🔄 Validated response:", parsedResponse);
+    let parsedResponse: ProcessedResponse;
+    try {
+      // set up timeout for the operation
+      const timeoutPromise = new Promise<never>((_, reject) => {
+        setTimeout(() => reject(new Error("operation timed out")), 5000); // 5 second timeout
+      });
+      
+      // actual processing logic
+      const processingPromise = (async () => {
+        const dilemma = dilemmaTemplates[args.dilemmaTitle];
+        const generatedResponse = await processDilemmaResponse({
+          pet,
+          dilemma,
+          selectedChoice: args.selectedChoice,
+          responseText: args.responseText,
+        });
+        return JSON.parse(generatedResponse as string);
+      })();
+      
+      // race between timeout and actual processing
+      parsedResponse = await Promise.race([timeoutPromise, processingPromise]);
+    } catch (e) {
+      console.error("❌ unable to parse response from API", e);
+      parsedResponse = {
+        ok: false,
+        outcome: "my brain short-circuited. can you try again?",
+      };
+    }
 
+    // if the response is not ok, it is a clarifying question
     if (!parsedResponse.ok) {
-      // if the response is not ok, it is a clarifying question
       const clarifyingQuestion = parsedResponse.outcome;
+      // special case: we check if the "question" changes to see if we should reenable player input; because of this, we should never repeat the same question.
+      if (args.existingOutcome === clarifyingQuestion) {
+        parsedResponse.outcome = "oops, I got confused. could you rephrase that?";
+      }
       await ctx.runMutation(api.dilemmas.updateDilemmaAndPet, {
         dilemmaId: args.dilemmaId,
         petId: pet._id,

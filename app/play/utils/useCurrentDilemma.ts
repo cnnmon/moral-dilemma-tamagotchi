@@ -15,7 +15,7 @@ export function useCurrentDilemma({
   const [currentDilemma, setCurrentDilemma] = useState<DilemmaTemplate | null>(
     null
   );
-  const [isUnresolved, setIsUnresolved] = useState(false);
+  const [lastQuestion, setLastQuestion] = useState<string | null>(null);
 
   const handleSaveCurrentDilemma = useCallback((dilemma: DilemmaTemplate) => {
     setCurrentDilemma(dilemma);
@@ -49,39 +49,45 @@ export function useCurrentDilemma({
 
   const onDilemmaProcessingStart = () => {
     setIsProcessing(true);
-    setIsUnresolved(false);
+    localStorage.setItem(CURRENT_DILEMMA_KEY, JSON.stringify(currentDilemma));
   };
 
   const onDilemmaProcessingEnd = () => {
-    setIsProcessing(false);
-
     // clear current dilemma from storage to allow picking next one
+    setIsProcessing(false);
     localStorage.removeItem(CURRENT_DILEMMA_KEY);
     setCurrentDilemma(null);
+    setLastQuestion(null);
   };
 
   // handle dilemma selection and storage
   useEffect(() => {
+    console.log("stateResult", stateResult);
     if (!stateResult || stateResult.status === "graduated") return;
 
     // handle unresolved dilemma case
     if (stateResult.status === "has_unresolved_dilemma") {
+      console.log("has unresolved dilemma");
       handleSaveCurrentDilemma(stateResult.unresolvedDilemma);
-      if (!isUnresolved) {
+
+      // if a new question has been asked
+      // and we want to enable the user to respond
+      console.log("lastQuestion", lastQuestion);
+      console.log("stateResult.question", stateResult.question);
+      if (lastQuestion !== stateResult.question) {
         setIsProcessing(false);
-        setIsUnresolved(true);
+        setLastQuestion(stateResult.question);
       }
-      return;
     }
 
     // if we're processing a dilemma, don't change it
-    if (isProcessing) return;
+    else if (isProcessing) return;
 
     // try to load saved dilemma if we don't have one
-    if (!currentDilemma && stateResult.status === "has_dilemmas") {
+    else if (!currentDilemma && stateResult.status === "has_dilemmas") {
       loadCurrentDilemma(stateResult.unseenDilemmaTitles);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stateResult, currentDilemma]);
 
   return {

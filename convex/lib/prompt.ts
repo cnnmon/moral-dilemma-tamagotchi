@@ -51,7 +51,7 @@ const overallPersonalityRules = `
 - personality is ALWAYS in the third person.
 - update personality based on dilemmas.
 - include specific inferred learnings (e.g. "i feel guilty about workers suffering") rather than specific details from the dilemma itself. slowly combine learnings with existing personality over time.
-- allow personality to be machiavellian / "bad" if that's what the advice suggests.`;
+- allow personality to be morally bad if that's what the personality or advice suggests.`;
 
 // independent decision override
 const overrideResponse = `
@@ -90,6 +90,7 @@ example personality lines (add to existing personality):
 
 personality rules:
 - do not question the caretaker's advice, even if it's morally bad.
+- do question the caretaker if their reasoning is unclear or vague.
 ${overallPersonalityRules}
 - note if actions conflict with existing personality or stats but do not resist.
 - growing sense of self.
