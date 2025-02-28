@@ -30,6 +30,7 @@ export default function WindowTextarea({
           className="w-full max-w-2xl p-8 transition-all duration-300"
           style={{
             opacity: isOpen && isTextareaOpen ? 1 : 0,
+            pointerEvents: isOpen && isTextareaOpen ? "auto" : "none",
             transform:
               isOpen && isTextareaOpen ? "translateY(0)" : "translateY(-5px)",
           }}

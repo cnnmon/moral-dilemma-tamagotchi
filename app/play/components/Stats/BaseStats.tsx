@@ -1,5 +1,5 @@
 import Stat from "./Stat";
-import { BaseStatsType } from "@/constants/base";
+import { BaseStatKeys, BaseStatsType } from "@/constants/base";
 
 export function BaseStats({
   baseStats,
@@ -12,7 +12,7 @@ export function BaseStats({
 }) {
   return (
     <div>
-      {Object.keys(baseStats).map((key) => {
+      {Object.keys(BaseStatKeys).map((key) => {
         const statKey = key as keyof BaseStatsType;
         const decrement = recentDecrements[statKey] ?? 0;
         const increment = recentIncrements[statKey] ?? 0;

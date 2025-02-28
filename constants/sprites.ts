@@ -11,11 +11,11 @@ export const SPRITES = {
     [Animation.HAPPY]: "/birb/smol_happy.gif",
   },
   1: {
-    [Animation.IDLE]: "/birb/idle.gif",
-    [Animation.HAPPY]: "/birb/happy.gif",
+    [Animation.IDLE]: "/birb/old_idle.gif",
+    [Animation.HAPPY]: "/birb/old_happy.gif",
   },
   2: {
-    [Animation.IDLE]: "/birb/idle.gif",
-    [Animation.HAPPY]: "/birb/happy.gif",
+    [Animation.IDLE]: "/birb/old_idle.gif",
+    [Animation.HAPPY]: "/birb/old_happy.gif",
   },
 };

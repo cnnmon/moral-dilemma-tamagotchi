@@ -253,11 +253,12 @@ export const updateDilemmaAndPet = mutation({
         throw new Error("❌ Pet not found in database");
       }
 
-      // incl. evolutionId, age, and graduated bool
-      const evolutionAdditions = evolvePetIfNeeded(seenDilemmas.length, pet);
-
       // update moral stats by averaging all seen dilemma moral stats
       const averageMoralStats = getAverageMoralStats(seenDilemmas);
+
+      // incl. evolutionId, age, and graduated bool
+      const evolutionAdditions = evolvePetIfNeeded(seenDilemmas.length, pet, averageMoralStats);
+
       const updatedBaseStats = {
         ...pet.baseStats,
         ...(args.newBaseStats && {

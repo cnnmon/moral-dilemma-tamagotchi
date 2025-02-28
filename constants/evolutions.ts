@@ -2,9 +2,9 @@ import { MoralDimensions, MoralStatAttribute, attributes } from "./morals";
 
 // evolution time frames
 const evolutionTimeFrame = {
-  0: 6, // in age 0 until age 1 evolution
-  1: 10, // in age 1 until age 2 evollution
-  2: 14, // until graduation
+  0: 4, // in age 0 until age 1 evolution
+  1: 9, // in age 1 until age 2 evolution
+  2: 12, // until graduation
 }
 
 export function getEvolutionTimeFrame(age: number): number {
@@ -12,9 +12,9 @@ export function getEvolutionTimeFrame(age: number): number {
 }
 
 // evolution types
-export type Stage1EvolutionId = "harbinger" | "devout" | "watcher" | "loyalist" | "soldier" | "maverick";
+export type Stage1EvolutionId = "empath" | "devout" | "watcher" | "loyalist" | "soldier" | "maverick";
 
-export type Stage2EvolutionId = "monk" | "shepherd" | "arbiter" | "martyr" | "warden" | "wayfarer" | "mercenary" | "guardian" | "patrician" | "sovereign" | "cultleader" | "npc";
+export type Stage2EvolutionId = "monk" | "shepherd" | "arbiter" | "martyr" | "judge" | "vigilante" | "mercenary" | "guardian" | "patrician" | "sovereign" | "cultleader" | "npc";
 
 export type EvolutionId = "baby" | "graduated" | Stage1EvolutionId | Stage2EvolutionId;
 
@@ -41,18 +41,18 @@ type Stage3Evolution = {
   description: string;
 }
 
-type Evolution = Stage0Evolution | Stage1Evolution | Stage2Evolution | Stage3Evolution;
+export type Evolution = Stage0Evolution | Stage1Evolution | Stage2Evolution | Stage3Evolution;
 
 export const stage0Evolutions: Record<'baby', Stage0Evolution> = {
   baby: {
     id: "baby",
     description: "a naive baby bird, curious about the world",
     nextStages: {
-      [attributes[MoralDimensions.compassion].low]: "harbinger",
-      [attributes[MoralDimensions.purity].low]: "devout",
-      [attributes[MoralDimensions.retribution].low]: "watcher",
-      [attributes[MoralDimensions.devotion].low]: "loyalist",
-      [attributes[MoralDimensions.dominance].low]: "soldier",
+      [attributes[MoralDimensions.compassion].high]: "empath", // fixed from harbinger to empath
+      [attributes[MoralDimensions.purity].high]: "devout",
+      [attributes[MoralDimensions.retribution].high]: "watcher",
+      [attributes[MoralDimensions.devotion].high]: "loyalist",
+      [attributes[MoralDimensions.dominance].high]: "soldier",
       [attributes[MoralDimensions.ego].high]: "maverick",
     }
   }
@@ -60,8 +60,8 @@ export const stage0Evolutions: Record<'baby', Stage0Evolution> = {
 
 export const stage1Evolutions: Record<Stage1EvolutionId, Stage1Evolution> = {
   // empathetic (compassion) -> evolves based on devotion
-  harbinger: {
-    id: "harbinger",
+  empath: {
+    id: "empath",
     description: "a caring envoy who strives to help the world",
     nextStages: {
       [attributes[MoralDimensions.devotion].low]: "monk",
@@ -79,13 +79,13 @@ export const stage1Evolutions: Record<Stage1EvolutionId, Stage1Evolution> = {
     },
   },
 
-  // forgiveness (retribution) -> evolves based on dominance
+  // punishment (retribution) -> evolves based on dominance
   watcher: { 
     id: "watcher",
     description: "a observer who questions their place in justice",
     nextStages: {
-      [attributes[MoralDimensions.dominance].high]: "warden",
-      [attributes[MoralDimensions.dominance].low]: "wayfarer",
+      [attributes[MoralDimensions.dominance].high]: "judge",
+      [attributes[MoralDimensions.dominance].low]: "vigilante",
     },
   },
 
@@ -137,12 +137,12 @@ export const stage2Evolutions: Record<Stage2EvolutionId, Stage2Evolution> = {
     id: "martyr",
     description: "a selfless soul who takes on the suffering of others",
   },
-  warden: { // forgiving + authoritarian
-    id: "warden",
+  judge: { // punishing + authoritarian
+    id: "judge",
     description: "a strict but merciful enforcer",
   },
-  wayfarer: { // forgiving + autonomous
-    id: "wayfarer",
+  vigilante: { // punishing + autonomous
+    id: "vigilante",
     description: "a free spirit, healing and helping wherever they go",
   },
   mercenary: { // loyal + self-serving
@@ -171,6 +171,7 @@ export const stage2Evolutions: Record<Stage2EvolutionId, Stage2Evolution> = {
   },
 };
 
+// combine all evolutions into a single record
 const evolutions: Record<EvolutionId, Evolution> = {
   ...stage0Evolutions,
   ...stage1Evolutions,
@@ -185,8 +186,8 @@ export function getEvolution(id: EvolutionId): Evolution {
   return evolutions[id];
 }
 
-
-type EvolutionPath = {
+// type for evolution path data
+export type EvolutionPath = {
   stage: string;
   id: string;
   description: string;
@@ -197,16 +198,20 @@ type EvolutionPath = {
   };
 }
 
+// helper function to get stat information
 function getStatUsed(statKey: MoralStatAttribute): {
   dimension: MoralDimensions;
   value: 'high' | 'low';
   name: MoralStatAttribute;
 } {
+  // find which dimension this stat belongs to
   const dimension = Object.entries(attributes).find(([, attr]) => 
     attr.high === statKey || attr.low === statKey
   )?.[0] as MoralDimensions;
+  
+  // determine if it's a high or low value
   const value = attributes[dimension].high === statKey ? 'high' : 'low';
-  console.log(dimension, value, attributes[dimension][value]);
+  
   return {
     dimension,
     value,
@@ -214,18 +219,21 @@ function getStatUsed(statKey: MoralStatAttribute): {
   }
 }
 
+// get the full evolution path for a final evolution
 export function getEvolutions(finalEvolutionId: Stage2EvolutionId): EvolutionPath[] {
-  // add stage 2 evolution
+  // get stage 2 evolution
   const stage2Evolution = stage2Evolutions[finalEvolutionId];
+  if (!stage2Evolution) {
+    throw new Error(`invalid stage 2 evolution id: ${finalEvolutionId}`);
+  }
 
-  // find and add stage 1 evolution
+  // find stage 1 evolution and the stat that led to stage 2
   let stage1Evolution: Stage1Evolution | undefined;
   let stage2StatKey: MoralStatAttribute | undefined;
   
-  for (const stage1Id in stage1Evolutions) {
-    const evolution = stage1Evolutions[stage1Id as Stage1EvolutionId];
-    const entries = Object.entries(evolution.nextStages);
-    for (const [statKey, evolveId] of entries) {
+  // search through all stage 1 evolutions to find which one leads to our final evolution
+  for (const [, evolution] of Object.entries(stage1Evolutions)) {
+    for (const [statKey, evolveId] of Object.entries(evolution.nextStages)) {
       if (evolveId === finalEvolutionId) {
         stage1Evolution = evolution;
         stage2StatKey = statKey as MoralStatAttribute;
@@ -236,13 +244,12 @@ export function getEvolutions(finalEvolutionId: Stage2EvolutionId): EvolutionPat
   }
 
   if (!stage1Evolution || !stage2StatKey) {
-    throw new Error(`no previous evolution found for ${finalEvolutionId}`);
+    throw new Error(`no stage 1 evolution found for ${finalEvolutionId}`);
   }
 
-  // find stage 0 stat used
+  // find which stat from stage 0 led to stage 1
   let stage1StatKey: MoralStatAttribute | undefined;
-  const entries = Object.entries(stage0Evolutions.baby.nextStages);
-  for (const [statKey, evolveId] of entries) {
+  for (const [statKey, evolveId] of Object.entries(stage0Evolutions.baby.nextStages)) {
     if (evolveId === stage1Evolution.id) {
       stage1StatKey = statKey as MoralStatAttribute;
       break;
@@ -253,6 +260,7 @@ export function getEvolutions(finalEvolutionId: Stage2EvolutionId): EvolutionPat
     throw new Error(`no stage 0 stat found for ${stage1Evolution.id}`);
   }
 
+  // build the complete evolution path
   return [
     {
       stage: "stage 2",

@@ -141,7 +141,7 @@ export default function Play() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5 }}
-            className="flex w-full justify-center items-center pt-[10%]"
+            className="flex w-full justify-center items-center"
           >
             <Viewport
               pet={pet}

@@ -1,11 +1,11 @@
 import { EvolutionId, getEvolution, getEvolutionTimeFrame, stage0Evolutions, Stage1EvolutionId, stage1Evolutions } from "../../constants/evolutions";
-import { MoralStatAttribute, getMoralStatsWritten } from "../../constants/morals";
+import { MoralDimensionsType, MoralStatAttribute, getMoralStatsWritten } from "../../constants/morals";
 import { Doc } from "../_generated/dataModel";
 
 function evolveFromBabyToStage1(moralStatsWritten: { key: string; description: string; percentage: number }[]): EvolutionId {
   for (const attribute of moralStatsWritten) {
     const currentEvolution = stage0Evolutions.baby;
-    const nextEvolution = currentEvolution.nextStages[attribute.description as MoralStatAttribute];
+    const nextEvolution = currentEvolution.nextStages?.[attribute.description as MoralStatAttribute];
     if (nextEvolution) {
       return nextEvolution;
     }
@@ -16,7 +16,7 @@ function evolveFromBabyToStage1(moralStatsWritten: { key: string; description: s
 function evolveFromStage1ToStage2(currentEvolutionId: Stage1EvolutionId, moralStatsWritten: { key: string; description: string; percentage: number }[]): EvolutionId {
   const currentEvolution = stage1Evolutions[currentEvolutionId];
   for (const attribute of moralStatsWritten) {
-    const nextEvolution = currentEvolution.nextStages[attribute.description as MoralStatAttribute];
+    const nextEvolution = currentEvolution.nextStages?.[attribute.description as MoralStatAttribute];
     if (nextEvolution) {
       return nextEvolution;
     }
@@ -24,7 +24,7 @@ function evolveFromStage1ToStage2(currentEvolutionId: Stage1EvolutionId, moralSt
   throw new Error(`No evolution determined for ${JSON.stringify(moralStatsWritten)}`);
 }
 
-export function evolvePetIfNeeded(seenDilemmasCount: number, pet: Doc<"pets">): Doc<"pets"> | undefined {
+export function evolvePetIfNeeded(seenDilemmasCount: number, pet: Doc<"pets">, averageMoralStats: MoralDimensionsType): Doc<"pets"> | undefined {
   const timeFrame = getEvolutionTimeFrame(pet.age);
   console.log("🐦 timeFrame vs seenDilemmasCount", timeFrame, seenDilemmasCount);
   if (seenDilemmasCount < timeFrame) {
@@ -32,7 +32,7 @@ export function evolvePetIfNeeded(seenDilemmasCount: number, pet: Doc<"pets">): 
   }
 
   const currentEvolution = getEvolution(pet.evolutionId as EvolutionId);
-  const moralStatsWritten = getMoralStatsWritten(pet.moralStats, true);
+  const moralStatsWritten = getMoralStatsWritten(averageMoralStats, true);
   console.log("🐦 moralStatsWritten", JSON.stringify(moralStatsWritten));
 
   let newEvolutionId: EvolutionId | undefined;
