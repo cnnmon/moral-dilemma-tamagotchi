@@ -80,8 +80,8 @@ const Viewport = React.memo(function Viewport({
         <Image
           src={petSprite}
           alt="birb"
-          width={VIEWPORT_WIDTH / 4.5}
-          height={VIEWPORT_HEIGHT / 4.5}
+          width={VIEWPORT_WIDTH / 5}
+          height={VIEWPORT_HEIGHT / 5}
           onMouseEnter={() => {
             if (cursorObject === "burger") {
               incrementStat(BaseStatKeys.hunger);
@@ -92,7 +92,7 @@ const Viewport = React.memo(function Viewport({
             }
           }}
           priority
-          className="translate-y-[22%]"
+          className="translate-y-[30%]"
         />
       </Background>
     </div>

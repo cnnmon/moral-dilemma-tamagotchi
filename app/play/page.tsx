@@ -29,7 +29,14 @@ export default function Play() {
   const [dilemmaOpen, setDilemmaOpen] = useState(false);
 
   const stateResult = useQuery(api.state.getActiveGameState);
-  const { baseStats, incrementStat, poos, cleanupPoo } = useBaseStats({
+  const {
+    baseStats,
+    incrementStat,
+    poos,
+    cleanupPoo,
+    recentDecrements,
+    recentIncrements,
+  } = useBaseStats({
     stateResult,
     setAnimation,
     setRip,
@@ -91,7 +98,12 @@ export default function Play() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
           >
-            <Stats pet={pet} baseStats={baseStats} />
+            <Stats
+              pet={pet}
+              baseStats={baseStats}
+              recentDecrements={recentDecrements}
+              recentIncrements={recentIncrements}
+            />
             <p className="flex items-center text-zinc-500">
               <b>level {pet.age}</b>—{evolution.id}
             </p>

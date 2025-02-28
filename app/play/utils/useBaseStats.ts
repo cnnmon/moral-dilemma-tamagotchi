@@ -6,8 +6,8 @@ import { VIEWPORT_HEIGHT, VIEWPORT_WIDTH } from "@/components/Background";
 
 const POO_STORAGE_KEY = "poos";
 
-const DECREMENT_INTERVAL_MS = 5000;
-const BASE_STATS_DECREMENT_VALUE = 0.3;
+const DECREMENT_INTERVAL_MS = 10000;
+const BASE_STATS_DECREMENT_VALUE = 0.5;
 const MAX_POOS = 10;
 const POO_CHANCE = 0.05;
 
@@ -38,6 +38,9 @@ export default function useBaseStats({
     happiness: 5,
     sanity: 5,
   });
+  // track recent stat changes for animation
+  const [recentDecrements, setRecentDecrements] = useState<Partial<Record<keyof BaseStatsType, number>>>({});
+  const [recentIncrements, setRecentIncrements] = useState<Partial<Record<keyof BaseStatsType, number>>>({});
 
   // on mount, set the poos to saved poos
   useEffect(() => {
@@ -74,6 +77,7 @@ export default function useBaseStats({
 
       // decrement stats
       setBaseStats((prevStats: BaseStatsType) => {
+        const decrements: Partial<Record<keyof BaseStatsType, number>> = {};
         const newStats = {
           health: Math.max(
             0,
@@ -92,6 +96,24 @@ export default function useBaseStats({
             prevStats.sanity - BASE_STATS_DECREMENT_VALUE * Math.random()
           ),
         };
+
+        // calculate decrements for animation
+        Object.keys(newStats).forEach((key) => {
+          const statKey = key as keyof BaseStatsType;
+          const decrement = prevStats[statKey] - newStats[statKey];
+          if (decrement > 0) {
+            decrements[statKey] = parseFloat(decrement.toFixed(2));
+          }
+        });
+
+        // set recent decrements for animation
+        if (Object.keys(decrements).length > 0) {
+          setRecentDecrements(decrements);
+          // clear decrements after animation time
+          setTimeout(() => {
+            setRecentDecrements({});
+          }, 2000);
+        }
 
         // check if any stat has reached zero -> game over
         if (
@@ -130,10 +152,24 @@ export default function useBaseStats({
     }, 3000);
 
     // increment stat
-    setBaseStats((prevStats: BaseStatsType) => ({
-      ...prevStats,
-      [stat]: Math.min(prevStats[stat] + 3, 10),
-    }));
+    setBaseStats((prevStats: BaseStatsType) => {
+      const incrementAmount = 3;
+      const newValue = Math.min(prevStats[stat] + incrementAmount, 10);
+      
+      // track increment for animation
+      const increments = { [stat]: incrementAmount };
+      setRecentIncrements(increments);
+      
+      // clear increments after animation time
+      setTimeout(() => {
+        setRecentIncrements({});
+      }, 2000);
+      
+      return {
+        ...prevStats,
+        [stat]: newValue,
+      };
+    });
   };
 
   const cleanupPoo = (id: number) => {
@@ -149,5 +185,7 @@ export default function useBaseStats({
     incrementStat,
     poos,
     cleanupPoo,
+    recentDecrements,
+    recentIncrements,
   };
 }

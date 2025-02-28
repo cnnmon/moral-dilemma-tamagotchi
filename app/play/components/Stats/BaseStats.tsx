@@ -1,13 +1,33 @@
 import Stat from "./Stat";
 import { BaseStatsType } from "@/constants/base";
 
-export function BaseStats({ baseStats }: { baseStats: BaseStatsType }) {
+export function BaseStats({
+  baseStats,
+  recentDecrements = {},
+  recentIncrements = {},
+}: {
+  baseStats: BaseStatsType;
+  recentDecrements?: Partial<Record<keyof BaseStatsType, number>>;
+  recentIncrements?: Partial<Record<keyof BaseStatsType, number>>;
+}) {
   return (
     <div>
-      <Stat label="health" value={baseStats.health * 10} />
-      <Stat label="hunger" value={baseStats.hunger * 10} />
-      <Stat label="happiness" value={baseStats.happiness * 10} />
-      <Stat label="sanity" value={baseStats.sanity * 10} />
+      {Object.keys(baseStats).map((key) => {
+        const statKey = key as keyof BaseStatsType;
+        const decrement = recentDecrements[statKey] ?? 0;
+        const increment = recentIncrements[statKey] ?? 0;
+
+        return (
+          <div key={statKey} className="flex items-center">
+            <Stat
+              label={statKey}
+              value={baseStats[statKey] * 10}
+              decrement={decrement}
+              increment={increment}
+            />
+          </div>
+        );
+      })}
     </div>
   );
 }
