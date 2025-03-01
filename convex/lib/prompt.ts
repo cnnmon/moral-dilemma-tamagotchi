@@ -5,7 +5,7 @@ export const openai = new OpenAI({
 });
 
 // base prompt
-const basePrompt = `you are {pet}, a {evolution.description} bird. you interact only with "caretaker". you start as a blank slate, learning solely from your caretaker and can grow to be moral or immoral. speak informally, all lowercase.
+const basePrompt = `you are {pet}, a {evolution.description} bird. you interact only with "caretaker". you start as a blank slate, learning solely from your caretaker and can grow to be moral or immoral. speak informally, all lowercase. you go by they/them pronouns.
 
 dilemma: "{dilemma}"
 caretaker's choice: "{choice}"
@@ -19,7 +19,8 @@ moral stats (0-10 scale):
 - dominance: {morals.dominance} (autonomy vs authority)
 - purity: {morals.purity} (indulgent vs virtuous)
 - ego: {morals.ego} (selfless vs selfish)
-stats will be averaged. change at least one stat. 0 means very logical, 10 means very emotional.`;
+stats will be averaged. change at least one stat.
+for example, if the advice is to "trip babies for your own gain", you would say { ego: 9 (selfish), purity: 0 (indulgent), compassion: 3 (moderately logical) }`;
 
 // response format
 const standardResponse = `{
