@@ -25,6 +25,7 @@ const Viewport = React.memo(function Viewport({
   poos,
   cleanupPoo,
   incrementStat,
+  baseStats,
 }: {
   pet: Doc<"pets">;
   clarifyingQuestion: string | null;
@@ -34,6 +35,7 @@ const Viewport = React.memo(function Viewport({
   poos: PooType[];
   cleanupPoo: (id: number) => void;
   incrementStat: (stat: keyof BaseStatsType) => void;
+  baseStats: BaseStatsType;
 }) {
   const [prevSprite, setPrevSprite] = useState<string | null>(null);
   const [isTransforming, setIsTransforming] = useState(false);
@@ -67,15 +69,19 @@ const Viewport = React.memo(function Viewport({
 
   // add shake effect when stats are low
   useEffect(() => {
-    // shake when hunger is low
-    if (pet.baseStats?.hunger < 2 && !isShaking) {
+    // shake when any stat is low
+    // but not entirely 0
+    if (
+      (baseStats.hunger < 2 && baseStats.hunger > 0) ||
+      (baseStats.health < 2 && baseStats.health > 0) ||
+      (baseStats.happiness < 2 && baseStats.happiness > 0) ||
+      (baseStats.sanity < 2 && baseStats.sanity > 0)
+    ) {
       setIsShaking(true);
-      const timer = setTimeout(() => {
-        setIsShaking(false);
-      }, 1000);
-      return () => clearTimeout(timer);
+    } else {
+      setIsShaking(false);
     }
-  }, [pet.baseStats?.hunger, isShaking]);
+  }, [baseStats, isShaking]);
 
   return (
     <div
@@ -92,7 +98,7 @@ const Viewport = React.memo(function Viewport({
         return (
           <div
             key={id}
-            className="absolute z-10 cursor-pointer hover:opacity-50 transition-opacity"
+            className="absolute z-20 cursor-pointer hover:opacity-50 transition-opacity"
             style={{
               transform: `translate(${left}px, ${top}px)`,
             }}
@@ -141,7 +147,7 @@ const Viewport = React.memo(function Viewport({
                   : undefined,
               }}
               transition={{
-                duration: isShaking ? 0.5 : 0.5,
+                duration: 0.5,
                 ease: isShaking ? "easeInOut" : "easeOut",
                 times: isShaking ? [0, 0.2, 0.4, 0.6, 0.8, 1] : undefined,
               }}

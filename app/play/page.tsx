@@ -159,6 +159,7 @@ export default function Play() {
                   ? stateResult.question
                   : null
               }
+              baseStats={baseStats}
             />
           </motion.div>
 
