@@ -8,6 +8,15 @@ export enum MoralDimensions {
   ego = "ego",
 }
 
+export const DEFAULT_AVERAGE_STATS: MoralDimensionsType = {
+  compassion: 5,
+  retribution: 5,
+  devotion: 5,
+  dominance: 5,
+  purity: 5,
+  ego: 5,
+};
+
 export type MoralStatAttribute =
   | "logical"
   | "emotional"
@@ -56,40 +65,49 @@ type MoralStatsWritten = {
   value: number;
 };
 
+export function parseMoralStats(moralStats: MoralDimensionsType): MoralStatsWritten[] {
+  return Object.entries(moralStats).reduce((acc, [key, value]) => {
+    const range = attributes[key as MoralDimensions];
+    const description = value > 5 ? range.high : range.low;
+    acc.push({
+      key,
+      description,
+      percentage: Math.abs(value - 5) * 20,
+      value
+    });
+    return acc;
+  }, [] as MoralStatsWritten[]);
+}
+
 export function getMoralStatsWritten(
   moralStats: MoralDimensionsType,
   forEvolution: boolean = false // if true, only returns the attribute & returns all attributes; used to determine best next evolution
 ): MoralStatsWritten[] {
-  const stats = Object.entries(moralStats).reduce(
-    (acc, [key, value]) => {
-      if (value === 5 && !forEvolution) {
+  // use parseMoralStats to get the base stats
+  const moralStatsParsed = parseMoralStats(moralStats);
+  console.log("🐦 moralStatsParsed", moralStatsParsed);
+  
+  // filter and format the stats
+  const stats = moralStatsParsed.reduce(
+    (acc, stat) => {
+      if (stat.value === 5 && !forEvolution) {
         return acc;
       }
 
       let prefix: string;
-      if (value > 7 || value < 3) {
+      if (stat.value > 7 || stat.value < 3) {
         prefix = "highly ";
-      } else if (value > 6 || value < 4) {
+      } else if (stat.value > 6 || stat.value < 4) {
         prefix = "moderately ";
       } else {
         prefix = "mildly ";
       }
 
-      const range = attributes[key as MoralDimensions];
-      let description: string;
-      if (value > 5) {
-        description = range.high;
-      } else {
-        description = range.low;
-      }
-
-      const percentage = Math.abs(value - 5) * 20;
-
       acc.push({
-        key,
-        description: `${!forEvolution ? prefix : ""}${description}`,
-        percentage,
-        value,
+        key: stat.key,
+        description: `${!forEvolution ? prefix : ""}${stat.description}`,
+        percentage: stat.percentage,
+        value: stat.value,
       });
 
       return acc;

@@ -115,7 +115,7 @@ export default function Play() {
           </motion.div>
 
           {/* Outcomes */}
-          <div className="fixed top-0 p-4 w-full max-w-lg z-10">
+          <div className="fixed top-0 p-4 w-full max-w-lg z-30">
             <AnimatePresence>
               {outcomes.map((outcome) => (
                 <motion.div

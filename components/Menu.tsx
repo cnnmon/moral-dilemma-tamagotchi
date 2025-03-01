@@ -15,7 +15,7 @@ export default function Menu() {
   }, []);
 
   return (
-    <div className="fixed top-0 left-0 text-sm text-zinc-500 p-4 z-50">
+    <div className="fixed top-0 left-0 text-sm text-zinc-500 p-4 z-10">
       <div className="relative">
         <a
           onClick={() => setMenuOpen(!menuOpen)}
@@ -35,7 +35,7 @@ export default function Menu() {
             >
               {currentPath !== "create" && (
                 <a href="/create" className="block py-1 hover:bg-zinc-100">
-                  new game
+                  adopt a new pet
                 </a>
               )}
               {currentPet && currentPath !== "play" && (

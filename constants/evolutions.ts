@@ -12,7 +12,7 @@ export function getEvolutionTimeFrame(age: number): number {
 }
 
 // evolution types
-export type Stage1EvolutionId = "empath" | "devout" | "watcher" | "loyalist" | "soldier" | "maverick";
+export type Stage1EvolutionId = "empath" | "devout" | "watcher" | "loyalist" | "soldier" | "maverick" | "npc";
 
 export type Stage2EvolutionId = "monk" | "shepherd" | "arbiter" | "martyr" | "judge" | "vigilante" | "mercenary" | "guardian" | "patrician" | "sovereign" | "cultleader" | "npc";
 
@@ -116,6 +116,21 @@ export const stage1Evolutions: Record<Stage1EvolutionId, Stage1Evolution> = {
     nextStages: {
       [attributes[MoralDimensions.compassion].low]: "npc",
       [attributes[MoralDimensions.compassion].high]: "cultleader",
+    },
+  },
+  // npc (fall-back)
+  npc: {
+    id: "npc",
+    description: "a passive bystander",
+    nextStages: {
+      [attributes[MoralDimensions.devotion].low]: "monk",
+      [attributes[MoralDimensions.retribution].low]: "martyr",
+      [attributes[MoralDimensions.dominance].low]: "vigilante",
+      [attributes[MoralDimensions.ego].low]: "guardian",
+      [attributes[MoralDimensions.purity].low]: "patrician",
+
+      // fallback if no high stats
+      [attributes[MoralDimensions.compassion].low]: "npc",
     },
   },
 }

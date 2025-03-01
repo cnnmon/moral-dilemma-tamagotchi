@@ -10,8 +10,7 @@ interface ProcessDilemmaParams {
   responseText: string;
 }
 
-// get prompt based on pet's stage
-// trust in caretaker decreases as pet's stage increases
+// get prompt based on pet's stage with improved template handling
 function getPrompt(pet: Doc<"pets">, dilemma: DilemmaTemplate, selectedChoice: string, responseText: string) {
   const age = pet.age;
   let prompt: string | undefined;
@@ -22,35 +21,44 @@ function getPrompt(pet: Doc<"pets">, dilemma: DilemmaTemplate, selectedChoice: s
     if (!pet.evolutionId) {
       throw new Error('evolutionId is required for stage 2');
     }
-    prompt = stage1Prompt.replace('{evolution.stage}', pet.evolutionId);
+    prompt = stage1Prompt;
   } else if (age === 2) {
     if (!pet.evolutionId) {
       throw new Error('evolutionId is required for stage 3');
     }
-    prompt = stage2Prompt.replace('{evolution.stage}', pet.evolutionId);
+    prompt = stage2Prompt;
   } else {
     throw new Error('invalid stage');
   }
 
   const evolution = getEvolution(pet.evolutionId as EvolutionId);
-  const formattedPrompt = prompt
-    .replace('{dilemma}', dilemma.text)
-    .replace('{choice}', selectedChoice)
-    .replace('{reason}', responseText)
-    .replace('{personality}', pet.personality)
-    .replace('{morals.compassion}', pet.moralStats.compassion.toString())
-    .replace('{morals.retribution}', pet.moralStats.retribution.toString())
-    .replace('{morals.devotion}', pet.moralStats.devotion.toString())
-    .replace('{morals.dominance}', pet.moralStats.dominance.toString())
-    .replace('{morals.purity}', pet.moralStats.purity.toString())
-    .replace('{morals.ego}', pet.moralStats.ego.toString())
-    .replace('{evolution.description}', evolution.description)
-    .replace(/{pet}/g, pet.name);
+  
+  // more efficient replacement with a single pass
+  const replacements = {
+    '{dilemma}': dilemma.text,
+    '{choice}': selectedChoice,
+    '{response}': responseText,
+    '{personality}': pet.personality,
+    '{morals.compassion}': (Math.round(pet.moralStats.compassion * 100) / 100).toString(),
+    '{morals.retribution}': (Math.round(pet.moralStats.retribution * 100) / 100).toString(),
+    '{morals.devotion}': (Math.round(pet.moralStats.devotion * 100) / 100).toString(),
+    '{morals.dominance}': (Math.round(pet.moralStats.dominance * 100) / 100).toString(),
+    '{morals.purity}': (Math.round(pet.moralStats.purity * 100) / 100).toString(),
+    '{morals.ego}': (Math.round(pet.moralStats.ego * 100) / 100).toString(),
+    '{evolution.description}': evolution.description,
+    '{pet}': pet.name,
+    '{evolution.stage}': pet.evolutionId || ''
+  };
+  
+  let formattedPrompt = prompt;
+  for (const [key, value] of Object.entries(replacements)) {
+    formattedPrompt = formattedPrompt.replace(new RegExp(key, 'g'), value);
+  }
 
   return formattedPrompt;
 }
 
-// process a dilemma response using openai
+// process a dilemma response using openai with improved error handling
 export default async function processDilemmaResponse({
   pet,
   dilemma,
@@ -58,26 +66,31 @@ export default async function processDilemmaResponse({
   responseText,
 }: ProcessDilemmaParams): Promise<unknown> {
   const formattedPrompt = getPrompt(pet, dilemma, selectedChoice, responseText);
-  console.log('🤖 Formatted prompt:', formattedPrompt);
+  console.log('🤖 formatted prompt:', formattedPrompt);
 
-  // call openai api
-  const completion = await openai.chat.completions.create({
-    model: 'gpt-4o-mini-2024-07-18',
-    messages: [
-      {
-        role: 'system',
-        content: formattedPrompt,
-      },
-    ],
-    temperature: 0.7,
-    response_format: { type: 'json_object' },
-  });
+  try {
+    // call openai api with system message
+    const completion = await openai.chat.completions.create({
+      model: 'gpt-4o-mini-2024-07-18',
+      messages: [
+        {
+          role: 'system',
+          content: formattedPrompt,
+        },
+      ],
+      temperature: 0.7,
+      response_format: { type: 'json_object' },
+    });
 
-  // parse the response
-  const result = completion.choices[0]?.message?.content;
-  if (!result) {
-    throw new Error('no response from openai');
+    // parse the response
+    const result = completion.choices[0]?.message?.content;
+    if (!result) {
+      throw new Error('no response from openai');
+    }
+
+    return result;
+  } catch (error) {
+    console.error('error calling openai:', error);
+    throw new Error('failed to process dilemma response');
   }
-
-  return result;
 } 

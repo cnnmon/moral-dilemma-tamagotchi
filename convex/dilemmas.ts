@@ -3,7 +3,7 @@ import { mutation, query, internalAction } from "./_generated/server";
 import { api, internal } from "./_generated/api";
 import { getUserAndPetId } from "./user";
 import { dilemmaTemplates } from "../constants/dilemmas";
-import { MoralDimensionsType } from "../constants/morals";
+import { DEFAULT_AVERAGE_STATS, MoralDimensionsType } from "../constants/morals";
 import processDilemmaResponse from "./lib/processDilemmaResponse";
 import { Id } from "./_generated/dataModel";
 import { evolvePetIfNeeded } from "./lib/evolvePetIfNeeded";
@@ -168,6 +168,7 @@ export const generateResponse = internalAction({
       
       // race between timeout and actual processing
       parsedResponse = await Promise.race([timeoutPromise, processingPromise]);
+      console.log("🤖 Parsed response:", parsedResponse);
     } catch (e) {
       console.error("❌ unable to parse response from API", e);
       parsedResponse = {
@@ -196,7 +197,7 @@ export const generateResponse = internalAction({
         petId: pet._id,
         outcome: parsedResponse.outcome,
         updatedMoralStats: parsedResponse.stats as
-          | MoralDimensionsType
+          | Partial<MoralDimensionsType>
           | undefined,
         updatedPersonality: parsedResponse.personality,
         resolved: true,
@@ -210,7 +211,7 @@ export const generateResponse = internalAction({
         petId: pet._id,
         outcome: parsedResponse.outcome,
         updatedMoralStats: parsedResponse.stats as
-          | MoralDimensionsType
+          | Partial<MoralDimensionsType>
           | undefined,
         updatedPersonality: parsedResponse.personality,
         resolved: true,
@@ -237,12 +238,12 @@ export const updateDilemmaAndPet = mutation({
     ),
     updatedMoralStats: v.optional(
       v.object({
-        compassion: v.number(),
-        retribution: v.number(),
-        devotion: v.number(),
-        dominance: v.number(),
-        purity: v.number(),
-        ego: v.number(),
+        compassion: v.optional(v.number()),
+        retribution: v.optional(v.number()),
+        devotion: v.optional(v.number()),
+        dominance: v.optional(v.number()),
+        purity: v.optional(v.number()),
+        ego: v.optional(v.number()),
       })
     ),
     updatedPersonality: v.optional(v.string()),
@@ -250,12 +251,15 @@ export const updateDilemmaAndPet = mutation({
     overridden: v.optional(v.boolean()),
   },
   handler: async (ctx, args) => {
+    const newMoralStats = {
+      ...DEFAULT_AVERAGE_STATS,
+      ...args.updatedMoralStats,
+    }
+
     // update dilemma response
     await ctx.db.patch(args.dilemmaId, {
       outcome: args.outcome,
-      updatedMoralStats: args.updatedMoralStats as
-        | MoralDimensionsType
-        | undefined,
+      updatedMoralStats: newMoralStats,
       updatedPersonality: args.updatedPersonality,
       resolved: args.resolved,
       overridden: args.overridden,
@@ -279,7 +283,7 @@ export const updateDilemmaAndPet = mutation({
       }
 
       // update moral stats by averaging all seen dilemma moral stats
-      const averageMoralStats = getAverageMoralStats(seenDilemmas);
+      const averageMoralStats = getAverageMoralStats(seenDilemmas, newMoralStats);
 
       // incl. evolutionId, age, and graduated bool
       const evolutionAdditions = evolvePetIfNeeded(seenDilemmas.length, pet, averageMoralStats);

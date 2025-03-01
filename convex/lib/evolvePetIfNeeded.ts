@@ -10,7 +10,7 @@ function evolveFromBabyToStage1(moralStatsWritten: { key: string; description: s
       return nextEvolution;
     }
   }
-  throw new Error(`No evolution determined for ${JSON.stringify(moralStatsWritten)}`);
+  return "npc";
 }
 
 function evolveFromStage1ToStage2(currentEvolutionId: Stage1EvolutionId, moralStatsWritten: { key: string; description: string; percentage: number }[]): EvolutionId {
@@ -21,7 +21,7 @@ function evolveFromStage1ToStage2(currentEvolutionId: Stage1EvolutionId, moralSt
       return nextEvolution;
     }
   }
-  throw new Error(`No evolution determined for ${JSON.stringify(moralStatsWritten)}`);
+  return "npc";
 }
 
 export function evolvePetIfNeeded(seenDilemmasCount: number, pet: Doc<"pets">, averageMoralStats: MoralDimensionsType): Doc<"pets"> | undefined {

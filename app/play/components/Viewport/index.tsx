@@ -9,10 +9,10 @@ import { BaseStatKeys, BaseStatsType, PooType } from "@/constants/base";
 import { ObjectKey } from "@/constants/objects";
 
 function isSpriteTransformation(prevSprite: string, currentSprite: string) {
-  // simply checks if first letter of sprite changed, due to naming convention (e.g. smol -> old)
+  // checks if first letter of sprite changed
+  // this works due to naming convention (e.g. smol -> old)
   const prevFirstLetter = prevSprite.split("/").pop()?.charAt(0);
   const currentFirstLetter = currentSprite.split("/").pop()?.charAt(0);
-  console.log(prevFirstLetter, currentFirstLetter);
   return prevFirstLetter !== currentFirstLetter;
 }
 
@@ -46,7 +46,11 @@ const Viewport = React.memo(function Viewport({
     return SPRITES[pet.age as keyof typeof SPRITES][animation];
   }, [rip, pet.age, animation]);
 
-  // detect sprite changes and trigger transformation only if first letter changed
+  // trigger transformation only if first letter changed
+  useEffect(() => {
+    setPrevSprite(petSprite);
+  }, [petSprite]);
+
   useEffect(() => {
     if (prevSprite && prevSprite !== petSprite) {
       if (isSpriteTransformation(prevSprite, petSprite)) {
@@ -58,8 +62,8 @@ const Viewport = React.memo(function Viewport({
         return () => clearTimeout(timer);
       }
     }
-    setPrevSprite(petSprite);
-  }, [petSprite, prevSprite]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [petSprite]);
 
   // add shake effect when stats are low
   useEffect(() => {
@@ -88,7 +92,7 @@ const Viewport = React.memo(function Viewport({
         return (
           <div
             key={id}
-            className="absolute z-30 cursor-pointer hover:opacity-50 transition-opacity"
+            className="absolute z-10 cursor-pointer hover:opacity-50 transition-opacity"
             style={{
               transform: `translate(${left}px, ${top}px)`,
             }}

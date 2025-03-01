@@ -62,18 +62,14 @@ export function useCurrentDilemma({
 
   // handle dilemma selection and storage
   useEffect(() => {
-    console.log("stateResult", stateResult);
     if (!stateResult || stateResult.status === "graduated") return;
 
     // handle unresolved dilemma case
     if (stateResult.status === "has_unresolved_dilemma") {
-      console.log("has unresolved dilemma");
       handleSaveCurrentDilemma(stateResult.unresolvedDilemma);
 
       // if a new question has been asked
       // and we want to enable the user to respond
-      console.log("lastQuestion", lastQuestion);
-      console.log("stateResult.question", stateResult.question);
       if (lastQuestion !== stateResult.question) {
         setIsProcessing(false);
         setLastQuestion(stateResult.question);

@@ -73,6 +73,7 @@ export function Background({
                 zIndex: 10,
                 mixBlendMode: "multiply",
                 filter: "brightness(1.2)",
+                pointerEvents: "none",
               }}
             />
           )}
