@@ -129,7 +129,7 @@ const Viewport = React.memo(function Viewport({
               initial={{
                 filter: isTransforming
                   ? "contrast(0%) brightness(1000%)"
-                  : "contrast(100%)",
+                  : undefined,
               }}
               animate={{
                 filter: "contrast(100%)",
@@ -138,7 +138,7 @@ const Viewport = React.memo(function Viewport({
               exit={{
                 filter: isTransforming
                   ? "contrast(0%) brightness(1000%)"
-                  : "contrast(100%)",
+                  : undefined,
               }}
               transition={{
                 duration: isShaking ? 0.5 : 0.5,

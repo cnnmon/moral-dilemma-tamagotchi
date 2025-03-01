@@ -101,7 +101,7 @@ if reason is unclear or choice contradicts your personality and values strongly,
 {
   "ok": true,
   "override": true,
-  "outcome": "<your own decision, starting with ‼️>",
+  "outcome": "<your own decision. always start with ‼️>",
   "stats": {<moral stats reflecting your choice>},
   "personality": "<reinforced personality>",
   "reaction": "<why you rejected the advice>"
