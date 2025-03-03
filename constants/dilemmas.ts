@@ -148,14 +148,14 @@ export const dilemmaTemplates: Record<string, DilemmaTemplate> = {
   },
   cheatinggame: {
     id: "cheatinggame",
-    text: "{pet} catches a friend cheating during game night. should {pet} call them out publicly or whisper \"i know what you did\" ominously?",
+    text: "{pet} catches a friend cheating during game night. should {pet} call them out publicly or whisper \"i know what you did\"?",
     attribute: [MoralDimensions.retribution],
     responses: [
       {
         text: "call them out publicly",
       },
       {
-        text: "whisper ominously",
+        text: "whisper the threat",
       },
     ],
   },

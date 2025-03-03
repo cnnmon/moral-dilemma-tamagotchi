@@ -18,8 +18,8 @@ export default function Stat({
   increment?: number;
 }) {
   const dangerousValue = dangerous ?? value < 25;
-  const scaledIncrement = increment ? Math.round(increment * 33.3) : 0;
-  const scaledDecrement = decrement ? Math.round(decrement * 33.3) : 0;
+  const scaledIncrement = increment ? Math.round(increment) : 0;
+  const scaledDecrement = decrement ? Math.round(decrement) : 0;
 
   return (
     <div
@@ -27,11 +27,17 @@ export default function Stat({
       style={containerStyle}
     >
       <p className="font-pixel w-18">{label}</p>
-      <div className="border-2 h-3 border-black" style={barStyle}>
-        <div
-          className={`h-full ${dangerousValue ? "bg-red-500" : "bg-black"} transition-all duration-100`}
-          style={{ width: `${value}%` }}
-        ></div>
+      <div className="border-2 h-3 border-black relative" style={barStyle}>
+        {value === 0 ? (
+          <div className="absolute inset-0 mt-1 flex items-center justify-center text-sm">
+            ☠️
+          </div>
+        ) : (
+          <div
+            className={`h-full ${dangerousValue ? "bg-red-500" : "bg-black"} transition-all duration-100`}
+            style={{ width: `${value}%` }}
+          ></div>
+        )}
       </div>
       <AnimatePresence>
         {scaledIncrement > 0 ? (
