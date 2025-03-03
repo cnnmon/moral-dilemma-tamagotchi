@@ -93,7 +93,7 @@ export default function Play() {
           {/* Stats */}
           <motion.div
             key="stats"
-            className="sm:absolute w-full h-full flex flex-col sm:items-end sm:p-4 pointer-events-none"
+            className="w-full pointer-events-none"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
@@ -103,15 +103,10 @@ export default function Play() {
               baseStats={baseStats}
               recentDecrements={recentDecrements}
               recentIncrements={recentIncrements}
+              evolution={evolution}
+              seenDilemmasCount={seenDilemmas.length}
+              timeFrame={timeFrame}
             />
-            <p className="flex items-center text-zinc-500">
-              <b>level {pet.age}</b>—{evolution.id}
-            </p>
-            <p>
-              {pet.age < 2
-                ? `${seenDilemmas.length} / ${timeFrame} dilemmas til next evolution`
-                : `${seenDilemmas.length} / ${timeFrame} dilemmas til graduation`}
-            </p>
           </motion.div>
 
           {/* Outcomes */}

@@ -39,6 +39,7 @@ function getPrompt(pet: Doc<"pets">, dilemma: DilemmaTemplate, selectedChoice: s
     '{choice}': selectedChoice,
     '{response}': responseText,
     '{personality}': pet.personality,
+    '{dilemma.attribute}': dilemma.attribute,
     '{morals.compassion}': (Math.round(pet.moralStats.compassion * 100) / 100).toString(),
     '{morals.retribution}': (Math.round(pet.moralStats.retribution * 100) / 100).toString(),
     '{morals.devotion}': (Math.round(pet.moralStats.devotion * 100) / 100).toString(),

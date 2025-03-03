@@ -39,7 +39,7 @@ const Viewport = React.memo(function Viewport({
 }) {
   const [prevSprite, setPrevSprite] = useState<string | null>(null);
   const [isTransforming, setIsTransforming] = useState(false);
-  const [isShaking, setIsShaking] = useState(false);
+  const [isAlmostDead, setIsAlmostDead] = useState(false);
 
   const petSprite = useMemo(() => {
     if (rip) {
@@ -71,17 +71,13 @@ const Viewport = React.memo(function Viewport({
   useEffect(() => {
     // shake when any stat is low
     // but not entirely 0
-    if (
+    setIsAlmostDead(
       (baseStats.hunger < 2 && baseStats.hunger > 0) ||
-      (baseStats.health < 2 && baseStats.health > 0) ||
-      (baseStats.happiness < 2 && baseStats.happiness > 0) ||
-      (baseStats.sanity < 2 && baseStats.sanity > 0)
-    ) {
-      setIsShaking(true);
-    } else {
-      setIsShaking(false);
-    }
-  }, [baseStats, isShaking]);
+        (baseStats.health < 2 && baseStats.health > 0) ||
+        (baseStats.happiness < 2 && baseStats.happiness > 0) ||
+        (baseStats.sanity < 2 && baseStats.sanity > 0)
+    );
+  }, [baseStats]);
 
   return (
     <div
@@ -129,29 +125,7 @@ const Viewport = React.memo(function Viewport({
         <div className="relative">
           {/* pet sprite */}
           <AnimatePresence mode="wait">
-            <motion.div
-              key={petSprite}
-              className="relative"
-              initial={{
-                filter: isTransforming
-                  ? "contrast(0%) brightness(1000%)"
-                  : undefined,
-              }}
-              animate={{
-                filter: "contrast(100%)",
-                x: isShaking ? [0, -10, 10, -10, 10, 0] : 0,
-              }}
-              exit={{
-                filter: isTransforming
-                  ? "contrast(0%) brightness(1000%)"
-                  : undefined,
-              }}
-              transition={{
-                duration: 0.5,
-                ease: isShaking ? "easeInOut" : "easeOut",
-                times: isShaking ? [0, 0.2, 0.4, 0.6, 0.8, 1] : undefined,
-              }}
-            >
+            <motion.div key={petSprite} className="relative">
               <Image
                 src={petSprite}
                 alt="birb"
@@ -167,7 +141,9 @@ const Viewport = React.memo(function Viewport({
                   }
                 }}
                 priority
-                className="translate-y-[30%]"
+                className={`translate-y-[30%] cursor-grab ${
+                  isAlmostDead ? "animate-pulse" : ""
+                }`}
               />
             </motion.div>
           </AnimatePresence>
