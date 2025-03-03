@@ -3,11 +3,13 @@ export default function Window({
   children,
   isOpen = true,
   setIsOpen,
+  exitable = true,
 }: {
   title: string;
   children: React.ReactNode;
   isOpen?: boolean;
   setIsOpen?: (isOpen: boolean) => void;
+  exitable?: boolean;
 }) {
   return (
     <div
@@ -20,7 +22,7 @@ export default function Window({
     >
       <div className="flex justify-between items-center border-b-2 border-black">
         <p className="px-3 py-1">{title}</p>
-        {setIsOpen && (
+        {setIsOpen && exitable && (
           <button
             onClick={() => {
               setIsOpen(false);

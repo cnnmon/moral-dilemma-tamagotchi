@@ -83,9 +83,7 @@ export function getMoralStatsWritten(
   moralStats: MoralDimensionsType,
   forEvolution: boolean = false // if true, only returns the attribute & returns all attributes; used to determine best next evolution
 ): MoralStatsWritten[] {
-  // use parseMoralStats to get the base stats
   const moralStatsParsed = parseMoralStats(moralStats);
-  console.log("🐦 moralStatsParsed", moralStatsParsed);
   
   // filter and format the stats
   const stats = moralStatsParsed.reduce(

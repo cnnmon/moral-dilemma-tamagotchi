@@ -39,7 +39,7 @@ export function MoralStats({
             layout
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="text-zinc-400 animate-pulse"
+            className="text-zinc-400 animate-pulse no-select"
           >
             moral uncertainty
           </motion.span>

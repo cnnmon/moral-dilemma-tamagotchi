@@ -70,6 +70,7 @@ function Content() {
         <br />
         <WindowTextarea
           title="event! ( ˶°ㅁ°) ! ! !"
+          exitable={false}
           isOpen={true}
           setIsOpen={(isOpen) => {
             if (!isOpen) {

@@ -10,6 +10,7 @@ export default function WindowTextarea({
   handleSubmit,
   children,
   isDisabled,
+  exitable = true,
 }: {
   title: string;
   isOpen: boolean;
@@ -19,18 +20,23 @@ export default function WindowTextarea({
   handleSubmit: (response: string) => void;
   isDisabled: boolean;
   children: React.ReactNode;
+  exitable?: boolean;
 }) {
   return (
     <>
-      <Window title={title} isOpen={isOpen} setIsOpen={setIsOpen}>
+      <Window
+        exitable={exitable}
+        title={title}
+        isOpen={isOpen}
+        setIsOpen={setIsOpen}
+      >
         {children}
       </Window>
-      <div className="fixed bottom-0 left-0 w-full flex justify-center items-center z-100">
+      <div className="fixed bottom-0 left-0 w-full flex justify-center items-center pointer-events-none">
         <div
           className="w-full max-w-2xl p-8 transition-all duration-300"
           style={{
             opacity: isOpen && isTextareaOpen ? 1 : 0,
-            pointerEvents: isOpen && isTextareaOpen ? "auto" : "none",
             transform:
               isOpen && isTextareaOpen ? "translateY(0)" : "translateY(-5px)",
           }}

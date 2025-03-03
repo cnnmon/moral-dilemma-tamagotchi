@@ -2,8 +2,8 @@ import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { useMemo, useState } from "react";
 
-export const VIEWPORT_WIDTH = 570 * 1.18;
-export const VIEWPORT_HEIGHT = 230 * 1.18;
+export const VIEWPORT_WIDTH = 570 * 1.12;
+export const VIEWPORT_HEIGHT = 230 * 1.12;
 
 export function Background({
   backgroundSrcs,
@@ -33,7 +33,7 @@ export function Background({
             width: `min(calc(100% - 30px), ${VIEWPORT_WIDTH}px)`,
             objectFit: "cover",
           }}
-          className={`absolute w-full transition-opacity duration-500 ${
+          className={`absolute w-full transition-opacity duration-500 pointer-events-none ${
             loadedImages.includes(src) ? "opacity-100" : "opacity-0"
           }`}
           onLoadingComplete={() => {

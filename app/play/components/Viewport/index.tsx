@@ -141,7 +141,7 @@ const Viewport = React.memo(function Viewport({
                   }
                 }}
                 priority
-                className={`translate-y-[30%] cursor-grab ${
+                className={`translate-y-[30%] cursor-grab no-select ${
                   isAlmostDead ? "animate-pulse" : ""
                 }`}
               />

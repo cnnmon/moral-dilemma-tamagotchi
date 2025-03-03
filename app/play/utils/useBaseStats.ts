@@ -6,7 +6,7 @@ import { VIEWPORT_HEIGHT, VIEWPORT_WIDTH } from "@/components/Background";
 
 const POO_STORAGE_KEY = "poos";
 
-const DECREMENT_INTERVAL_MS = 10000;
+const DECREMENT_INTERVAL_MS = 8000;
 const BASE_STATS_DECREMENT_VALUE = 0.7;
 const MAX_POOS = 10;
 const POO_CHANCE = 0.05;

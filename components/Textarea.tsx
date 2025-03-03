@@ -37,9 +37,9 @@ export function Textarea({
   }, [isSubmitting]);
 
   return (
-    <div className="w-full mt-2">
+    <>
       <textarea
-        className={`w-full resize-none border-2 border-black bg-zinc-200 outline-none p-2 ${
+        className={`w-full resize-none border-2 border-black bg-zinc-200 outline-none p-2 pointer-events-auto ${
           isDisabled ? "opacity-50 cursor-not-allowed" : ""
         }`}
         value={value}
@@ -67,6 +67,6 @@ export function Textarea({
           )}
         </p>
       </div>
-    </div>
+    </>
   );
 }

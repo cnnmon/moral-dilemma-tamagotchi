@@ -8,7 +8,8 @@ import { useOutcomes } from "./utils/useOutcomes";
 import { useCurrentDilemma } from "./utils/useCurrentDilemma";
 import Viewport from "./components/Viewport";
 import Dialog from "./components/Dialog";
-import Stats from "./components/Stats";
+import Header from "./components/Header";
+import { MoralStats } from "./components/MoralStats";
 import { AnimatePresence, motion } from "framer-motion";
 import useBaseStats from "./utils/useBaseStats";
 import Actions from "./components/Actions";
@@ -89,7 +90,7 @@ export default function Play() {
       <HoverText hoverText={hoverText} cursorObject={cursorObject} />
 
       <AnimatePresence mode="wait">
-        <div className="flex flex-col gap-2 items-center justify-center sm:w-2xl w-full py-[20%] sm:p-0 p-4">
+        <div className="flex flex-col gap-2 sm:w-2xl p-4">
           {/* Stats */}
           <motion.div
             key="stats"
@@ -98,7 +99,7 @@ export default function Play() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
           >
-            <Stats
+            <Header
               pet={pet}
               baseStats={baseStats}
               recentDecrements={recentDecrements}
@@ -136,7 +137,6 @@ export default function Play() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5 }}
-            className="flex w-full justify-center items-center"
           >
             <Viewport
               pet={pet}
@@ -158,7 +158,11 @@ export default function Play() {
             />
           </motion.div>
 
-          <div className="flex sm:flex-row flex-col w-full justify-between sm:p-0 gap-2">
+          <div className="sm:fixed sm:bottom-0 sm:right-0 sm:p-4 w-full z-30 pointer-events-none">
+            <MoralStats moralStats={pet.moralStats} />
+          </div>
+
+          <div className="flex sm:flex-row flex-col gap-2">
             <div className="flex flex-col gap-2">
               <Actions
                 setCursorObject={setCursorObject}
@@ -168,14 +172,20 @@ export default function Play() {
                 rip={rip}
               />
               <motion.div
-                key="viewport"
+                key="personality"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3, delay: 0.5 }}
+                transition={{ duration: 0.3, delay: 0.3 }}
                 className="pointer-events-auto"
               >
-                <div className="border-2 border-black p-2 bg-zinc-100 sm:max-w-3xs text-sm mb-2 w-full">
-                  {pet.name} is {evolution.description}. {pet.personality}{" "}
+                <div
+                  className="border-2 border-black p-2 bg-zinc-100 sm:max-w-3xs text-sm mb-2 w-full"
+                  key={pet.personality}
+                >
+                  <i>
+                    {pet.name} is {evolution.description}.
+                  </i>{" "}
+                  {pet.personality}
                 </div>
               </motion.div>
             </div>
