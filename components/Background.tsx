@@ -36,7 +36,7 @@ export function Background({
           className={`absolute w-full transition-opacity duration-500 pointer-events-none ${
             loadedImages.includes(src) ? "opacity-100" : "opacity-0"
           }`}
-          onLoadingComplete={() => {
+          onLoad={() => {
             setLoadedImages((prev) => [...prev, src]);
           }}
         />
