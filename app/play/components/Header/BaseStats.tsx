@@ -16,12 +16,14 @@ export function BaseStats({
         const statKey = key as keyof BaseStatsType;
         const decrement = recentDecrements[statKey] ?? 0;
         const increment = recentIncrements[statKey] ?? 0;
+        const value = baseStats[statKey] * 10;
 
         return (
           <div key={statKey} className="flex items-center">
             <Stat
               label={statKey}
-              value={baseStats[statKey] * 10}
+              value={value}
+              displayValue={`${Math.round(value)}/100`}
               decrement={decrement}
               increment={increment}
             />

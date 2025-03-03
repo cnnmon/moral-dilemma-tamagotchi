@@ -22,7 +22,7 @@ export type MoralStatAttribute =
   | "emotional"
   | "forgiving"
   | "punishing"
-  | "integrous"
+  | "personally integrous"
   | "loyal"
   | "autonomous"
   | "authoritarian"
@@ -41,7 +41,7 @@ export const attributes: Record<MoralDimensions, { low: MoralStatAttribute; high
     high: "punishing",
   },
   [MoralDimensions.devotion]: {
-    low: "integrous",
+    low: "personally integrous",
     high: "loyal",
   },
   [MoralDimensions.dominance]: {

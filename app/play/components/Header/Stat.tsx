@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from "framer-motion";
 export default function Stat({
   label,
   value, // out of 100
+  displayValue,
   dangerous,
   barStyle = { width: "100px" },
   containerStyle = { justifyContent: "start" },
@@ -11,6 +12,7 @@ export default function Stat({
 }: {
   label: string;
   value: number;
+  displayValue?: string;
   dangerous?: boolean;
   barStyle?: React.CSSProperties;
   containerStyle?: React.CSSProperties;
@@ -18,8 +20,8 @@ export default function Stat({
   increment?: number;
 }) {
   const dangerousValue = dangerous ?? value < 25;
-  const scaledIncrement = increment ? Math.round(increment) : 0;
-  const scaledDecrement = decrement ? Math.round(decrement) : 0;
+  const scaledIncrement = increment ? Math.round(increment * 10) : 0;
+  const scaledDecrement = decrement ? Math.round(decrement * 10) : 0;
 
   return (
     <div
@@ -39,6 +41,9 @@ export default function Stat({
           ></div>
         )}
       </div>
+      {displayValue && (
+        <span className="text-xs ml-1 mr-1">{displayValue}</span>
+      )}
       <AnimatePresence>
         {scaledIncrement > 0 ? (
           <motion.div
