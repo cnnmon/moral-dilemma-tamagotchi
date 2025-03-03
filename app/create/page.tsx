@@ -37,7 +37,7 @@ function Content() {
             alt="pan"
             width={180}
             height={180}
-            className="transform translate-x-23"
+            className="transform translate-x-27 no-select"
           />
         </Background>
         <br />
@@ -65,7 +65,13 @@ function Content() {
         transition={{ duration: 0.3 }}
       >
         <Background backgroundSrcs={["/uwantahand.png"]}>
-          <Image src="/egg.gif" alt="egg" width={180} height={180} />
+          <Image
+            src="/egg.gif"
+            alt="egg"
+            width={180}
+            height={180}
+            className="no-select"
+          />
         </Background>
         <br />
         <WindowTextarea

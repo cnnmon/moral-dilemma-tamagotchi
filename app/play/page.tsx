@@ -90,7 +90,7 @@ export default function Play() {
       <HoverText hoverText={hoverText} cursorObject={cursorObject} />
 
       <AnimatePresence mode="wait">
-        <div className="flex flex-col gap-2 sm:w-2xl p-4">
+        <div className="flex flex-col gap-2 sm:w-2xl p-4 justify-center items-center">
           {/* Stats */}
           <motion.div
             key="stats"

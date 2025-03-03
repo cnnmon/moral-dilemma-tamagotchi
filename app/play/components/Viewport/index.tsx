@@ -2,7 +2,7 @@ import React, { useMemo, useState, useEffect } from "react";
 import Image from "next/image";
 import { Background, VIEWPORT_WIDTH } from "@/components/Background";
 import { VIEWPORT_HEIGHT } from "@/components/Background";
-import { motion, AnimatePresence } from "framer-motion"; // import animatepresence
+import { motion } from "framer-motion";
 import { Animation, RIP_SPRITE, SPRITES } from "@/constants/sprites";
 import { Doc } from "@/convex/_generated/dataModel";
 import { BaseStatKeys, BaseStatsType, PooType } from "@/constants/base";
@@ -50,10 +50,6 @@ const Viewport = React.memo(function Viewport({
 
   // trigger transformation only if first letter changed
   useEffect(() => {
-    setPrevSprite(petSprite);
-  }, [petSprite]);
-
-  useEffect(() => {
     if (prevSprite && prevSprite !== petSprite) {
       if (isSpriteTransformation(prevSprite, petSprite)) {
         setIsTransforming(true);
@@ -64,6 +60,7 @@ const Viewport = React.memo(function Viewport({
         return () => clearTimeout(timer);
       }
     }
+    setPrevSprite(petSprite);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [petSprite]);
 
@@ -124,29 +121,27 @@ const Viewport = React.memo(function Viewport({
       <Background hasOverlay backgroundSrcs={["/background.png", "/trees.gif"]}>
         <div className="relative">
           {/* pet sprite */}
-          <AnimatePresence mode="wait">
-            <motion.div key={petSprite} className="relative">
-              <Image
-                src={petSprite}
-                alt="birb"
-                width={VIEWPORT_WIDTH / 5}
-                height={VIEWPORT_HEIGHT / 5}
-                onMouseEnter={() => {
-                  if (cursorObject === "burger") {
-                    incrementStat(BaseStatKeys.hunger);
-                  } else if (cursorObject === "bandaid") {
-                    incrementStat(BaseStatKeys.health);
-                  } else if (cursorObject === "ball") {
-                    incrementStat(BaseStatKeys.happiness);
-                  }
-                }}
-                priority
-                className={`translate-y-[30%] cursor-grab no-select ${
-                  isAlmostDead ? "animate-pulse" : ""
-                }`}
-              />
-            </motion.div>
-          </AnimatePresence>
+          <div className="relative">
+            <Image
+              src={petSprite}
+              alt="birb"
+              width={VIEWPORT_WIDTH / 5}
+              height={VIEWPORT_HEIGHT / 5}
+              onMouseEnter={() => {
+                if (cursorObject === "burger") {
+                  incrementStat(BaseStatKeys.hunger);
+                } else if (cursorObject === "bandaid") {
+                  incrementStat(BaseStatKeys.health);
+                } else if (cursorObject === "ball") {
+                  incrementStat(BaseStatKeys.happiness);
+                }
+              }}
+              priority
+              className={`translate-y-[30%] cursor-grab no-select ${
+                isAlmostDead ? "animate-pulse" : ""
+              }`}
+            />
+          </div>
 
           {/* sparkles that appear during transformation */}
           {isTransforming && (

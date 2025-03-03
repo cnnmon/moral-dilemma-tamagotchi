@@ -20,7 +20,7 @@ export function MoralStats({
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.3 }}
-              title={`${Math.round(percentage * 100) / 100}%`}
+              title={`${Math.round(percentage)}%`}
               className={`${
                 percentage >= 50
                   ? "text-black"
@@ -31,7 +31,7 @@ export function MoralStats({
                       : "text-zinc-400"
               }`}
             >
-              {description} {Math.round(percentage * 100) / 100}%
+              {description} {Math.round(percentage)}%
             </motion.span>
           ))
         ) : (
