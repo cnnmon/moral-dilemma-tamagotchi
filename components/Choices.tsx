@@ -7,12 +7,9 @@ export default function Choices({
 }: {
   dilemmaText: string;
   choices: { text: string }[];
-  placeholderText?: string;
-  handleSubmit: (response: string) => void;
   disabled?: boolean;
   selectedChoice: number | null;
   setSelectedChoice: (choice: number) => void;
-  showTextbox?: boolean;
 }) {
   return (
     <div className="flex flex-col gap-2">
