@@ -32,7 +32,6 @@ const standardResponse = `{
   "stats": {<update at least one moral stat, do not include unchanged stats>},
   "personality": "<refined personality that evolves from experience (<200 chars)>",
   "outcome": "<specific experience from this situation with clear consequences>",
-  "reaction": "<your authentic first-person reflection>"
 }`;
 
 // personality rules
@@ -105,10 +104,9 @@ carefully evaluate the caretaker's advice against your established values. decid
 {
   "ok": true,
   "override": <boolean: true if you reject their advice>,
-  "outcome": "<your own decision and how it relates to the caretaker's advice. always start with ‼️>",
+  "outcome": "<your own decision and how it relates to the caretaker's advice. always start with ‼️. <150 chars>",
   "stats": {<moral stats reflecting your choice>},
   "personality": "<reinforced personality showing your independence>",
-  "reaction": "<why you accepted or rejected the advice with your reasoning>"
 }
 
 example outcomes:
