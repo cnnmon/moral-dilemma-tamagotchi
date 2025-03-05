@@ -12,9 +12,9 @@ export function getEvolutionTimeFrame(age: number): number {
 }
 
 // evolution types
-export type Stage1EvolutionId = "empath" | "devout" | "watcher" | "loyalist" | "soldier" | "maverick" | "npc";
+export type Stage1EvolutionId = "empath" | "devout" | "watcher" | "knight" | "soldier" | "alpha" | "npc";
 
-export type Stage2EvolutionId = "monk" | "shepherd" | "arbiter" | "martyr" | "judge" | "vigilante" | "mercenary" | "guardian" | "patrician" | "sovereign" | "cultleader" | "npc";
+export type Stage2EvolutionId = "sage" | "shepherd" | "gavel" | "martyr" | "gavel" | "vigilante" | "mercenary" | "guardian" | "hedonist" | "herald" | "cultleader" | "npc";
 
 export type EvolutionId = "baby" | "graduated" | Stage1EvolutionId | Stage2EvolutionId;
 
@@ -46,14 +46,14 @@ export type Evolution = Stage0Evolution | Stage1Evolution | Stage2Evolution | St
 export const stage0Evolutions: Record<'baby', Stage0Evolution> = {
   baby: {
     id: "baby",
-    description: "a curious hatchling taking first steps into the world",
+    description: "curious hatchling taking first steps",
     nextStages: {
       [attributes[MoralDimensions.compassion].high]: "empath",
       [attributes[MoralDimensions.purity].high]: "devout",
       [attributes[MoralDimensions.retribution].high]: "watcher",
-      [attributes[MoralDimensions.devotion].high]: "loyalist",
+      [attributes[MoralDimensions.devotion].high]: "knight",
       [attributes[MoralDimensions.dominance].high]: "soldier",
-      [attributes[MoralDimensions.ego].high]: "maverick",
+      [attributes[MoralDimensions.ego].high]: "alpha",
     }
   }
 }
@@ -62,9 +62,9 @@ export const stage1Evolutions: Record<Stage1EvolutionId, Stage1Evolution> = {
   // follows heart (high compassion) -> evolves based on devotion
   empath: {
     id: "empath",
-    description: "a sensitive soul who feels deeply and questions whose heart to listen to",
+    description: "sensitive soul torn between empathy for all or loyalty to few",
     nextStages: {
-      [attributes[MoralDimensions.devotion].low]: "monk",
+      [attributes[MoralDimensions.devotion].low]: "sage",
       [attributes[MoralDimensions.devotion].high]: "shepherd",
     },
   },
@@ -72,9 +72,9 @@ export const stage1Evolutions: Record<Stage1EvolutionId, Stage1Evolution> = {
   // virtuous (purity) -> evolves based on retribution
   devout: { 
     id: "devout",
-    description: "a believer in higher purpose who struggles between mercy and judgment",
+    description: "principled believer balancing mercy and judgment",
     nextStages: {
-      [attributes[MoralDimensions.retribution].high]: "arbiter",
+      [attributes[MoralDimensions.retribution].high]: "gavel",
       [attributes[MoralDimensions.retribution].low]: "martyr",
     },
   },
@@ -82,17 +82,17 @@ export const stage1Evolutions: Record<Stage1EvolutionId, Stage1Evolution> = {
   // punishment (retribution) -> evolves based on dominance
   watcher: { 
     id: "watcher",
-    description: "a keen observer of right and wrong who contemplates how justice should be delivered",
+    description: "justice-seeker deciding between personal action or systemic change",
     nextStages: {
-      [attributes[MoralDimensions.dominance].high]: "judge",
+      [attributes[MoralDimensions.dominance].high]: "gavel",
       [attributes[MoralDimensions.dominance].low]: "vigilante",
     },
   },
 
   // loyal (devotion) -> evolves based on ego
-  loyalist: { 
-    id: "loyalist",
-    description: "a faithful companion bound by trust who wonders if loyalty extends to oneself",
+  knight: { 
+    id: "knight",
+    description: "faithful protector questioning if loyalty demands self-sacrifice",
     nextStages: {
       [attributes[MoralDimensions.ego].high]: "mercenary",
       [attributes[MoralDimensions.ego].low]: "guardian",
@@ -102,85 +102,82 @@ export const stage1Evolutions: Record<Stage1EvolutionId, Stage1Evolution> = {
   // authoritarian (dominance) -> evolves based on purity
   soldier: { 
     id: "soldier",
-    description: "a disciplined enforcer of order who debates whether principles or pragmatism should guide power",
+    description: "disciplined enforcer choosing between rigid virtue or pragmatic power",
     nextStages: {
-      [attributes[MoralDimensions.purity].high]: "sovereign",
-      [attributes[MoralDimensions.purity].low]: "patrician",
+      [attributes[MoralDimensions.purity].high]: "herald",
+      [attributes[MoralDimensions.purity].low]: "hedonist",
     },
   },
 
   // self-serving (ego) -> evolves based on compassion
-  maverick: { 
-    id: "maverick",
-    description: "a free spirit charting their own path who considers if independence means solitude or leadership",
+  alpha: { 
+    id: "alpha",
+    description: "independent spirit deciding between solitary freedom or leading others",
     nextStages: {
       [attributes[MoralDimensions.compassion].low]: "npc",
       [attributes[MoralDimensions.compassion].high]: "cultleader",
     },
   },
+
   // npc (fall-back if no traits are particularly high)
   npc: {
     id: "npc",
-    description: "an ordinary bird finding their way who ponders whether to seek purpose or embrace simplicity",
+    description: "ordinary bird seeking meaning in simplicity",
     nextStages: {
-      [attributes[MoralDimensions.devotion].low]: "monk",
+      [attributes[MoralDimensions.devotion].low]: "sage",
       [attributes[MoralDimensions.retribution].low]: "martyr",
       [attributes[MoralDimensions.dominance].low]: "vigilante",
       [attributes[MoralDimensions.ego].low]: "guardian",
-      [attributes[MoralDimensions.purity].low]: "patrician",
+      [attributes[MoralDimensions.purity].low]: "hedonist",
       [attributes[MoralDimensions.compassion].low]: "npc",
     },
   },
 }
 
 export const stage2Evolutions: Record<Stage2EvolutionId, Stage2Evolution> = {
-  monk: { // empathetic + integrous
-    id: "monk",
-    description: "a wise sage with inner peace and moral clarity",
+  sage: { // empathetic + integrous
+    id: "sage",
+    description: "wise philosopher with universal compassion",
   },
   shepherd: { // empathetic + loyal
     id: "shepherd",
-    description: "a nurturing guide who protects the vulnerable",
-  },
-  arbiter: { // virtuous + just
-    id: "arbiter",
-    description: "a fair-minded judge balancing mercy with justice",
+    description: "nurturing guide protecting the vulnerable",
   },
   martyr: { // virtuous + forgiving
     id: "martyr",
-    description: "a selfless hero who bears others' burdens",
+    description: "selfless hero bearing others' burdens",
   },
-  judge: { // punishing + authoritarian
-    id: "judge",
-    description: "a stern enforcer with unwavering principles",
+  gavel: { // punishing + authoritarian
+    id: "gavel",
+    description: "stern judge with unwavering principles",
   },
   vigilante: { // punishing + autonomous
     id: "vigilante",
-    description: "a rogue healer fighting injustice on their terms",
+    description: "rogue healer fighting injustice independently",
   },
   mercenary: { // loyal + self-serving
     id: "mercenary",
-    description: "a skilled fighter who serves the highest bidder",
+    description: "skilled fighter loyal to highest bidder",
   },
   guardian: { // loyal + self-sacrificing
     id: "guardian",
-    description: "a devoted shield standing between danger and allies",
+    description: "devoted shield between danger and allies",
   },
-  patrician: { // authoritarian + indulgent
-    id: "patrician",
-    description: "a privileged elite who enjoys power and status",
+  hedonist: { // authoritarian + indulgent
+    id: "hedonist",
+    description: "privileged elite enjoying power and pleasure",
   },
-  sovereign: { // authoritarian + virtuous
-    id: "sovereign",
-    description: "a noble ruler guided by higher principles",
+  herald: { // authoritarian + virtuous
+    id: "herald",
+    description: "noble ruler guided by higher principles",
   },
   cultleader: { // self-serving + empathetic
     id: "cultleader",
-    description: "a charismatic visionary who inspires devoted followers",
+    description: "charismatic visionary inspiring devoted followers",
   },
   npc: { // self-serving + indifferent
     id: "npc",
-    description: "an ordinary bird content with simple pleasures",
+    description: "ordinary bird content with simple pleasures",
   },
 };
 
@@ -191,7 +188,7 @@ const evolutions: Record<EvolutionId, Evolution> = {
   ...stage2Evolutions,
   graduated: {
     id: "graduated",
-    description: "a fully realized bird who has found their true path",
+    description: "fully realized bird who found their true path",
   },
 }
 
