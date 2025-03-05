@@ -182,9 +182,6 @@ export default function Play() {
                   className="border-2 border-black p-2 bg-zinc-100 sm:max-w-3xs text-sm mb-2 w-full"
                   key={pet.personality}
                 >
-                  <i>
-                    {pet.name} is {evolution.description}.
-                  </i>{" "}
                   {pet.personality}
                 </div>
               </motion.div>

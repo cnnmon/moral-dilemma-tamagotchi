@@ -33,7 +33,7 @@ export default function Header({
         <p className="flex items-center text-zinc-500">
           <b>level {pet.age}</b>—{evolution.id}
         </p>
-        <p className="text-sm max-w-48 ">{evolution.description}</p>
+        <p className="text-sm max-w-48">{evolution.description}</p>
         <div className="mt-2 w-fit">
           <p className="text-xs text-zinc-500">
             {pet.age < 2

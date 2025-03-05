@@ -9,7 +9,7 @@ export function MoralStats({
   const moralStatsWritten = getMoralStatsWritten(moralStats);
 
   return (
-    <div className="flex flex-col text-right">
+    <div className="flex flex-col text-right" style={{ zIndex: -2 }}>
       <AnimatePresence mode="popLayout">
         {moralStatsWritten.length ? (
           moralStatsWritten.map(({ key, description, percentage }) => (

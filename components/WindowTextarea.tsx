@@ -32,7 +32,7 @@ export default function WindowTextarea({
       >
         {children}
       </Window>
-      <div className="fixed bottom-0 left-0 w-full flex justify-center items-center pointer-events-none">
+      <div className="fixed z-30 bottom-0 left-0 w-full flex justify-center items-center pointer-events-none">
         <div
           className="w-full max-w-2xl p-8 transition-all duration-300"
           style={{
