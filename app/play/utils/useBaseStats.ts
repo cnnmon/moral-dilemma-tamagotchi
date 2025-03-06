@@ -41,6 +41,25 @@ export default function useBaseStats({
   // track recent stat changes for animation
   const [recentDecrements, setRecentDecrements] = useState<Partial<Record<keyof BaseStatsType, number>>>({});
   const [recentIncrements, setRecentIncrements] = useState<Partial<Record<keyof BaseStatsType, number>>>({});
+  // track page focus state
+  const [isPageFocused, setIsPageFocused] = useState(true);
+
+  // set up focus/blur event listeners
+  useEffect(() => {
+    // default to true if document.hasFocus() is not available (SSR)
+    setIsPageFocused(typeof document !== 'undefined' ? document.hasFocus() : true);
+
+    const handleFocus = () => setIsPageFocused(true);
+    const handleBlur = () => setIsPageFocused(false);
+
+    window.addEventListener('focus', handleFocus);
+    window.addEventListener('blur', handleBlur);
+
+    return () => {
+      window.removeEventListener('focus', handleFocus);
+      window.removeEventListener('blur', handleBlur);
+    };
+  }, []);
 
   // on mount, set the poos to saved poos
   useEffect(() => {
@@ -73,7 +92,8 @@ export default function useBaseStats({
 
   useEffect(() => {
     const interval = setInterval(() => {
-      if (!stateResult || stateResult.status === "graduated") return;
+      // only decrement stats when page is focused
+      if (!isPageFocused || !stateResult || stateResult.status === "graduated") return;
 
       // decrement stats
       setBaseStats((prevStats: BaseStatsType) => {
@@ -142,7 +162,7 @@ export default function useBaseStats({
 
     return () => clearInterval(interval);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [baseStatsLoaded]);
+  }, [baseStatsLoaded, isPageFocused]);
 
   const incrementStat = (stat: keyof BaseStatsType) => {
     // temporary happy animation
