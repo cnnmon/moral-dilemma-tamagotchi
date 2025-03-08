@@ -17,10 +17,11 @@ import HoverText from "@/components/HoverText";
 import { useState } from "react";
 import { Animation } from "@/constants/sprites";
 import { ObjectKey } from "@/constants/objects";
-import Graduation from "./components/Graduation";
 import { getEvolutionTimeFrame } from "@/constants/evolutions";
 import { EvolutionId } from "@/constants/evolutions";
 import { getEvolution } from "@/constants/evolutions";
+import Window from "@/components/Window";
+import Graduation from "./components/Graduation";
 
 export default function Play() {
   const [animation, setAnimation] = useState<Animation>(Animation.IDLE);
@@ -28,6 +29,7 @@ export default function Play() {
   const [cursorObject, setCursorObject] = useState<ObjectKey | null>(null);
   const [rip, setRip] = useState(false);
   const [dilemmaOpen, setDilemmaOpen] = useState(false);
+  const [graduationOpen, setGraduationOpen] = useState(false);
 
   const stateResult = useQuery(api.state.getActiveGameState);
   const {
@@ -73,21 +75,41 @@ export default function Play() {
 
   // if out of dilemmas, note that
   const { pet, seenDilemmas } = stateResult;
-  const isGraduated = status === "out_of_dilemmas" || status === "graduated";
-  if (isGraduated) {
-    return (
-      <>
-        <Graduation />
-      </>
-    );
-  }
-
+  const hasGraduated = status === "out_of_dilemmas" || status === "graduated";
   const evolution = getEvolution(pet.evolutionId as EvolutionId);
   const timeFrame = getEvolutionTimeFrame(pet.age);
 
   return (
     <>
       <HoverText hoverText={hoverText} cursorObject={cursorObject} />
+
+      <AnimatePresence mode="wait">
+        {graduationOpen && (
+          <motion.div
+            key="graduation-container"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed top-0 w-full z-30 inset-0 flex justify-center items-center bg-white/50"
+            onClick={() => setGraduationOpen(false)}
+          >
+            <motion.div
+              key="graduation"
+              initial={{ y: 20 }}
+              animate={{ y: 0 }}
+              exit={{ y: 20 }}
+              transition={{ duration: 0.3 }}
+            >
+              <Graduation
+                pet={pet}
+                seenDilemmaCount={seenDilemmas.length}
+                graduationOpen={graduationOpen}
+                setGraduationOpen={setGraduationOpen}
+              />
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <AnimatePresence mode="wait">
         <div className="flex flex-col gap-2 sm:w-2xl p-4 justify-center items-center sm:mt-[-30px] w-full">
@@ -162,55 +184,81 @@ export default function Play() {
             <MoralStats moralStats={pet.moralStats} />
           </div>
 
-          <div className="flex sm:flex-row flex-col gap-2">
-            <div className="flex flex-col gap-2">
-              <Actions
-                setCursorObject={setCursorObject}
-                setHoverText={setHoverText}
-                openDilemma={() => setDilemmaOpen(true)}
-                isProcessing={isProcessing}
-                rip={rip}
-              />
-              <motion.div
-                key="personality"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3, delay: 0.3 }}
-                className="pointer-events-auto"
-              >
-                <div
-                  className="border-2 border-black p-2 bg-zinc-100 sm:max-w-3xs text-sm mb-2 w-full"
-                  key={pet.personality}
-                >
-                  {pet.personality.length > 0
-                    ? pet.personality
-                    : "no personality yet."}
-                </div>
-              </motion.div>
-            </div>
-            <AnimatePresence>
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 20 }}
-                transition={{ duration: 0.2 }}
-                className="flex w-full"
-              >
-                <Dialog
-                  isOpen={dilemmaOpen}
-                  setIsOpen={setDilemmaOpen}
-                  petName={pet.name}
-                  baseStats={baseStats}
+          {hasGraduated ? (
+            <motion.div
+              key="graduation"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="w-full"
+            >
+              <Window title="°˖✧◝(⁰▿⁰)◜✧˖°">
+                <p>
+                  {pet.name} has graduated! {pet.name} has learned a lot from
+                  you and is ready to start their new journey. thank you for
+                  your service.{" "}
+                  <a
+                    className="underline"
+                    onClick={() => {
+                      setGraduationOpen(true);
+                    }}
+                  >
+                    what kind of adult will {pet.name} be?
+                  </a>
+                </p>
+              </Window>
+            </motion.div>
+          ) : (
+            <div className="flex sm:flex-row flex-col gap-2">
+              <div className="flex flex-col gap-2">
+                <Actions
+                  setCursorObject={setCursorObject}
+                  setHoverText={setHoverText}
+                  openDilemma={() => setDilemmaOpen(true)}
+                  isProcessing={isProcessing}
                   rip={rip}
-                  dilemma={currentDilemma}
-                  onOutcome={addOutcome}
-                  onProcessingStart={onDilemmaProcessingStart}
-                  onProcessingEnd={onDilemmaProcessingEnd}
-                  disabled={isProcessing}
                 />
-              </motion.div>
-            </AnimatePresence>
-          </div>
+                <motion.div
+                  key="personality"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3, delay: 0.3 }}
+                  className="pointer-events-auto"
+                >
+                  <div
+                    className="border-2 border-black p-2 bg-zinc-100 sm:max-w-3xs text-sm mb-2 w-full"
+                    key={pet.personality}
+                  >
+                    {pet.personality.length > 0
+                      ? pet.personality
+                      : "no personality yet."}
+                  </div>
+                </motion.div>
+              </div>
+              <AnimatePresence>
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 20 }}
+                  transition={{ duration: 0.2 }}
+                  className="flex w-full"
+                >
+                  <Dialog
+                    isOpen={dilemmaOpen}
+                    setIsOpen={setDilemmaOpen}
+                    petName={pet.name}
+                    baseStats={baseStats}
+                    rip={rip}
+                    dilemma={currentDilemma}
+                    onOutcome={addOutcome}
+                    onProcessingStart={onDilemmaProcessingStart}
+                    onProcessingEnd={onDilemmaProcessingEnd}
+                    disabled={isProcessing}
+                  />
+                </motion.div>
+              </AnimatePresence>
+            </div>
+          )}
         </div>
       </AnimatePresence>
     </>

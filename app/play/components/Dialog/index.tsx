@@ -142,7 +142,6 @@ export default function Dialog({
           choices={dilemma.responses.map((response) => ({
             text: response.text.replace(/{pet}/g, petName),
           }))}
-          handleSubmit={handleSubmit}
         />
       </WindowTextarea>
     </div>
