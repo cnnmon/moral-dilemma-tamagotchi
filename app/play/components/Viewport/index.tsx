@@ -3,10 +3,11 @@ import Image from "next/image";
 import { Background, VIEWPORT_WIDTH } from "@/components/Background";
 import { VIEWPORT_HEIGHT } from "@/components/Background";
 import { motion } from "framer-motion";
-import { Animation, RIP_SPRITE, SPRITES } from "@/constants/sprites";
+import { Animation, RIP_SPRITE, getSprite } from "@/constants/sprites";
 import { Doc } from "@/convex/_generated/dataModel";
 import { BaseStatKeys, BaseStatsType, PooType } from "@/constants/base";
 import { ObjectKey } from "@/constants/objects";
+import { EvolutionId } from "@/constants/evolutions";
 
 function isSpriteTransformation(prevSprite: string, currentSprite: string) {
   // checks if first letter of sprite changed
@@ -45,8 +46,18 @@ const Viewport = React.memo(function Viewport({
     if (rip) {
       return RIP_SPRITE;
     }
-    return SPRITES[pet.age as keyof typeof SPRITES][animation];
-  }, [rip, pet.age, animation]);
+    const sprite = getSprite(
+      pet.age,
+      animation,
+      pet.evolutionId as EvolutionId
+    );
+    if (!sprite) {
+      throw new Error(
+        `no sprite found for ${pet.age}, ${animation}, ${pet.evolutionId}`
+      );
+    }
+    return sprite;
+  }, [rip, pet.age, animation, pet.evolutionId]);
 
   // trigger transformation only if first letter changed
   useEffect(() => {

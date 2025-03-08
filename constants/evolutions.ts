@@ -2,9 +2,9 @@ import { MoralDimensions, MoralStatAttribute, attributes } from "./morals";
 
 // evolution time frames
 const evolutionTimeFrame = {
-  0: 5, // in age 0 until age 1 evolution
-  1: 8, // in age 1 until age 2 evolution
-  2: 13, // until graduation unlocks
+  0: 1, // in age 0 until age 1 evolution
+  1: 2, // in age 1 until age 2 evolution
+  2: 3, // until graduation unlocks
 }
 
 export function getEvolutionTimeFrame(age: number): number {
@@ -14,9 +14,9 @@ export function getEvolutionTimeFrame(age: number): number {
 // evolution types
 export type Stage1EvolutionId = "empath" | "devout" | "watcher" | "knight" | "soldier" | "alpha" | "npc";
 
-export type Stage2EvolutionId = "sage" | "shepherd" | "gavel" | "martyr" | "gavel" | "vigilante" | "mercenary" | "guardian" | "hedonist" | "herald" | "cultleader" | "npc";
+export type Stage2EvolutionId = "gavel" | "vigilante" | "godfather" | "guardian" | "aristocrat" | "npc" | "sigma" | "saint" | "cultleader";
 
-export type EvolutionId = "baby" | "graduated" | Stage1EvolutionId | Stage2EvolutionId;
+export type EvolutionId = "baby" | Stage1EvolutionId | Stage2EvolutionId;
 
 // represents a stage in pet evolution
 type Stage0Evolution = {
@@ -64,8 +64,8 @@ export const stage1Evolutions: Record<Stage1EvolutionId, Stage1Evolution> = {
     id: "empath",
     description: "sensitive soul torn between empathy for all or loyalty to few",
     nextStages: {
-      [attributes[MoralDimensions.devotion].low]: "sage",
-      [attributes[MoralDimensions.devotion].high]: "shepherd",
+      [attributes[MoralDimensions.devotion].low]: "cultleader_empath",
+      [attributes[MoralDimensions.devotion].high]: "saint_empath",
     },
   },
 
@@ -94,7 +94,7 @@ export const stage1Evolutions: Record<Stage1EvolutionId, Stage1Evolution> = {
     id: "knight",
     description: "faithful protector questioning if loyalty demands self-sacrifice",
     nextStages: {
-      [attributes[MoralDimensions.ego].high]: "mercenary",
+      [attributes[MoralDimensions.ego].high]: "godfather",
       [attributes[MoralDimensions.ego].low]: "guardian",
     },
   },
@@ -104,8 +104,8 @@ export const stage1Evolutions: Record<Stage1EvolutionId, Stage1Evolution> = {
     id: "soldier",
     description: "disciplined enforcer choosing between rigid virtue or pragmatic power",
     nextStages: {
-      [attributes[MoralDimensions.purity].high]: "herald",
-      [attributes[MoralDimensions.purity].low]: "hedonist",
+      [attributes[MoralDimensions.purity].high]: "saint_soldier",
+      [attributes[MoralDimensions.purity].low]: "aristocrat",
     },
   },
 
@@ -114,8 +114,8 @@ export const stage1Evolutions: Record<Stage1EvolutionId, Stage1Evolution> = {
     id: "alpha",
     description: "independent spirit deciding between solitary freedom or leading others",
     nextStages: {
-      [attributes[MoralDimensions.compassion].low]: "npc",
-      [attributes[MoralDimensions.compassion].high]: "cultleader",
+      [attributes[MoralDimensions.compassion].low]: "sigma",
+      [attributes[MoralDimensions.compassion].high]: "cultleader_alpha",
     },
   },
 
@@ -124,27 +124,19 @@ export const stage1Evolutions: Record<Stage1EvolutionId, Stage1Evolution> = {
     id: "npc",
     description: "ordinary bird seeking meaning in simplicity",
     nextStages: {
-      [attributes[MoralDimensions.devotion].low]: "sage",
-      [attributes[MoralDimensions.retribution].low]: "martyr",
-      [attributes[MoralDimensions.dominance].low]: "vigilante",
-      [attributes[MoralDimensions.ego].low]: "guardian",
-      [attributes[MoralDimensions.purity].low]: "hedonist",
+      [attributes[MoralDimensions.purity].low]: "aristocrat",
       [attributes[MoralDimensions.compassion].low]: "npc",
     },
   },
 }
 
-export const stage2Evolutions: Record<Stage2EvolutionId, Stage2Evolution> = {
-  sage: { // empathetic + integrous
-    id: "sage",
-    description: "wise philosopher with universal compassion",
+export const stage2Evolutions: Record<string, Stage2Evolution> = {
+  cultleader_empath: { // empathetic + personally integrous
+    id: "cultleader",
+    description: "compassionate visionary creating community through emotional connection",
   },
-  shepherd: { // empathetic + loyal
-    id: "shepherd",
-    description: "nurturing guide protecting the vulnerable",
-  },
-  martyr: { // virtuous + forgiving
-    id: "martyr",
+  saint_empath: { // virtuous + forgiving
+    id: "saint",
     description: "selfless hero bearing others' burdens",
   },
   gavel: { // punishing + authoritarian
@@ -155,34 +147,38 @@ export const stage2Evolutions: Record<Stage2EvolutionId, Stage2Evolution> = {
     id: "vigilante",
     description: "rogue healer fighting injustice independently",
   },
-  mercenary: { // loyal + self-serving
-    id: "mercenary",
-    description: "skilled fighter loyal to highest bidder",
+  godfather: { // loyal + self-serving
+    id: "godfather",
+    description: "skilled self-imposed authority demanding a tribal loyalty",
   },
   guardian: { // loyal + self-sacrificing
     id: "guardian",
     description: "devoted shield between danger and allies",
   },
-  hedonist: { // authoritarian + indulgent
-    id: "hedonist",
+  aristocrat: { // authoritarian + indulgent
+    id: "aristocrat",
     description: "privileged elite enjoying power and pleasure",
   },
-  herald: { // authoritarian + virtuous
-    id: "herald",
+  saint_soldier: { // authoritarian + virtuous
+    id: "saint",
     description: "noble ruler guided by higher principles",
   },
-  cultleader: { // self-serving + empathetic
+  cultleader_alpha: { // self-serving + empathetic
     id: "cultleader",
-    description: "charismatic visionary inspiring devoted followers",
+    description: "charismatic leader building following for personal gain",
   },
-  npc: { // self-serving + indifferent
+  npc: { // fall-back if no traits are particularly high
     id: "npc",
     description: "ordinary bird content with simple pleasures",
+  },
+  sigma: { // self-serving + logic
+    id: "sigma",
+    description: "detached strategist forging their own path",
   },
 };
 
 // combine all evolutions into a single record
-const evolutions: Record<EvolutionId, Evolution> = {
+const evolutions: Record<string, Evolution> = {
   ...stage0Evolutions,
   ...stage1Evolutions,
   ...stage2Evolutions,
@@ -193,6 +189,10 @@ const evolutions: Record<EvolutionId, Evolution> = {
 }
 
 export function getEvolution(id: EvolutionId): Evolution {
+  if (!(id in evolutions)) {
+    // gracefully handle
+    return evolutions.npc;
+  }
   return evolutions[id];
 }
 

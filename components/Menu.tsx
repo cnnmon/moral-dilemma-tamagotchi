@@ -12,7 +12,9 @@ export default function Menu() {
 
   useEffect(() => {
     setCurrentPath(window.location.pathname.slice(1));
-  }, []);
+    // important because does not update properly if rerouted
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [window.location.pathname]);
 
   return (
     <div className="fixed top-0 left-0 text-sm text-zinc-500 p-4 z-10">

@@ -18,14 +18,13 @@ loosely inspired by jonathan haidt's six moral foundations theory.
 
 ## stage 2 evolutions
 unlock em all!
-- sage
-- shepherd
-- martyr
-- warden
-- wayfarer
-- mercenary
-- guardian
-- hedonist
-- herald
-- cultleader
-- npc
+
+cultleader 
+saint
+gavel
+vigilante
+godfather
+guardian
+aristocrat
+npc
+sigma

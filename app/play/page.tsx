@@ -77,7 +77,7 @@ export default function Play() {
   if (isGraduated) {
     return (
       <>
-        <Graduation pet={pet} seenDilemmas={seenDilemmas} />
+        <Graduation />
       </>
     );
   }
@@ -182,7 +182,9 @@ export default function Play() {
                   className="border-2 border-black p-2 bg-zinc-100 sm:max-w-3xs text-sm mb-2 w-full"
                   key={pet.personality}
                 >
-                  {pet.personality}
+                  {pet.personality.length > 0
+                    ? pet.personality
+                    : "no personality yet."}
                 </div>
               </motion.div>
             </div>
