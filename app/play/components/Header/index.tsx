@@ -42,8 +42,8 @@ export default function Header({
       </div>
 
       <div>
-        {false ? (
-          <p className="text-zinc-500">{pet.name} has graduated!!!</p>
+        {hasGraduated ? (
+          <p className="text-zinc-500">{pet.name} has graduated.</p>
         ) : (
           <Stat
             label={pet.age < 2 ? "until evolution" : "until graduation"}

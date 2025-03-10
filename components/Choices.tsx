@@ -5,7 +5,7 @@ export default function Choices({
   selectedChoice,
   setSelectedChoice,
 }: {
-  dilemmaText: string;
+  dilemmaText?: string;
   choices: { text: string }[];
   disabled?: boolean;
   selectedChoice: number | null;
@@ -13,7 +13,7 @@ export default function Choices({
 }) {
   return (
     <div className="flex flex-col gap-2">
-      <p>{dilemmaText}</p>
+      {dilemmaText && <p>{dilemmaText}</p>}
       <div className="flex flex-col gap-1">
         {choices.map((choice, index) => (
           <button

@@ -22,6 +22,9 @@ import { EvolutionId } from "@/constants/evolutions";
 import { getEvolution } from "@/constants/evolutions";
 import Window from "@/components/Window";
 import Graduation from "./components/Graduation";
+import Stat from "./components/Header/Stat";
+import { attributes } from "@/constants/morals";
+import Choices from "@/components/Choices";
 
 export default function Play() {
   const [animation, setAnimation] = useState<Animation>(Animation.IDLE);
@@ -102,7 +105,7 @@ export default function Play() {
             >
               <Graduation
                 pet={pet}
-                seenDilemmaCount={seenDilemmas.length}
+                seenDilemmas={seenDilemmas}
                 graduationOpen={graduationOpen}
                 setGraduationOpen={setGraduationOpen}
               />
@@ -191,21 +194,26 @@ export default function Play() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
+              className="w-full"
             >
               <Window title="°˖✧◝(⁰▿⁰)◜✧˖°">
                 <p>
-                  {pet.name} has graduated! {pet.name} has learned a lot from
-                  you and is ready to start their new journey. thank you for
-                  your service.{" "}
-                  <a
-                    className="underline"
-                    onClick={() => {
-                      setGraduationOpen(true);
-                    }}
-                  >
-                    what kind of adult will {pet.name} be?
-                  </a>
+                  happy graduation! after {seenDilemmas.length} days of moral
+                  growth, {pet.name} has learned a lot from you and is ready to
+                  start a new journey.
                 </p>
+                <div className="flex gap-2 items-center">
+                  <a
+                    onClick={() => setGraduationOpen(true)}
+                    className="underline"
+                  >
+                    🎓 attend graduation
+                  </a>
+                  <span className="text-zinc-500">or</span>
+                  <a href="/create" className="underline">
+                    adopt a new pet
+                  </a>
+                </div>
               </Window>
             </motion.div>
           ) : (
