@@ -3,7 +3,7 @@ import { MoralDimensions, MoralStatAttribute, attributes } from "./morals";
 // evolution time frames
 const evolutionTimeFrame = {
   0: 5, // in age 0 until age 1 evolution
-  1: 8, // in age 1 until age 2 evolution
+  1: 9, // in age 1 until age 2 evolution
   2: 12, // until graduation unlocks
 }
 
@@ -267,7 +267,25 @@ export function getEvolutions(finalEvolutionId: Stage2EvolutionId): EvolutionPat
   }
 
   if (!stage1StatKey) {
-    throw new Error(`no stage 0 stat found for ${stage1Evolution.id}`);
+    return [{
+      stage: "stage 2",
+      id: stage2Evolution.id,
+      description: stage2Evolution.description,
+      statUsed: getStatUsed(stage2StatKey)
+    }, {
+      stage: "stage 1",
+      id: stage1Evolution.id,
+      description: stage1Evolution.description,
+      statUsed: {
+        dimension: MoralDimensions.compassion,
+        value: "low",
+        name: attributes[MoralDimensions.compassion].low
+      }
+    }, {
+      stage: "stage 0",
+      id: "baby",
+      description: stage0Evolutions.baby.description
+    }]
   }
 
   // build the complete evolution path

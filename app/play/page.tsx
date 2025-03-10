@@ -12,7 +12,6 @@ import Header from "./components/Header";
 import { MoralStats } from "./components/MoralStats";
 import { AnimatePresence, motion } from "framer-motion";
 import useBaseStats from "./utils/useBaseStats";
-import Actions from "./components/Actions";
 import HoverText from "@/components/HoverText";
 import { useState } from "react";
 import { Animation } from "@/constants/sprites";
@@ -22,6 +21,7 @@ import { EvolutionId } from "@/constants/evolutions";
 import { getEvolution } from "@/constants/evolutions";
 import Window from "@/components/Window";
 import Graduation from "./components/Graduation";
+import Actions from "./components/Actions";
 
 export default function Play() {
   const [animation, setAnimation] = useState<Animation>(Animation.IDLE);
@@ -30,6 +30,7 @@ export default function Play() {
   const [rip, setRip] = useState(false);
   const [dilemmaOpen, setDilemmaOpen] = useState(false);
   const [graduationOpen, setGraduationOpen] = useState(false);
+  const { outcomes, addOutcome, removeOutcome } = useOutcomes();
 
   const stateResult = useQuery(api.state.getActiveGameState);
   const {
@@ -45,7 +46,6 @@ export default function Play() {
     setRip,
     rip,
   });
-  const { outcomes, addOutcome, removeOutcome } = useOutcomes();
   const {
     currentDilemma,
     onDilemmaProcessingStart,
@@ -73,11 +73,11 @@ export default function Play() {
     return <Loading />;
   }
 
-  // if out of dilemmas, note that
+  // extract pet and seenDilemmas based on status
   const { pet, seenDilemmas } = stateResult;
-  const hasGraduated = status === "out_of_dilemmas" || status === "graduated";
   const evolution = getEvolution(pet.evolutionId as EvolutionId);
   const timeFrame = getEvolutionTimeFrame(pet.age);
+  const hasGraduated = status === "graduated" || status === "out_of_dilemmas";
 
   return (
     <>
@@ -94,7 +94,7 @@ export default function Play() {
             onClick={() => setGraduationOpen(false)}
           >
             <motion.div
-              key="graduation"
+              key="graduated-content"
               initial={{ y: 20 }}
               animate={{ y: 0 }}
               exit={{ y: 20 }}
@@ -186,9 +186,10 @@ export default function Play() {
             <MoralStats moralStats={pet.moralStats} />
           </div>
 
+          {/* Main content */}
           {hasGraduated ? (
             <motion.div
-              key="graduation"
+              key="graduated"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
@@ -229,7 +230,6 @@ export default function Play() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.3, delay: 0.3 }}
-                  className="pointer-events-auto"
                 >
                   <div
                     className="border-2 border-black p-2 bg-zinc-100 sm:max-w-3xs text-sm mb-2 w-full"

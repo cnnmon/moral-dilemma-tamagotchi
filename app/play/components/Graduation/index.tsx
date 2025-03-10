@@ -121,7 +121,7 @@ export default function Graduation({
                   <div className="pl-1">
                     {pastEvolutions.map((evolution, index) => (
                       <div
-                        key={evolution.id}
+                        key={`${evolution.id}-${index}`}
                         className="flex items-start text-sm mb-1 last:mb-0"
                       >
                         <span className="font-mono mr-1">{3 - index}.</span>

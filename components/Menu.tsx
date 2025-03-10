@@ -45,6 +45,14 @@ export default function Menu() {
                   resume: {currentPet.name}
                 </a>
               )}
+              {currentPath !== "achievements" && (
+                <a
+                  href="/achievements"
+                  className="block py-1 hover:bg-zinc-100"
+                >
+                  view achievements
+                </a>
+              )}
               {currentPath !== "about" && (
                 <a href="/about" className="block py-1 hover:bg-zinc-100">
                   about

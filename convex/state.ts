@@ -3,6 +3,7 @@ import { Doc } from "./_generated/dataModel";
 import { getUserAndPetId } from "./user";
 import { DilemmaTemplate, dilemmaTemplates } from "../constants/dilemmas";
 import { getPartitionedDilemmas } from "./lib/getPartitionedDilemmas";
+import { api } from "./_generated/api";
 
 export type GameState = 
   | { status: 'not_authenticated' }
@@ -11,24 +12,28 @@ export type GameState =
       status: 'has_dilemmas',
       seenDilemmas: Doc<"dilemmas">[],
       unseenDilemmaTitles: string[],
-      pet: Doc<"pets">
+      pet: Doc<"pets">,
+      achievements: Doc<"achievements">[]
     }
   | {
       status: 'out_of_dilemmas',
       seenDilemmas: Doc<"dilemmas">[],
-      pet: Doc<"pets">
+      pet: Doc<"pets">,
+      achievements: Doc<"achievements">[]
     }
   | {
       status: 'has_unresolved_dilemma',
       seenDilemmas: Doc<"dilemmas">[],
       unresolvedDilemma: DilemmaTemplate,
       question: string,
-      pet: Doc<"pets">
+      pet: Doc<"pets">,
+      achievements: Doc<"achievements">[]
     }
   | {
       status: 'graduated',
       seenDilemmas: Doc<"dilemmas">[],
-      pet: Doc<"pets">
+      pet: Doc<"pets">,
+      achievements: Doc<"achievements">[]
     }
 
 // get an active pet & dilemmas
@@ -57,11 +62,15 @@ export const getActiveGameState = query({
 
     const { seenDilemmas, unseenDilemmaTitles, unresolvedDilemma } = getPartitionedDilemmas(allDilemmas);
 
+    // get all achievements for this user
+    const achievements = await ctx.runQuery(api.achievements.getUserAchievements);
+
     if (pet.graduated) {
       return {
         status: 'graduated',
         seenDilemmas,
         pet,
+        achievements,
       };
     }
 
@@ -73,6 +82,7 @@ export const getActiveGameState = query({
         unresolvedDilemma: dilemma,
         question: unresolvedDilemma.outcome,
         pet,
+        achievements,
       };
     }
     
@@ -80,7 +90,8 @@ export const getActiveGameState = query({
       return { 
         status: 'out_of_dilemmas',
         seenDilemmas,
-        pet
+        pet,
+        achievements,
       };
     }
 
@@ -89,6 +100,7 @@ export const getActiveGameState = query({
       seenDilemmas,
       unseenDilemmaTitles,
       pet,
+      achievements,
     };
   },
 });

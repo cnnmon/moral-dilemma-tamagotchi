@@ -6,20 +6,25 @@ interface UserInfo {
   petId: Id<'pets'> | null;
 }
 
+export async function getUserId(ctx: QueryCtx | MutationCtx): Promise<string | null> {
+  const identity = await ctx.auth.getUserIdentity();
+  if (!identity?.email) {
+    return null;
+  }
+  return identity.email;
+}
+
 // internal helper to get user info and latest pet
 export async function getUserAndPetId(
   ctx: QueryCtx | MutationCtx
 ): Promise<UserInfo> {
-  // get user identity
-  const identity = await ctx.auth.getUserIdentity();
-  if (!identity?.email) {
-    return { 
-      userId: null, 
+  const userId = await getUserId(ctx);
+  if (!userId) {
+    return {
+      userId: null,
       petId: null,
     };
   }
-
-  const userId = identity.email;
 
   // get latest active pet for this user
   const latestPet = await ctx.db

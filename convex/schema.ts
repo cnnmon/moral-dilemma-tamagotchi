@@ -42,4 +42,12 @@ export default defineSchema({
   })
     .index("by_userAndPetId", ["userId", "petId"])
     .index("by_petId", ["petId"]),
+    
+  achievements: defineTable({
+    userId: v.string(), // user who earned the achievements
+    achievementId: v.string(), // ID of the achievement
+    timestamp: v.number(), // timestamp when the achievement was earned
+  })
+    .index("by_userId", ["userId"])
+    .index("by_userAndAchievement", ["userId", "achievementId"]),
 });

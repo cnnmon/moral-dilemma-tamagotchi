@@ -8,6 +8,7 @@ import processDilemmaResponse from "./lib/processDilemmaResponse";
 import { Id } from "./_generated/dataModel";
 import { evolvePetIfNeeded } from "./lib/evolvePetIfNeeded";
 import { getAverageMoralStats } from "./lib/getAverageMoralStats";
+import { AchievementId } from "../constants/achievements";
 
 type ProcessedResponse = {
   ok: true;
@@ -33,6 +34,14 @@ export const getDilemmaById = query({
       outcome: dilemma.outcome,
       resolved: dilemma.resolved,
     };
+  },
+});
+
+// get all seen dilemmas for a pet
+export const getSeenDilemmas = query({
+  args: { petId: v.id("pets") },
+  handler: async (ctx, args) => {
+    return await ctx.db.query("dilemmas").withIndex("by_petId", (q) => q.eq("petId", args.petId)).collect();
   },
 });
 
@@ -218,6 +227,7 @@ export const generateResponse = internalAction({
         newBaseStats: args.newBaseStats,
       });
     }
+
     return parsedResponse;
   },
 });
@@ -296,6 +306,19 @@ export const updateDilemmaAndPet = mutation({
         }),
       };
 
+      // unlock evolution achievement!
+      if (evolutionAdditions && "evolutionId" in evolutionAdditions && evolutionAdditions.evolutionId !== pet.evolutionId) {
+        const evolutionIdWithoutPath = evolutionAdditions.evolutionId.split('_')[0];
+        const achievementId = `evolve_to_${evolutionIdWithoutPath}` as AchievementId;
+        const userId = pet.userId;
+        await ctx.db.insert("achievements", {
+          userId,
+          achievementId,
+          timestamp: Date.now(),
+        });
+      }
+
+      // update pet with new moral stats and personality and evolution
       await ctx.db.patch(args.petId, {
         ...evolutionAdditions,
         baseStats: updatedBaseStats,
