@@ -295,11 +295,11 @@ export const dilemmaTemplates: Record<string, DilemmaTemplate> = {
   
   heirloomring: {
     id: "heirloomring",
-    text: "{pet}'s grandmother left them a family heirloom ring with instructions to 'keep it in the family.' {pet}'s cousin who was very close to grandma really wants the ring but wasn't mentioned in the will. should {pet} give the ring to their cousin or keep it as instructed?",
+    text: "{pet}'s grandmother left them a family heirloom. {pet}'s cousin really wants the heirloom but wasn't mentioned in the will. should {pet} give the heirloom to their cousin or keep it as instructed?",
     attribute: [MoralDimensions.devotion],
     responses: [
       {
-        text: "give the ring to their cousin",
+        text: "give the heirloom to their cousin",
       },
       {
         text: "keep it as instructed",
@@ -349,14 +349,14 @@ export const dilemmaTemplates: Record<string, DilemmaTemplate> = {
   },
   gamenight: {
     id: "gamenight",
-    text: "{pet} is winning by a large margin at game night against a friend who always gets upset when losing. this friend has been having a rough week already. should {pet} play to win decisively or subtly let the friend catch up for a closer game?",
+    text: "{pet} is winning against their friend at their favorite board game. this friend has been having a rough week already. should {pet} show no mercy or subtly let the friend catch up?",
     attribute: [MoralDimensions.dominance, MoralDimensions.compassion],
     responses: [
       {
-        text: "play to win decisively",
+        text: "show no mercy",
       },
       {
-        text: "subtly let the friend catch up",
+        text: "let the friend catch up",
       },
     ],
   },

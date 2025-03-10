@@ -5,13 +5,14 @@ export default function Stat({
   value, // out of 100
   displayValue,
   dangerous,
-  barStyle = { width: "100px" },
+  barStyle = { width: "100%" },
   containerStyle = { justifyContent: "start" },
   customBarColor,
   decrement,
   increment,
   hideSkull = false,
   useLerpColors = false,
+  disabled = false,
 }: {
   label?: string;
   value: number;
@@ -24,6 +25,7 @@ export default function Stat({
   increment?: number;
   hideSkull?: boolean;
   useLerpColors?: boolean;
+  disabled?: boolean;
 }) {
   const dangerousValue = dangerous ?? value < 25;
   const scaledIncrement = increment ? Math.round(increment * 10) : 0;
@@ -63,10 +65,12 @@ export default function Stat({
 
   return (
     <div
-      className="flex w-full justify-start items-center mb-[-4px]"
+      className={`flex w-full justify-start items-center gap-2 mb-[-4px] ${
+        disabled ? "opacity-50" : ""
+      }`}
       style={containerStyle}
     >
-      {label && <p className="font-pixel w-18">{label}</p>}
+      {label && <p className="min-w-28">{label}</p>}
       <div className="border-2 h-3 border-black relative" style={barStyle}>
         {value === 0 && !hideSkull ? (
           <div className="absolute inset-0 mt-1 flex items-center justify-center text-sm">
@@ -74,7 +78,7 @@ export default function Stat({
           </div>
         ) : (
           <div
-            className={`h-full ${!useLerpColors ? customBarColor || (dangerousValue ? "bg-red-500" : "bg-black") : ""} transition-all duration-100`}
+            className={`h-full ${!useLerpColors ? customBarColor || (dangerousValue ? "bg-red-500" : "bg-black") : ""} transition-all duration-100 bg-zinc-500`}
             style={{
               width: `${value}%`,
               ...getProgressColor(),
@@ -83,7 +87,13 @@ export default function Stat({
         )}
       </div>
       {displayValue && (
-        <span className="text-xs ml-1 mr-1">{displayValue}</span>
+        <p
+          className={`text-xs ${
+            displayValue.length > 10 ? "w-28" : ""
+          } text-right`}
+        >
+          {displayValue}
+        </p>
       )}
       <AnimatePresence>
         {scaledIncrement > 0 ? (

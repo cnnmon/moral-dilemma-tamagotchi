@@ -12,6 +12,7 @@ export default function Header({
   evolution,
   seenDilemmasCount,
   timeFrame,
+  hasGraduated,
 }: {
   pet: Doc<"pets">;
   baseStats: BaseStatsType;
@@ -20,36 +21,39 @@ export default function Header({
   evolution: Evolution;
   seenDilemmasCount: number;
   timeFrame: number;
+  hasGraduated: boolean;
 }) {
   return (
-    <div className="flex gap-4 w-full bg-white border-2 p-3 justify-between">
-      <BaseStats
-        baseStats={baseStats}
-        recentDecrements={recentDecrements}
-        recentIncrements={recentIncrements}
-      />
+    <div className="flex flex-col bg-white border-2 p-4 gap-2">
+      <div className="flex flex-col sm:flex-row gap-4 sm:gap-0 w-full justify-between">
+        <BaseStats
+          baseStats={baseStats}
+          recentDecrements={recentDecrements}
+          recentIncrements={recentIncrements}
+          hasGraduated={hasGraduated}
+        />
 
-      <div className="flex flex-col items-end text-right">
-        <p className="flex items-center text-zinc-500">
-          <b>level {pet.age}</b>—{evolution.id}
-        </p>
-        <p className="text-sm max-w-48">{evolution.description}</p>
-        <div className="mt-2 w-fit">
-          <p className="text-xs text-zinc-500">
-            {pet.age < 2
-              ? "dilemmas until evolution"
-              : "dilemmas until graduation"}{" "}
-            ({seenDilemmasCount}/{timeFrame})
+        <div className="flex flex-col sm:items-end text-right">
+          <p className="flex items-center text-zinc-500">
+            <b>level {pet.age}</b>—{evolution.id}
           </p>
+          <p className="text-sm max-w-48">{evolution.description}</p>
+        </div>
+      </div>
+
+      <div>
+        {false ? (
+          <p className="text-zinc-500">{pet.name} has graduated!!!</p>
+        ) : (
           <Stat
+            label={pet.age < 2 ? "until evolution" : "until graduation"}
             value={(seenDilemmasCount / timeFrame) * 100}
-            barStyle={{ width: "120px" }}
-            containerStyle={{ justifyContent: "end" }}
+            displayValue={`${seenDilemmasCount}/${timeFrame} dilemmas`}
             dangerous={false}
             hideSkull={true}
             useLerpColors={true}
           />
-        </div>
+        )}
       </div>
     </div>
   );

@@ -129,6 +129,7 @@ export default function Play() {
               evolution={evolution}
               seenDilemmasCount={seenDilemmas.length}
               timeFrame={timeFrame}
+              hasGraduated={hasGraduated}
             />
           </motion.div>
 
@@ -190,7 +191,6 @@ export default function Play() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
-              className="w-full"
             >
               <Window title="°˖✧◝(⁰▿⁰)◜✧˖°">
                 <p>
@@ -209,7 +209,7 @@ export default function Play() {
               </Window>
             </motion.div>
           ) : (
-            <div className="flex sm:flex-row flex-col gap-2">
+            <div className="flex sm:flex-row flex-col gap-2 w-full">
               <div className="flex flex-col gap-2">
                 <Actions
                   setCursorObject={setCursorObject}

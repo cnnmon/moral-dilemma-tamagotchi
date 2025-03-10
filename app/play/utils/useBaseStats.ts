@@ -6,7 +6,7 @@ import { VIEWPORT_HEIGHT, VIEWPORT_WIDTH } from "@/components/Background";
 
 const POO_STORAGE_KEY = "poos";
 
-const DECREMENT_INTERVAL_MS = 8000;
+const DECREMENT_INTERVAL_MS = 6000;
 const BASE_STATS_DECREMENT_VALUE = 0.5;
 const MAX_POOS = 10;
 const POO_CHANCE = 0.05;
@@ -41,25 +41,6 @@ export default function useBaseStats({
   // track recent stat changes for animation
   const [recentDecrements, setRecentDecrements] = useState<Partial<Record<keyof BaseStatsType, number>>>({});
   const [recentIncrements, setRecentIncrements] = useState<Partial<Record<keyof BaseStatsType, number>>>({});
-  // track page focus state
-  const [isPageFocused, setIsPageFocused] = useState(true);
-
-  // set up focus/blur event listeners
-  useEffect(() => {
-    // default to true if document.hasFocus() is not available (SSR)
-    setIsPageFocused(typeof document !== 'undefined' ? document.hasFocus() : true);
-
-    const handleFocus = () => setIsPageFocused(true);
-    const handleBlur = () => setIsPageFocused(false);
-
-    window.addEventListener('focus', handleFocus);
-    window.addEventListener('blur', handleBlur);
-
-    return () => {
-      window.removeEventListener('focus', handleFocus);
-      window.removeEventListener('blur', handleBlur);
-    };
-  }, []);
 
   // on mount, set the poos to saved poos
   useEffect(() => {
@@ -93,7 +74,7 @@ export default function useBaseStats({
   useEffect(() => {
     const interval = setInterval(() => {
       // only decrement stats when page is focused
-      if (!isPageFocused || !stateResult || stateResult.status === "graduated") return;
+      if (!stateResult || stateResult.status === "graduated") return;
 
       // decrement stats
       setBaseStats((prevStats: BaseStatsType) => {
@@ -161,8 +142,7 @@ export default function useBaseStats({
     }, DECREMENT_INTERVAL_MS);
 
     return () => clearInterval(interval);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [baseStatsLoaded, isPageFocused]);
+  }, [baseStatsLoaded, stateResult, setRip]);
 
   const incrementStat = (stat: keyof BaseStatsType) => {
     // temporary happy animation
