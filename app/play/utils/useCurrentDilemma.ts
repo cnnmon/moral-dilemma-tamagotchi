@@ -1,10 +1,30 @@
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { DilemmaTemplate, dilemmaTemplates } from "@/constants/dilemmas";
-import { useState } from "react";
 import { getRandomItem } from "./random";
 import { GameState } from "@/convex/state";
 
 const CURRENT_DILEMMA_KEY = "pet-current-dilemma";
+const LOCALSTORAGE_DEBOUNCE_MS = 1000;
+
+// debounced local storage function
+function useDebounce<Args extends unknown[]>(
+  callback: (...args: Args) => void,
+  delay: number
+): (...args: Args) => void {
+  const [timer, setTimer] = useState<NodeJS.Timeout | null>(null);
+
+  return useCallback((...args: Args) => {
+    if (timer) {
+      clearTimeout(timer);
+    }
+
+    setTimer(
+      setTimeout(() => {
+        callback(...args);
+      }, delay)
+    );
+  }, [callback, delay, timer]);
+}
 
 export function useCurrentDilemma({
   stateResult,
@@ -17,10 +37,24 @@ export function useCurrentDilemma({
   );
   const [lastQuestion, setLastQuestion] = useState<string | null>(null);
 
+  // debounce localStorage operations
+  const debouncedSaveDilemma = useDebounce((dilemma: DilemmaTemplate | null) => {
+    if (dilemma) {
+      localStorage.setItem(CURRENT_DILEMMA_KEY, JSON.stringify(dilemma));
+    } else {
+      localStorage.removeItem(CURRENT_DILEMMA_KEY);
+    }
+  }, LOCALSTORAGE_DEBOUNCE_MS);
+
   const handleSaveCurrentDilemma = useCallback((dilemma: DilemmaTemplate) => {
     setCurrentDilemma(dilemma);
-    localStorage.setItem(CURRENT_DILEMMA_KEY, JSON.stringify(dilemma));
-  }, []);
+    if (dilemma) {
+      localStorage.setItem(CURRENT_DILEMMA_KEY, JSON.stringify(dilemma));
+
+    } else {
+      debouncedSaveDilemma(null);
+    }
+  }, [debouncedSaveDilemma]);
 
   const loadCurrentDilemma = useCallback((availableDilemmaTitles: string[]) => {
     // either try to load from storage
@@ -47,18 +81,20 @@ export function useCurrentDilemma({
     handleSaveCurrentDilemma(newDilemma);
   }, [handleSaveCurrentDilemma]);
 
-  const onDilemmaProcessingStart = () => {
+  const onDilemmaProcessingStart = useCallback(() => {
     setIsProcessing(true);
-    localStorage.setItem(CURRENT_DILEMMA_KEY, JSON.stringify(currentDilemma));
-  };
+    if (currentDilemma) {
+      debouncedSaveDilemma(currentDilemma);
+    }
+  }, [currentDilemma, debouncedSaveDilemma]);
 
-  const onDilemmaProcessingEnd = () => {
+  const onDilemmaProcessingEnd = useCallback(() => {
     // clear current dilemma from storage to allow picking next one
     setIsProcessing(false);
-    localStorage.removeItem(CURRENT_DILEMMA_KEY);
+    debouncedSaveDilemma(null);
     setCurrentDilemma(null);
     setLastQuestion(null);
-  };
+  }, [debouncedSaveDilemma]);
 
   // handle dilemma selection and storage
   useEffect(() => {
@@ -83,8 +119,7 @@ export function useCurrentDilemma({
     else if (!currentDilemma && stateResult.status === "has_dilemmas") {
       loadCurrentDilemma(stateResult.unseenDilemmaTitles);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [stateResult, currentDilemma]);
+  }, [stateResult, currentDilemma, isProcessing, handleSaveCurrentDilemma, lastQuestion, loadCurrentDilemma]);
 
   return {
     currentDilemma,

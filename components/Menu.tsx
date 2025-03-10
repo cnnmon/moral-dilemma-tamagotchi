@@ -50,7 +50,7 @@ export default function Menu() {
                   href="/achievements"
                   className="block py-1 hover:bg-zinc-100"
                 >
-                  view achievements
+                  achievements
                 </a>
               )}
               {currentPath !== "about" && (

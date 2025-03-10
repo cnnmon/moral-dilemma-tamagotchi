@@ -12,11 +12,54 @@ export function getEvolutionTimeFrame(age: number): number {
 }
 
 // evolution types
-export type Stage1EvolutionId = "empath" | "devout" | "watcher" | "knight" | "soldier" | "alpha" | "npc";
+export enum EvolutionIdEnum {
+  // Base
+  BABY = "baby",
+  
+  // Stage 1
+  EMPATH = "empath",
+  DEVOUT = "devout",
+  WATCHER = "watcher",
+  KNIGHT = "knight",
+  SOLDIER = "soldier",
+  ALPHA = "alpha",
+  NPC = "npc",
+  
+  // Stage 2
+  GAVEL = "gavel",
+  VIGILANTE = "vigilante",
+  GODFATHER = "godfather",
+  GUARDIAN = "guardian",
+  ARISTOCRAT = "aristocrat",
+  SIGMA = "sigma",
+  SAINT = "saint",
+  CULTLEADER = "cultleader",
+  
+  // Final
+  GRADUATED = "graduated"
+}
 
-export type Stage2EvolutionId = "gavel" | "vigilante" | "godfather" | "guardian" | "aristocrat" | "npc" | "sigma" | "saint" | "cultleader";
+export type Stage1EvolutionId = 
+  | EvolutionIdEnum.EMPATH 
+  | EvolutionIdEnum.DEVOUT 
+  | EvolutionIdEnum.WATCHER 
+  | EvolutionIdEnum.KNIGHT 
+  | EvolutionIdEnum.SOLDIER 
+  | EvolutionIdEnum.ALPHA 
+  | EvolutionIdEnum.NPC;
 
-export type EvolutionId = "baby" | Stage1EvolutionId | Stage2EvolutionId;
+export type Stage2EvolutionId = 
+  | EvolutionIdEnum.GAVEL 
+  | EvolutionIdEnum.VIGILANTE 
+  | EvolutionIdEnum.GODFATHER 
+  | EvolutionIdEnum.GUARDIAN 
+  | EvolutionIdEnum.ARISTOCRAT 
+  | EvolutionIdEnum.NPC 
+  | EvolutionIdEnum.SIGMA 
+  | EvolutionIdEnum.SAINT 
+  | EvolutionIdEnum.CULTLEADER;
+
+export type EvolutionId = EvolutionIdEnum.BABY | Stage1EvolutionId | Stage2EvolutionId;
 
 // represents a stage in pet evolution
 type Stage0Evolution = {
@@ -28,7 +71,7 @@ type Stage0Evolution = {
 type Stage1Evolution = {
   id: Stage1EvolutionId;
   description: string;
-  nextStages: Partial<Record<MoralStatAttribute, Stage2EvolutionId>>;
+  nextStages: Partial<Record<MoralStatAttribute, Stage2EvolutionId | `${Stage2EvolutionId}_${MoralStatAttribute}`>>;
 } 
 
 type Stage2Evolution = {
@@ -43,136 +86,136 @@ type Stage3Evolution = {
 
 export type Evolution = Stage0Evolution | Stage1Evolution | Stage2Evolution | Stage3Evolution;
 
-export const stage0Evolutions: Record<'baby', Stage0Evolution> = {
-  baby: {
-    id: "baby",
+export const stage0Evolutions: Record<EvolutionIdEnum.BABY, Stage0Evolution> = {
+  [EvolutionIdEnum.BABY]: {
+    id: EvolutionIdEnum.BABY,
     description: "curious hatchling taking first steps",
     nextStages: {
-      [attributes[MoralDimensions.compassion].high]: "empath",
-      [attributes[MoralDimensions.purity].high]: "devout",
-      [attributes[MoralDimensions.retribution].high]: "watcher",
-      [attributes[MoralDimensions.devotion].high]: "knight",
-      [attributes[MoralDimensions.dominance].high]: "soldier",
-      [attributes[MoralDimensions.ego].high]: "alpha",
+      [attributes[MoralDimensions.compassion].high]: EvolutionIdEnum.EMPATH,
+      [attributes[MoralDimensions.purity].high]: EvolutionIdEnum.DEVOUT,
+      [attributes[MoralDimensions.retribution].high]: EvolutionIdEnum.WATCHER,
+      [attributes[MoralDimensions.devotion].high]: EvolutionIdEnum.KNIGHT,
+      [attributes[MoralDimensions.dominance].high]: EvolutionIdEnum.SOLDIER,
+      [attributes[MoralDimensions.ego].high]: EvolutionIdEnum.ALPHA,
     }
   }
 }
 
 export const stage1Evolutions: Record<Stage1EvolutionId, Stage1Evolution> = {
   // follows heart (high compassion) -> evolves based on devotion
-  empath: {
-    id: "empath",
+  [EvolutionIdEnum.EMPATH]: {
+    id: EvolutionIdEnum.EMPATH,
     description: "sensitive soul torn between empathy for all or loyalty to few",
     nextStages: {
-      [attributes[MoralDimensions.devotion].low]: "cultleader_empath",
-      [attributes[MoralDimensions.devotion].high]: "saint_empath",
+      [attributes[MoralDimensions.devotion].low]: `${EvolutionIdEnum.CULTLEADER}_empath`,
+      [attributes[MoralDimensions.devotion].high]: `${EvolutionIdEnum.SAINT}_empath`,
     },
   },
 
   // virtuous (purity) -> evolves based on retribution
-  devout: { 
-    id: "devout",
+  [EvolutionIdEnum.DEVOUT]: { 
+    id: EvolutionIdEnum.DEVOUT,
     description: "principled believer balancing mercy and judgment",
     nextStages: {
-      [attributes[MoralDimensions.retribution].high]: "gavel",
-      [attributes[MoralDimensions.retribution].low]: "martyr",
+      [attributes[MoralDimensions.retribution].high]: `${EvolutionIdEnum.GAVEL}_devout`,
+      [attributes[MoralDimensions.retribution].low]: `${EvolutionIdEnum.SAINT}_devout`,
     },
   },
 
   // punishment (retribution) -> evolves based on dominance
-  watcher: { 
-    id: "watcher",
+  [EvolutionIdEnum.WATCHER]: { 
+    id: EvolutionIdEnum.WATCHER,
     description: "justice-seeker deciding between personal action or systemic change",
     nextStages: {
-      [attributes[MoralDimensions.dominance].high]: "gavel",
-      [attributes[MoralDimensions.dominance].low]: "vigilante",
+      [attributes[MoralDimensions.dominance].high]: EvolutionIdEnum.GAVEL,
+      [attributes[MoralDimensions.dominance].low]: EvolutionIdEnum.VIGILANTE,
     },
   },
 
   // loyal (devotion) -> evolves based on ego
-  knight: { 
-    id: "knight",
+  [EvolutionIdEnum.KNIGHT]: { 
+    id: EvolutionIdEnum.KNIGHT,
     description: "faithful protector questioning if loyalty demands self-sacrifice",
     nextStages: {
-      [attributes[MoralDimensions.ego].high]: "godfather",
-      [attributes[MoralDimensions.ego].low]: "guardian",
+      [attributes[MoralDimensions.ego].high]: EvolutionIdEnum.GODFATHER,
+      [attributes[MoralDimensions.ego].low]: EvolutionIdEnum.GUARDIAN,
     },
   },
 
   // authoritarian (dominance) -> evolves based on purity
-  soldier: { 
-    id: "soldier",
+  [EvolutionIdEnum.SOLDIER]: { 
+    id: EvolutionIdEnum.SOLDIER,
     description: "disciplined enforcer choosing between rigid virtue or pragmatic power",
     nextStages: {
-      [attributes[MoralDimensions.purity].high]: "saint_soldier",
-      [attributes[MoralDimensions.purity].low]: "aristocrat",
+      [attributes[MoralDimensions.purity].high]: `${EvolutionIdEnum.SAINT}_soldier`,
+      [attributes[MoralDimensions.purity].low]: EvolutionIdEnum.ARISTOCRAT,
     },
   },
 
   // self-serving (ego) -> evolves based on compassion
-  alpha: { 
-    id: "alpha",
+  [EvolutionIdEnum.ALPHA]: { 
+    id: EvolutionIdEnum.ALPHA,
     description: "independent spirit deciding between solitary freedom or leading others",
     nextStages: {
-      [attributes[MoralDimensions.compassion].low]: "sigma",
-      [attributes[MoralDimensions.compassion].high]: "cultleader_alpha",
+      [attributes[MoralDimensions.compassion].low]: EvolutionIdEnum.SIGMA,
+      [attributes[MoralDimensions.compassion].high]: `${EvolutionIdEnum.CULTLEADER}_alpha`,
     },
   },
 
   // npc (fall-back if no traits are particularly high)
-  npc: {
-    id: "npc",
+  [EvolutionIdEnum.NPC]: {
+    id: EvolutionIdEnum.NPC,
     description: "ordinary bird seeking meaning in simplicity",
     nextStages: {
-      [attributes[MoralDimensions.purity].low]: "aristocrat",
-      [attributes[MoralDimensions.compassion].low]: "npc",
+      [attributes[MoralDimensions.purity].low]: EvolutionIdEnum.ARISTOCRAT,
+      [attributes[MoralDimensions.compassion].low]: EvolutionIdEnum.NPC,
     },
   },
 }
 
 export const stage2Evolutions: Record<string, Stage2Evolution> = {
-  cultleader_empath: { // empathetic + personally integrous
-    id: "cultleader",
+  "cultleader_empath": { // empathetic + personally integrous
+    id: EvolutionIdEnum.CULTLEADER,
     description: "compassionate visionary creating community through emotional connection",
   },
-  saint_empath: { // virtuous + forgiving
-    id: "saint",
+  "saint_empath": { // virtuous + forgiving
+    id: EvolutionIdEnum.SAINT,
     description: "selfless hero bearing others' burdens",
   },
-  gavel: { // punishing + authoritarian
-    id: "gavel",
+  [EvolutionIdEnum.GAVEL]: { // punishing + authoritarian
+    id: EvolutionIdEnum.GAVEL,
     description: "stern judge with unwavering principles",
   },
-  vigilante: { // punishing + autonomous
-    id: "vigilante",
+  [EvolutionIdEnum.VIGILANTE]: { // punishing + autonomous
+    id: EvolutionIdEnum.VIGILANTE,
     description: "rogue healer fighting injustice independently",
   },
-  godfather: { // loyal + self-serving
-    id: "godfather",
+  [EvolutionIdEnum.GODFATHER]: { // loyal + self-serving
+    id: EvolutionIdEnum.GODFATHER,
     description: "skilled self-imposed authority demanding a tribal loyalty",
   },
-  guardian: { // loyal + self-sacrificing
-    id: "guardian",
+  [EvolutionIdEnum.GUARDIAN]: { // loyal + self-sacrificing
+    id: EvolutionIdEnum.GUARDIAN,
     description: "devoted shield between danger and allies",
   },
-  aristocrat: { // authoritarian + indulgent
-    id: "aristocrat",
+  [EvolutionIdEnum.ARISTOCRAT]: { // authoritarian + indulgent
+    id: EvolutionIdEnum.ARISTOCRAT,
     description: "privileged elite enjoying power and pleasure",
   },
-  saint_soldier: { // authoritarian + virtuous
-    id: "saint",
+  "saint_soldier": { // authoritarian + virtuous
+    id: EvolutionIdEnum.SAINT,
     description: "noble ruler guided by higher principles",
   },
-  cultleader_alpha: { // self-serving + empathetic
-    id: "cultleader",
+  "cultleader_alpha": { // self-serving + empathetic
+    id: EvolutionIdEnum.CULTLEADER,
     description: "charismatic leader building following for personal gain",
   },
-  npc: { // fall-back if no traits are particularly high
-    id: "npc",
+  [EvolutionIdEnum.NPC]: { // fall-back if no traits are particularly high
+    id: EvolutionIdEnum.NPC,
     description: "ordinary bird content with simple pleasures",
   },
-  sigma: { // self-serving + logic
-    id: "sigma",
+  [EvolutionIdEnum.SIGMA]: { // self-serving + logic
+    id: EvolutionIdEnum.SIGMA,
     description: "detached strategist forging their own path",
   },
 };
@@ -182,10 +225,6 @@ const evolutions: Record<string, Evolution> = {
   ...stage0Evolutions,
   ...stage1Evolutions,
   ...stage2Evolutions,
-  graduated: {
-    id: "graduated",
-    description: "fully realized bird who found their true path",
-  },
 }
 
 export function getEvolution(id: EvolutionId): Evolution {
@@ -259,7 +298,7 @@ export function getEvolutions(finalEvolutionId: Stage2EvolutionId): EvolutionPat
 
   // find which stat from stage 0 led to stage 1
   let stage1StatKey: MoralStatAttribute | undefined;
-  for (const [statKey, evolveId] of Object.entries(stage0Evolutions.baby.nextStages)) {
+  for (const [statKey, evolveId] of Object.entries(stage0Evolutions[EvolutionIdEnum.BABY].nextStages)) {
     if (evolveId === stage1Evolution.id) {
       stage1StatKey = statKey as MoralStatAttribute;
       break;
@@ -283,8 +322,8 @@ export function getEvolutions(finalEvolutionId: Stage2EvolutionId): EvolutionPat
       }
     }, {
       stage: "stage 0",
-      id: "baby",
-      description: stage0Evolutions.baby.description
+      id: EvolutionIdEnum.BABY,
+      description: stage0Evolutions[EvolutionIdEnum.BABY].description
     }]
   }
 
@@ -304,8 +343,8 @@ export function getEvolutions(finalEvolutionId: Stage2EvolutionId): EvolutionPat
     },
     {
       stage: "stage 0",
-      id: "baby",
-      description: stage0Evolutions.baby.description
+      id: EvolutionIdEnum.BABY,
+      description: stage0Evolutions[EvolutionIdEnum.BABY].description
     }
   ]
 }
