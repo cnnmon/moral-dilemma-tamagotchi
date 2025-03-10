@@ -55,7 +55,7 @@ function baseStatsReducer(state: BaseStatsType, action: StatsAction): BaseStatsT
   }
 }
 
-export default function useBaseStats({
+export function useBaseStats({
   rip,
   stateResult,
   setAnimation,

@@ -9,7 +9,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Choices from "@/components/Choices";
 import WindowTextarea from "@/components/WindowTextarea";
-import { useAchievements } from "../hooks/useAchievements";
+import { useAchievements } from "../play/utils/useAchievements";
 import { useOutcomes } from "../play/utils/useOutcomes";
 import { OutcomePopup } from "../play/components/Outcome";
 
@@ -106,6 +106,26 @@ function Content() {
 
   return (
     <>
+      {/* Outcomes for achievements */}
+      <div className="fixed top-0 p-4 w-full max-w-lg z-30">
+        <AnimatePresence>
+          {outcomes.map((outcome) => (
+            <motion.div
+              key={outcome.id}
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.2 }}
+            >
+              <OutcomePopup
+                message={outcome.text}
+                exitable={outcome.exitable}
+                onClose={() => removeOutcome(outcome.id)}
+              />
+            </motion.div>
+          ))}
+        </AnimatePresence>
+      </div>
       <motion.div
         key="create-page"
         className="flex flex-col items-center gap-4 w-full sm:w-xl p-4 sm:p-0"
@@ -152,27 +172,6 @@ function Content() {
             ]}
           />
         </WindowTextarea>
-
-        {/* Outcomes for achievements */}
-        <AnimatePresence>
-          <div className="fixed top-0 p-4 w-full max-w-lg z-30">
-            {outcomes.map((outcome) => (
-              <motion.div
-                key={outcome.id}
-                initial={{ opacity: 0, y: -20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.2 }}
-              >
-                <OutcomePopup
-                  message={outcome.text}
-                  exitable={outcome.exitable}
-                  onClose={() => removeOutcome(outcome.id)}
-                />
-              </motion.div>
-            ))}
-          </div>
-        </AnimatePresence>
       </motion.div>
     </>
   );

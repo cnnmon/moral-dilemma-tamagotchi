@@ -4,14 +4,17 @@ import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { OutcomePopup } from "./components/Outcome";
 import Loading from "./components/Loading";
-import { useOutcomes } from "./utils/useOutcomes";
-import { useCurrentDilemma } from "./utils/useCurrentDilemma";
+import {
+  useOutcomes,
+  useAchievements,
+  useCurrentDilemma,
+  useBaseStats,
+} from "./utils";
 import Viewport from "./components/Viewport";
 import Dialog from "./components/Dialog";
 import Header from "./components/Header";
 import { MoralStats } from "./components/MoralStats";
 import { AnimatePresence, motion } from "framer-motion";
-import useBaseStats from "./utils/useBaseStats";
 import HoverText from "@/components/HoverText";
 import { useState } from "react";
 import { Animation } from "@/constants/sprites";
@@ -31,6 +34,7 @@ export default function Play() {
   const [dilemmaOpen, setDilemmaOpen] = useState(false);
   const [graduationOpen, setGraduationOpen] = useState(false);
   const { outcomes, addOutcome, removeOutcome } = useOutcomes();
+  useAchievements(addOutcome);
 
   const stateResult = useQuery(api.state.getActiveGameState);
   const {
@@ -83,6 +87,27 @@ export default function Play() {
     <>
       <HoverText hoverText={hoverText} cursorObject={cursorObject} />
 
+      {/* Outcomes */}
+      <div className="fixed top-0 p-4 w-full max-w-lg z-30">
+        <AnimatePresence>
+          {outcomes.map((outcome) => (
+            <motion.div
+              key={outcome.id}
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.2 }}
+            >
+              <OutcomePopup
+                message={outcome.text}
+                exitable={outcome.exitable}
+                onClose={() => removeOutcome(outcome.id)}
+              />
+            </motion.div>
+          ))}
+        </AnimatePresence>
+      </div>
+
       <AnimatePresence mode="wait">
         {graduationOpen && (
           <motion.div
@@ -134,27 +159,6 @@ export default function Play() {
             />
           </motion.div>
 
-          {/* Outcomes */}
-          <div className="fixed top-0 p-4 w-full max-w-lg z-30">
-            <AnimatePresence>
-              {outcomes.map((outcome) => (
-                <motion.div
-                  key={outcome.id}
-                  initial={{ opacity: 0, y: -20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  <OutcomePopup
-                    message={outcome.text}
-                    exitable={outcome.exitable}
-                    onClose={() => removeOutcome(outcome.id)}
-                  />
-                </motion.div>
-              ))}
-            </AnimatePresence>
-          </div>
-
           {/* Viewport & dilemma */}
           <motion.div
             key="viewport"
@@ -182,7 +186,7 @@ export default function Play() {
             />
           </motion.div>
 
-          <div className="sm:fixed sm:bottom-0 sm:right-0 sm:p-4 w-full z-30 pointer-events-none">
+          <div className="sm:absolute sm:bottom-0 sm:right-0 sm:p-4 w-full z-20 pointer-events-none">
             <MoralStats moralStats={pet.moralStats} />
           </div>
 

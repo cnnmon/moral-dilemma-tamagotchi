@@ -4,7 +4,6 @@ import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
-import Window from "@/components/Window";
 import { Achievement, achievements } from "@/constants/achievements";
 import Image from "next/image";
 import { getSprite, Animation } from "@/constants/sprites";
@@ -70,100 +69,88 @@ export default function AchievementsPage() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
-        className="w-5xl"
+        className="w-5xl my-[20%]"
       >
-        <Window
-          title="achievements (╯°□°)╯"
-          exitable
-          setIsOpen={(isOpen: boolean) => {
-            if (!isOpen) {
-              window.location.href = "/play";
-            }
-          }}
-        >
-          <div className="mb-4 p-4">
-            <div className="flex flex-col items-start gap-2">
-              <p className="text-3xl font-bold">your collection</p>
-              <p className="text-sm text-zinc-500 mb-4">
-                {userAchievements?.length || 0} of{" "}
-                {Object.keys(achievements).length} achievements unlocked
-              </p>
-            </div>
-
-            {/* categories */}
-            {Object.entries(achievementsByCategory).map(
-              ([category, categoryAchievements]) => (
-                <div key={category} className="mb-6">
-                  <h2 className="text-md mb-2 capitalize">
-                    {category} achievements
-                  </h2>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-                    {categoryAchievements.map((achievement) => {
-                      const unlocked = isUnlocked(achievement.id);
-                      const secret = achievement.secret && !unlocked;
-                      const evolutionSprite = getEvolutionSprite(
-                        achievement.id
-                      );
-                      return (
-                        <div
-                          key={achievement.id}
-                          className={`border relative rounded-md p-3 h-30 ${
-                            secret ? "cursor-not-allowed" : "cursor-pointer"
-                          } transition-all 
-                        ${unlocked ? "border-green-500 bg-green-500/10" : "border-zinc-300 bg-zinc-100/50"}`}
-                          onClick={() => {
-                            if (!secret) {
-                              setSelectedAchievement(achievement);
-                            }
-                          }}
-                        >
-                          <div className="flex items-center gap-2 mb-1">
-                            <div className="relative w-8 h-8 flex-shrink-0">
-                              {!secret ? (
-                                evolutionSprite && unlocked ? (
-                                  <Image
-                                    src={evolutionSprite}
-                                    alt={achievement.title}
-                                    width={32}
-                                    height={32}
-                                    className="object-contain"
-                                  />
-                                ) : (
-                                  <div className="w-8 h-8 flex items-center justify-center rounded-full">
-                                    <span className="text-lg">
-                                      {achievement.emoji}
-                                    </span>
-                                  </div>
-                                )
-                              ) : (
-                                <div className="w-8 h-8 bg-zinc-300 flex items-center justify-center rounded-full">
-                                  <span>?</span>
-                                </div>
-                              )}
-                            </div>
-                            <h3 className="text-sm font-medium">
-                              {secret ? "???" : achievement.title}
-                            </h3>
-                          </div>
-                          <p className="text-xs text-zinc-600">
-                            {secret
-                              ? "Unlock to discover"
-                              : achievement.description}
-                          </p>
-                          {unlocked && (
-                            <div className="absolute bottom-1 right-2 text-xs text-green-600">
-                              unlocked {getUnlockDate(achievement.id)}
-                            </div>
-                          )}
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              )
-            )}
+        <div className="mb-4 p-4">
+          <div className="flex flex-col items-start gap-2">
+            <p className="text-3xl font-bold">your collection</p>
+            <p className="text-sm text-zinc-500 mb-4">
+              {userAchievements?.length || 0} of{" "}
+              {Object.keys(achievements).length} achievements unlocked
+            </p>
           </div>
-        </Window>
+
+          {/* categories */}
+          {Object.entries(achievementsByCategory).map(
+            ([category, categoryAchievements]) => (
+              <div key={category} className="mb-6">
+                <h2 className="text-md mb-2 capitalize">
+                  {category} achievements
+                </h2>
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                  {categoryAchievements.map((achievement) => {
+                    const unlocked = isUnlocked(achievement.id);
+                    const secret = achievement.secret && !unlocked;
+                    const evolutionSprite = getEvolutionSprite(achievement.id);
+                    return (
+                      <div
+                        key={achievement.id}
+                        className={`border relative rounded-md p-3 h-30 ${
+                          secret ? "cursor-not-allowed" : "cursor-pointer"
+                        } transition-all 
+                        ${unlocked ? "border-green-500 bg-green-500/10" : "border-zinc-300 bg-zinc-100/50"}`}
+                        onClick={() => {
+                          if (!secret) {
+                            setSelectedAchievement(achievement);
+                          }
+                        }}
+                      >
+                        <div className="flex items-center gap-2 mb-1">
+                          <div className="relative w-8 h-8 flex-shrink-0">
+                            {!secret ? (
+                              evolutionSprite && unlocked ? (
+                                <Image
+                                  src={evolutionSprite}
+                                  alt={achievement.title}
+                                  width={32}
+                                  height={32}
+                                  className="object-contain"
+                                />
+                              ) : (
+                                <div className="w-8 h-8 flex items-center justify-center rounded-full">
+                                  <span className="text-lg">
+                                    {achievement.emoji}
+                                  </span>
+                                </div>
+                              )
+                            ) : (
+                              <div className="w-8 h-8 bg-zinc-300 flex items-center justify-center rounded-full">
+                                <span>?</span>
+                              </div>
+                            )}
+                          </div>
+                          <h3 className="text-sm font-medium">
+                            {secret ? "???" : achievement.title}
+                          </h3>
+                        </div>
+                        <p className="text-xs text-zinc-600">
+                          {secret
+                            ? "Unlock to discover"
+                            : achievement.description}
+                        </p>
+                        {unlocked && (
+                          <div className="absolute bottom-1 right-2 text-xs text-green-600">
+                            unlocked {getUnlockDate(achievement.id)}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )
+          )}
+        </div>
       </motion.div>
 
       {/* Achievement detail popup */}

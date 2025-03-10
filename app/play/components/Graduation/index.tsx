@@ -52,7 +52,10 @@ export default function Graduation({
   };
 
   return (
-    <div className="bg-white p-1 w-5xl" onClick={(e) => e.stopPropagation()}>
+    <div
+      className="p-1 sm:w-5xl overflow-y-auto h-screen outline-white"
+      onClick={(e) => e.stopPropagation()}
+    >
       <Window
         title={`${pet.name}'s graduation certificate`}
         isOpen={graduationOpen}
@@ -196,7 +199,7 @@ export default function Graduation({
                       day {currentPage} of {totalPages || 1}
                     </div>
 
-                    <div className="w-full bg-white p-2 border-2 border-zinc-800 text-sm relative">
+                    <div className="w-full bg-white p-2 border-2 border-zinc-800 text-sm relative h-10">
                       {dilemma.outcome || "no history"}
                     </div>
 
@@ -219,21 +222,19 @@ export default function Graduation({
 
                 {/* navigation controls */}
                 <div className="flex justify-between items-center mt-1">
-                  <button
+                  <a
                     onClick={goToPreviousPage}
-                    disabled={currentPage === 1}
-                    className={`p-1 text-sm border-2 border-zinc-800 ${currentPage === 1 ? "text-zinc-300 border-zinc-300" : "text-zinc-700 hover:bg-zinc-100"}`}
+                    className={`underline ${currentPage === 1 ? "text-zinc-300" : "text-zinc-700 hover:bg-zinc-100"}`}
                   >
                     ← prev
-                  </button>
+                  </a>
 
-                  <button
+                  <a
                     onClick={goToNextPage}
-                    disabled={currentPage === totalPages || totalPages === 0}
-                    className={`p-1 text-sm border-2 border-zinc-800 ${currentPage === totalPages || totalPages === 0 ? "text-zinc-300 border-zinc-300" : "text-zinc-700 hover:bg-zinc-100"}`}
+                    className={`underline ${currentPage === totalPages || totalPages === 0 ? "text-zinc-300" : "text-zinc-700 hover:bg-zinc-100"}`}
                   >
                     next →
-                  </button>
+                  </a>
                 </div>
               </div>
             </div>
