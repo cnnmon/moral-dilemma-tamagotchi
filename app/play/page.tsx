@@ -22,9 +22,6 @@ import { EvolutionId } from "@/constants/evolutions";
 import { getEvolution } from "@/constants/evolutions";
 import Window from "@/components/Window";
 import Graduation from "./components/Graduation";
-import Stat from "./components/Header/Stat";
-import { attributes } from "@/constants/morals";
-import Choices from "@/components/Choices";
 
 export default function Play() {
   const [animation, setAnimation] = useState<Animation>(Animation.IDLE);
@@ -34,101 +31,7 @@ export default function Play() {
   const [dilemmaOpen, setDilemmaOpen] = useState(false);
   const [graduationOpen, setGraduationOpen] = useState(false);
 
-  const stateResult = {
-    pet: {
-      _creationTime: 1741392624360.6372,
-      _id: "jd710q4m09thhhacrqk2rk5g3s7bpyv3",
-      age: 2,
-      baseStats: {
-        happiness: 4.292078335746941,
-        health: 4.5078138589982455,
-        hunger: 4.201963786193397,
-        sanity: 10,
-      },
-      evolutionId: "guardian",
-      graduated: true,
-      moralStats: {
-        compassion: 6,
-        devotion: 5.666666666666667,
-        dominance: 5,
-        ego: 5,
-        purity: 4.5,
-        retribution: 5,
-      },
-      name: "aa",
-      personality:
-        "aa's commitment to their values grows; they prioritize the earth and take responsibility, even when it's inconvenient.",
-      userId: "tiffanywang@berkeley.edu",
-    },
-    seenDilemmas: [
-      {
-        _creationTime: 1741392637578.245,
-        _id: "jn7fvrsxtyhmyvszzs2r98nh5h7bqhjg",
-        outcome:
-          "aa decided to throw the match for their friend's sake, feeling happy to support them, but puzzled why they didn't just share the song.",
-        petId: "jd710q4m09thhhacrqk2rk5g3s7bpyv3",
-        resolved: true,
-        responseText: "throw the match. friends are awesome",
-        title: "talentshow",
-        updatedMoralStats: {
-          compassion: 5,
-          devotion: 6,
-          dominance: 5,
-          ego: 5,
-          purity: 5,
-          retribution: 5,
-        },
-        updatedPersonality:
-          "aa is learning the value of loyalty to friends and how to prioritize relationships, even in competitions.",
-        userId: "tiffanywang@berkeley.edu",
-      },
-      {
-        _creationTime: 1741392650258.6077,
-        _id: "jn7cwp9t2h7n14xngc4mzpazs57bp96a",
-        outcome:
-          "aa turned down the job, realizing that loyalty to the earth and its well-being matters more than a paycheck.",
-        petId: "jd710q4m09thhhacrqk2rk5g3s7bpyv3",
-        resolved: true,
-        responseText: "leave it alone. the earth is important",
-        title: "antirecycling",
-        updatedMoralStats: {
-          compassion: 5,
-          devotion: 5,
-          dominance: 5,
-          ego: 5,
-          purity: 4,
-          retribution: 5,
-        },
-        updatedPersonality:
-          "aa is starting to see the importance of the earth and how their choices can impact it, even if it means sacrificing personal gain.",
-        userId: "tiffanywang@berkeley.edu",
-      },
-      {
-        _creationTime: 1741392753351.4937,
-        _id: "jn7c0x13pf92s649e5pxb1hzwn7bpwgk",
-        outcome:
-          "‼️ aa knows it's better to pick up the ice cube; it helps the earth and feels right, despite the easy way out.",
-        overridden: true,
-        petId: "jd710q4m09thhhacrqk2rk5g3s7bpyv3",
-        resolved: true,
-        responseText: "kick it under the refrigerator. yes",
-        title: "icecube",
-        updatedMoralStats: {
-          compassion: 6,
-          devotion: 5.5,
-          dominance: 5,
-          ego: 5,
-          purity: 5,
-          retribution: 5,
-        },
-        updatedPersonality:
-          "aa's commitment to their values grows; they prioritize the earth and take responsibility, even when it's inconvenient.",
-        userId: "tiffanywang@berkeley.edu",
-      },
-    ],
-    status: "graduated",
-  };
-  //useQuery(api.state.getActiveGameState);
+  const stateResult = useQuery(api.state.getActiveGameState);
   const {
     baseStats,
     incrementStat,
@@ -302,7 +205,7 @@ export default function Play() {
                     onClick={() => setGraduationOpen(true)}
                     className="underline"
                   >
-                    🎓 attend graduation
+                    🎓 collect graduation certificate
                   </a>
                   <span className="text-zinc-500">or</span>
                   <a href="/create" className="underline">

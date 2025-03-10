@@ -8,7 +8,7 @@ export default function About() {
       <Window title="about">
         <div className="flex flex-col gap-2">
           <p>thanks for playing~</p>
-          <p>[as of mar 2: work in progress, give me feedback!]</p>
+          <p>[work in progress, give me feedback!]</p>
           <p>
             princi(pal) is a moral dilemma tamagotchi. it&apos;s a virtual pet
             game where you can (finally!) impose your own ethical views on said
