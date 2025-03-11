@@ -16,7 +16,7 @@ import Header from "./components/Header";
 import { MoralStats } from "./components/MoralStats";
 import { AnimatePresence, motion } from "framer-motion";
 import HoverText from "@/components/HoverText";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Animation } from "@/constants/sprites";
 import { ObjectKey } from "@/constants/objects";
 import { getEvolutionTimeFrame } from "@/constants/evolutions";
@@ -25,6 +25,8 @@ import { getEvolution } from "@/constants/evolutions";
 import Window from "@/components/Window";
 import Graduation from "./components/Graduation";
 import Actions from "./components/Actions";
+import AchievementsSidebar from "./components/AchievementsSidebar";
+import { AchievementId } from "@/constants/achievements";
 
 export default function Play() {
   const [animation, setAnimation] = useState<Animation>(Animation.IDLE);
@@ -33,8 +35,40 @@ export default function Play() {
   const [rip, setRip] = useState(false);
   const [dilemmaOpen, setDilemmaOpen] = useState(false);
   const [graduationOpen, setGraduationOpen] = useState(false);
+  const [shownAchievements, setShownAchievements] = useState<AchievementId[]>(
+    []
+  );
   const { outcomes, addOutcome, removeOutcome } = useOutcomes();
-  useAchievements(addOutcome);
+  const { userAchievements } = useAchievements(addOutcome);
+
+  // initialize shown achievements from localStorage
+  useEffect(() => {
+    const savedShownAchievements = localStorage.getItem("shown_achievements");
+    if (savedShownAchievements) {
+      setShownAchievements(JSON.parse(savedShownAchievements));
+    }
+  }, []);
+
+  // update shown achievements when user views them in the sidebar
+  useEffect(() => {
+    if (!userAchievements) return;
+
+    // mark all achievements as shown when they're viewed in the sidebar
+    const achievementIds = userAchievements.map(
+      (a) => a.achievementId as AchievementId
+    );
+    const updatedShownAchievements = [
+      ...new Set([...shownAchievements, ...achievementIds]),
+    ];
+
+    if (updatedShownAchievements.length !== shownAchievements.length) {
+      setShownAchievements(updatedShownAchievements);
+      localStorage.setItem(
+        "shown_achievements",
+        JSON.stringify(updatedShownAchievements)
+      );
+    }
+  }, [userAchievements, shownAchievements]);
 
   const stateResult = useQuery(api.state.getActiveGameState);
   const {
@@ -86,6 +120,12 @@ export default function Play() {
   return (
     <>
       <HoverText hoverText={hoverText} cursorObject={cursorObject} />
+
+      {/* Achievements Sidebar */}
+      <AchievementsSidebar
+        userAchievements={userAchievements}
+        shownAchievements={shownAchievements}
+      />
 
       {/* Outcomes */}
       <div className="fixed top-0 p-4 w-full max-w-lg z-30">
