@@ -196,16 +196,8 @@ export default function Graduation({
               <div className="min-h-[80px] px-4 py-2 relative">
                 {seenDilemmas.length > 0 && dilemma ? (
                   <div className="flex flex-col items-center">
-                    <div className="text-center mb-1 text-[10px] text-zinc-500">
-                      day {currentPage} of {totalPages || 1}
-                    </div>
-
-                    <div className="w-full bg-white p-2 border-2 border-zinc-800 text-sm relative h-15 overflow-y-scroll">
-                      {dilemma.outcome || "no history"}
-                    </div>
-
                     {dilemma.title && (
-                      <div className="text-center mt-1 text-sm italic text-zinc-500">
+                      <div className="text-center mb-1 text-sm italic text-zinc-500">
                         {dilemma.title in dilemmaTemplates
                           ? dilemmaTemplates[dilemma.title].text.replace(
                               /{pet}/g,
@@ -214,6 +206,17 @@ export default function Graduation({
                           : "dilemma not found"}
                       </div>
                     )}
+
+                    <div className="w-full bg-white p-2 border-2 border-zinc-800 text-sm relative h-15 overflow-y-scroll">
+                      <p className="text-zinc-500">
+                        you said: &quot;{dilemma.responseText}&quot;.{" "}
+                        {dilemma.outcome || "no history"}
+                      </p>
+                    </div>
+
+                    <div className="text-center mt-1 text-[10px] text-zinc-500">
+                      day {currentPage} of {totalPages || 1}
+                    </div>
                   </div>
                 ) : (
                   <div className="flex items-center justify-center h-full">
