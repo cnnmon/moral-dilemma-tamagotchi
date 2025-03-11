@@ -10,7 +10,9 @@ export default function Menu() {
   const currentPet = useQuery(api.pets.getActivePet);
 
   useEffect(() => {
-    setCurrentPath(window.location.pathname.slice(1));
+    if (window !== undefined) {
+      setCurrentPath(window.location.pathname.slice(1));
+    }
     // important because does not update properly if rerouted
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [window.location.pathname]);
