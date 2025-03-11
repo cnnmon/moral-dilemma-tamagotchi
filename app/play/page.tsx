@@ -37,6 +37,7 @@ export default function Play() {
   const [graduationOpen, setGraduationOpen] = useState(false);
   const { outcomes, addOutcome, removeOutcome } = useOutcomes();
   const { userAchievements } = useAchievements(addOutcome);
+  const [stateLoadingTimeout, setStateLoadingTimeout] = useState(false);
 
   // State for tracking which achievements have been shown to the user
   const [shownAchievements, setShownAchievements] = useState<AchievementId[]>(
@@ -65,6 +66,24 @@ export default function Play() {
   }, []);
 
   const stateResult = useQuery(api.state.getActiveGameState);
+
+  // Add a timeout for state loading
+  useEffect(() => {
+    // If state is undefined (loading), set a timeout
+    const timeoutId =
+      stateResult === undefined
+        ? setTimeout(() => {
+            console.log("state loading timeout reached");
+            setStateLoadingTimeout(true);
+          }, 8000) // 8 seconds timeout
+        : undefined;
+
+    // Clear timeout if state loads
+    return () => {
+      if (timeoutId) clearTimeout(timeoutId);
+    };
+  }, [stateResult]);
+
   const {
     baseStats,
     incrementStat,
@@ -87,8 +106,30 @@ export default function Play() {
     stateResult,
   });
 
+  // Handle loading state with timeout fallback
   if (stateResult === undefined) {
+    // If we've hit the timeout, show a refresh button
+    if (stateLoadingTimeout) {
+      return (
+        <div className="flex flex-col items-center justify-center min-h-screen p-4">
+          <div className="text-center mb-4">
+            taking too long to load... there might be a connection issue.
+          </div>
+          <button
+            onClick={() => window.location.reload()}
+            className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 transition-colors"
+          >
+            refresh page
+          </button>
+        </div>
+      );
+    }
     return <Loading />;
+  }
+
+  // Reset timeout state when we have a result
+  if (stateLoadingTimeout) {
+    setStateLoadingTimeout(false);
   }
 
   const { status } = stateResult;
@@ -125,9 +166,9 @@ export default function Play() {
       {/* Outcomes */}
       <div className="fixed top-0 p-4 w-full max-w-lg z-30">
         <AnimatePresence>
-          {outcomes.map((outcome) => (
+          {outcomes.map((outcome, index) => (
             <motion.div
-              key={outcome.id}
+              key={index}
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}

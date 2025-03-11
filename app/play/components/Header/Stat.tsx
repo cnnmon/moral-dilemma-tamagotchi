@@ -78,7 +78,7 @@ export default function Stat({
           </div>
         ) : (
           <div
-            className={`h-full ${!useLerpColors ? customBarColor || (dangerousValue ? "bg-red-500" : "bg-black") : ""} transition-all duration-100 bg-zinc-500`}
+            className={`h-full ${!useLerpColors ? customBarColor || (dangerousValue ? "bg-red-500" : "bg-zinc-500") : ""} transition-all duration-100`}
             style={{
               width: `${value}%`,
               ...getProgressColor(),

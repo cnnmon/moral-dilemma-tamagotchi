@@ -13,7 +13,10 @@ function getAchievementForEvolution(evolutionId: EvolutionId): AchievementId | n
   // skip for baby evolution
   if (evolutionId === "baby") return null;
   
-  return `evolve_to_${evolutionId}` as AchievementId;
+  // split by underscore and take the first part if it contains underscores
+  const cleanEvolutionId = evolutionId.split('_')[0];
+  
+  return `evolve_to_${cleanEvolutionId}` as AchievementId;
 }
 
 // helper function to check if unlocking an achievement should also unlock collection achievements

@@ -52,17 +52,10 @@ export function evolvePetIfNeeded(
   pet: Doc<"pets">,
   averageMoralStats: MoralDimensionsType
 ):
-  | { evolutionId: EvolutionId; age: number }
-  | {
-      graduated: true;
-    }
+  | { evolutionId: EvolutionId; age: number; }
+  | { graduated: true }
   | undefined {
   const timeFrame = getEvolutionTimeFrame(pet.age);
-  console.log(
-    "🐦 timeFrame vs seenDilemmasCount",
-    timeFrame,
-    seenDilemmasCount
-  );
   if (seenDilemmasCount < timeFrame) {
     return;
   }
@@ -72,26 +65,19 @@ export function evolvePetIfNeeded(
   console.log("🐦 moralStatsWritten", JSON.stringify(moralStatsWritten));
 
   let newEvolutionId: EvolutionId | undefined;
-  switch (pet.age) {
-    case 0:
-      newEvolutionId = evolveFromBabyToStage1(moralStatsWritten);
-      console.log("🐦 stage 0 newEvolutionId", newEvolutionId);
-      break;
-    case 1:
-      newEvolutionId = evolveFromStage1ToStage2(
-        currentEvolution.id as Stage1EvolutionId,
-        moralStatsWritten
-      );
-      console.log("🐦 stage 1 newEvolutionId", newEvolutionId);
-      break;
-    case 2:
-      console.log("🐦 stage 2 graduated", true);
-      return {
-        ...pet,
-        graduated: true,
-      };
-    default:
-      throw new Error(`Unexpected age value of ${pet.age}`);
+  if (pet.age === 0) {
+    newEvolutionId = evolveFromBabyToStage1(moralStatsWritten);
+    console.log("🐦 stage 0 newEvolutionId", newEvolutionId);
+  } else if (pet.age === 1) {
+    newEvolutionId = evolveFromStage1ToStage2(
+      currentEvolution.id as Stage1EvolutionId,
+      moralStatsWritten
+    );
+    console.log("🐦 stage 1 newEvolutionId", newEvolutionId);
+  } else {
+    return {
+      graduated: true,
+    };
   }
 
   if (!newEvolutionId) {

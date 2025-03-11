@@ -3,8 +3,8 @@ import { MoralDimensions, MoralStatAttribute, attributes } from "./morals";
 // evolution time frames
 const evolutionTimeFrame = {
   0: 5, // in age 0 until age 1 evolution
-  1: 10, // in age 1 until age 2 evolution
-  2: Infinity, // until graduation unlocks
+  1: 9, // in age 1 until age 2 evolution
+  2: 10, // until graduation unlocks
 }
 
 export function getEvolutionTimeFrame(age: number): number {
@@ -272,7 +272,7 @@ function getStatUsed(statKey: MoralStatAttribute): {
 export function getEvolutions(finalEvolutionId: Stage2EvolutionId): EvolutionPath[] {
   // get stage 2 evolution
   const stage2Evolution = stage2Evolutions[finalEvolutionId];
-  
+
   if (!stage2Evolution) {
     // gracefully handle
     return [{
