@@ -101,8 +101,7 @@ export default function Dialog({
         <Window title={`${petName} has died :(`}>
           <p>maybe you should take better care of them next time...</p>
           <div className="flex gap-2">
-            <a href="/play">revive pet?</a>
-            <a href="/create">new pet</a>
+            <a href="/create">adopt a new pet</a>
           </div>
         </Window>
       </div>
