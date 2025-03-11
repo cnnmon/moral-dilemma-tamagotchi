@@ -44,19 +44,12 @@ export default function Play() {
   const [isRetrying, setIsRetrying] = useState(false);
   const [autoRetryCount, setAutoRetryCount] = useState(0);
   const MAX_AUTO_RETRIES = 3; // prevent infinite retry loops
-
-  // State for tracking which achievements have been shown to the user
   const [shownAchievements, setShownAchievements] = useState<AchievementId[]>(
     []
   );
-
-  // Track if we're using optimistic cached data
-  const [isOptimistic, setIsOptimistic] = useState(false);
-
-  // Use cached state for optimistic updates
   const { cachedState, isUsingCachedState } = useCachedState();
 
-  // Load shown achievements from localStorage on mount
+  // load shown achievements from localStorage on mount
   useEffect(() => {
     const savedShownAchievements = localStorage.getItem("shown_achievements");
     if (savedShownAchievements) {
@@ -64,11 +57,10 @@ export default function Play() {
     }
   }, []);
 
-  // Callback for when achievements are seen
+  // callback for when achievements are seen
   const handleAchievementsSeen = useCallback((ids: AchievementId[]) => {
     setShownAchievements((prev) => {
       const newShownAchievements = [...prev, ...ids];
-      // Update localStorage
       localStorage.setItem(
         "shown_achievements",
         JSON.stringify(newShownAchievements)
@@ -82,27 +74,21 @@ export default function Play() {
   const stateResult = stateQuery;
   const stateError = stateQuery instanceof Error ? stateQuery : null;
 
-  // Determine which state to use - real or optimistic
-  // If stateResult is undefined (loading) but we have cached state, use cached state
+  // if stateResult is undefined (loading) but we have cached state, use cached state
   const displayState =
     stateResult !== undefined
       ? stateResult
       : isUsingCachedState && cachedState
         ? cachedState
         : undefined;
-
-  // Track if we're using optimistic rendering
   useEffect(() => {
-    // We're using optimistic data if we have cached state but no stateResult yet
-    setIsOptimistic(stateResult === undefined && displayState !== undefined);
-
-    // Cache the state when it loads from server
+    // cache the state when it loads from server
     if (stateResult !== undefined) {
       cacheGameState(stateResult);
     }
   }, [stateResult, displayState]);
 
-  // Add a timeout for state loading with better error handling
+  // add a timeout for state loading with better error handling
   useEffect(() => {
     if (!isRetrying) {
       setStateLoadError(null);
@@ -140,7 +126,7 @@ export default function Play() {
 
     // Handle any errors from the query
     if (stateError) {
-      console.error("Error loading game state:", stateError);
+      console.error("error loading game state:", stateError);
       setStateLoadError(stateError.message || "Unknown error occurred");
       setStateLoadingTimeout(true);
     }
@@ -218,18 +204,6 @@ export default function Play() {
     return <Loading autoRetryCount={autoRetryCount} isRetrying={isRetrying} />;
   }
 
-  // Optimistic UI overlay - shows when using cached data
-  const OptimisticIndicator = () => {
-    if (isOptimistic) {
-      return (
-        <div className="fixed bottom-4 left-4 bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-xs">
-          using cached data...
-        </div>
-      );
-    }
-    return null;
-  };
-
   const { status } = displayState;
 
   // auth state
@@ -248,7 +222,7 @@ export default function Play() {
   const { pet, seenDilemmas } = displayState;
   const evolution = getEvolution(pet.evolutionId as EvolutionId);
   const timeFrame = getEvolutionTimeFrame(pet.age);
-  const hasGraduated = pet.age >= 2;
+  const hasGraduated = status === "graduated";
 
   // Handle unresolved dilemma question safely with type checking
   const clarifyingQuestion =
@@ -266,9 +240,6 @@ export default function Play() {
         shownAchievements={shownAchievements}
         onAchievementsSeen={handleAchievementsSeen}
       />
-
-      {/* Show optimistic data indicator */}
-      <OptimisticIndicator />
 
       {/* Outcomes */}
       <div className="fixed top-0 p-4 w-full max-w-lg z-30">

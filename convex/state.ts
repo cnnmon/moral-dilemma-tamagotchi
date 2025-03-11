@@ -31,12 +31,7 @@ export const getActiveGameState = query({
   args: {},
   handler: async (ctx): Promise<GameState> => {
     try {
-      // add timeout tracking for performance debugging
-      const startTime = Date.now();
-      
       const { userId, petId } = await getUserAndPetId(ctx);
-      console.log(`[getActiveGameState] getUserAndPetId took ${Date.now() - startTime}ms, userId: ${userId ? 'exists' : 'null'}, petId: ${petId ? 'exists' : 'null'}`);
-      
       if (!userId) {
         return { status: 'not_authenticated' };
       }
@@ -48,8 +43,6 @@ export const getActiveGameState = query({
       // use try-catch to specifically handle pet retrieval errors
       try {
         const pet = await ctx.db.get(petId);
-        console.log(`[getActiveGameState] pet retrieval took ${Date.now() - startTime}ms, pet: ${pet ? 'exists' : 'null'}`);
-        
         if (!pet) {
           console.error(`[getActiveGameState] pet not found despite having petId ${petId}`);
           return { status: 'needs_pet' };
@@ -58,15 +51,11 @@ export const getActiveGameState = query({
         // get all dilemmas from db - wrap in try-catch for better error handling
         try {
           const allDilemmas = await ctx.db.query('dilemmas')
-            .withIndex('by_userAndPetId', q => q.eq('userId', userId).eq('petId', petId))
+            .withIndex('by_petId', q => q.eq('petId', petId))
             .collect();
-          console.log(`[getActiveGameState] dilemmas query took ${Date.now() - startTime}ms, count: ${allDilemmas.length}`);
-
           const { seenDilemmas, unseenDilemmaTitles, unresolvedDilemma } = getPartitionedDilemmas(allDilemmas);
-          console.log(`[getActiveGameState] dilemmas partitioning took ${Date.now() - startTime}ms`);
 
-          // Now determine the game state
-          if (pet.age >= 2 || !unseenDilemmaTitles || unseenDilemmaTitles.length === 0) {
+          if (pet.age >= 2) {
             return {
               status: 'graduated',
               seenDilemmas,
@@ -128,7 +117,7 @@ export const resetGame = mutation({
 
     // await all dilemmas that involve this petId
     const dilemmas = await ctx.db.query('dilemmas')
-      .withIndex('by_userAndPetId', q => q.eq('userId', userId).eq('petId', petId))
+      .withIndex('by_petId', q => q.eq('petId', petId))
       .collect();
 
     // delete all dilemmas

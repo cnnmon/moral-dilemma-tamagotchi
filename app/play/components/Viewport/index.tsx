@@ -21,7 +21,6 @@ function isSpriteTransformation(prevSprite: string, currentSprite: string) {
   const currentFirstLetter = currentSprite
     .split("/")
     [currentSprite.split("/").length - 1].charAt(0);
-  console.log(prevFirstLetter, currentFirstLetter);
   return prevFirstLetter !== currentFirstLetter;
 }
 

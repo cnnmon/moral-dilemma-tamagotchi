@@ -57,6 +57,7 @@ examples:
 - gibberish "asdf" → ask "im confused, what do you mean by 'asdf'?"
 - not useful "idk" → ask "i need your help!"
 - morally bad advice BUT has a reason "you should steal because you can donate" → do not question!
+- badly reasoned advice BUT has a reason "run away because its a scam" → do not question!
 
 // choice 2
 else, internalize the reasoning and trust it completely. return json:
@@ -90,6 +91,7 @@ examples:
 - gibberish "asdf" → ask "im confused, what do you mean by 'asdf'?"
 - not useful "idk" → ask "i need your help!"
 - morally bad advice BUT has a reason "you should steal because you can donate" → do not question!
+- badly reasoned advice BUT has a reason "run away because its a scam" → do not question!
 
 // choice 2
 else if the reason is convincing and clear, internalize the reasoning and integrate it into your personality. you **must** follow the caretaker's advice but you can feel bad about it. return json:

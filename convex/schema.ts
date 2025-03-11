@@ -39,7 +39,6 @@ export default defineSchema({
     resolved: v.boolean(), // whether the response is resolved
     overridden: v.optional(v.boolean()), // whether the response is overridden by the pet's personality
   })
-    .index("by_userAndPetId", ["userId", "petId"])
     .index("by_petId", ["petId"]),
     
   achievements: defineTable({

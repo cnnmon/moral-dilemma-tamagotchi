@@ -82,8 +82,8 @@ export const processDilemma = mutation({
     // check if dilemma already exists
     const existingDilemma = await ctx.db
       .query("dilemmas")
-      .withIndex("by_userAndPetId", (q) =>
-        q.eq("userId", pet.userId).eq("petId", petId)
+      .withIndex("by_petId", (q) =>
+        q.eq("petId", petId)
       )
       .filter((q) => q.eq(q.field("title"), args.dilemma.title))
       .first();
