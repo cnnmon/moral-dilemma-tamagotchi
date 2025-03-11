@@ -127,13 +127,24 @@ export default function AchievementsSidebar({
   };
 
   const achievementsByCategory = {
-    choice: Object.values(achievements).filter((a) => a.category === "choice"),
-    evolution: Object.values(achievements).filter(
-      (a) => a.category === "evolution"
-    ),
-    general: Object.values(achievements).filter(
-      (a) => a.category === "general"
-    ),
+    choice: Object.values(achievements)
+      .filter((a) => a.category === "choice")
+      // deduplicate by ID if there are any duplicates
+      .filter(
+        (a, index, self) => index === self.findIndex((t) => t.id === a.id)
+      ),
+    evolution: Object.values(achievements)
+      .filter((a) => a.category === "evolution")
+      // deduplicate by ID if there are any duplicates
+      .filter(
+        (a, index, self) => index === self.findIndex((t) => t.id === a.id)
+      ),
+    general: Object.values(achievements)
+      .filter((a) => a.category === "general")
+      // deduplicate by ID if there are any duplicates
+      .filter(
+        (a, index, self) => index === self.findIndex((t) => t.id === a.id)
+      ),
   };
 
   return (
@@ -150,7 +161,7 @@ export default function AchievementsSidebar({
           transition={{ type: "spring", stiffness: 300, damping: 30 }}
         >
           <div
-            className={`bg-white border-r-2 border-t-2 border-b-2 border-black py-4 px-2 cursor-pointer rounded-r-md flex flex-col items-center justify-center shadow-md ${
+            className={`bg-white border-r-2 border-t-2 border-b-2 border-black py-4 px-2 cursor-pointer rounded-r-md flex flex-col items-center justify-center ${
               isBlinking ? "animate-pulse" : ""
             }`}
           >
@@ -174,8 +185,10 @@ export default function AchievementsSidebar({
             <div className="flex flex-col items-start gap-2">
               <p className="text-xl font-bold">achievements</p>
               <p className="text-xs text-zinc-500">
-                {userAchievements?.length || 0} of{" "}
-                {Object.keys(achievements).length} unlocked
+                {userAchievements
+                  ? new Set(userAchievements.map((a) => a.achievementId)).size
+                  : 0}{" "}
+                of 20 unlocked
               </p>
             </div>
           </div>
@@ -279,7 +292,7 @@ export default function AchievementsSidebar({
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
-              className="bg-white rounded-lg shadow-xl p-5 max-w-md w-full m-4"
+              className="bg-white  p-5 max-w-md w-full m-4"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex items-center gap-3 mb-3">

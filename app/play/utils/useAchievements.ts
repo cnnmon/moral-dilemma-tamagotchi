@@ -118,12 +118,19 @@ export function useAchievements(addOutcome: (text: string, exitable?: boolean) =
 
           // Unlock any collection achievements
           collectionAchievements.forEach((collectionId) => {
-            unlockAchievement({ achievementId: collectionId });
-            const collectionAchievement = getAchievement(collectionId);
-            addOutcome(
-              `🏆 achievement unlocked: ${collectionAchievement.title} - ${collectionAchievement.description}`,
-              true
+            // check if collection achievement is already unlocked
+            const isCollectionAlreadyUnlocked = userAchievements.some(
+              (a) => a.achievementId === collectionId
             );
+            
+            if (!isCollectionAlreadyUnlocked) {
+              unlockAchievement({ achievementId: collectionId });
+              const collectionAchievement = getAchievement(collectionId);
+              addOutcome(
+                `🏆 achievement unlocked: ${collectionAchievement.title} - ${collectionAchievement.description}`,
+                true
+              );
+            }
           });
         }
       }
