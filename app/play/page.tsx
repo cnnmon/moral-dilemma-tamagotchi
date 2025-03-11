@@ -38,6 +38,10 @@ export default function Play() {
   const { outcomes, addOutcome, removeOutcome } = useOutcomes();
   const { userAchievements } = useAchievements(addOutcome);
   const [stateLoadingTimeout, setStateLoadingTimeout] = useState(false);
+  const [stateLoadError, setStateLoadError] = useState<string | null>(null);
+  const [isRetrying, setIsRetrying] = useState(false);
+  const [autoRetryCount, setAutoRetryCount] = useState(0);
+  const MAX_AUTO_RETRIES = 3; // prevent infinite retry loops
 
   // State for tracking which achievements have been shown to the user
   const [shownAchievements, setShownAchievements] = useState<AchievementId[]>(
@@ -65,24 +69,78 @@ export default function Play() {
     });
   }, []);
 
-  const stateResult = useQuery(api.state.getActiveGameState);
+  // use the query with error handling and retry capabilities
+  const stateQuery = useQuery(api.state.getActiveGameState);
+  const stateResult = stateQuery;
+  const stateError = stateQuery instanceof Error ? stateQuery : null;
 
-  // Add a timeout for state loading
+  // Function to manually retry loading state without a full page refresh
+  const handleRetry = useCallback(() => {
+    setIsRetrying(true);
+    setStateLoadingTimeout(false);
+    setStateLoadError(null);
+
+    // Force a re-query by temporarily changing state
+    setTimeout(() => {
+      setIsRetrying(false);
+    }, 500);
+  }, []);
+
+  // Add a timeout for state loading with better error handling
   useEffect(() => {
-    // If state is undefined (loading), set a timeout
-    const timeoutId =
-      stateResult === undefined
-        ? setTimeout(() => {
-            console.log("state loading timeout reached");
-            setStateLoadingTimeout(true);
-          }, 8000) // 8 seconds timeout
-        : undefined;
+    // reset error state on each load attempt if not retrying
+    if (!isRetrying) {
+      setStateLoadError(null);
+    }
 
-    // Clear timeout if state loads
+    // Reset auto retry count when state successfully loads
+    if (stateResult !== undefined && autoRetryCount > 0) {
+      setAutoRetryCount(0);
+    }
+
+    let autoRetryTimeoutId: NodeJS.Timeout | undefined;
+
+    // If state is undefined (loading) and not already retrying, set both timeouts
+    if (stateResult === undefined && !isRetrying) {
+      // long timeout for showing the refresh UI
+      const timeoutId = setTimeout(() => {
+        console.log("state loading timeout reached");
+        setStateLoadingTimeout(true);
+      }, 15000); // 15 seconds timeout
+
+      // quick timeout for auto retry
+      if (autoRetryCount < MAX_AUTO_RETRIES) {
+        autoRetryTimeoutId = setTimeout(() => {
+          console.log(`auto retry attempt ${autoRetryCount + 1}`);
+          setIsRetrying(true);
+          setAutoRetryCount((prev) => prev + 1);
+
+          // force a re-query
+          setTimeout(() => {
+            setIsRetrying(false);
+          }, 500);
+        }, 2000); // retry after 2 seconds
+      }
+
+      // Clear timeouts if component unmounts or state loads
+      return () => {
+        clearTimeout(timeoutId);
+        if (autoRetryTimeoutId) clearTimeout(autoRetryTimeoutId);
+      };
+    }
+
+    // Handle any errors from the query
+    if (stateError) {
+      console.error("Error loading game state:", stateError);
+      setStateLoadError(stateError.message || "Unknown error occurred");
+      setStateLoadingTimeout(true);
+    }
+
+    // cleanup function
     return () => {
-      if (timeoutId) clearTimeout(timeoutId);
+      if (autoRetryTimeoutId) clearTimeout(autoRetryTimeoutId);
     };
-  }, [stateResult]);
+  }, [stateResult, stateError, isRetrying, autoRetryCount]);
 
   const {
     baseStats,
@@ -108,28 +166,37 @@ export default function Play() {
 
   // Handle loading state with timeout fallback
   if (stateResult === undefined) {
-    // If we've hit the timeout, show a refresh button
-    if (stateLoadingTimeout) {
+    // If we've hit the timeout or have an error, show a refresh button
+    if (stateLoadingTimeout || stateLoadError) {
       return (
         <div className="flex flex-col items-center justify-center min-h-screen p-4">
           <div className="text-center mb-4">
-            taking too long to load... there might be a connection issue.
+            {stateLoadError
+              ? `error loading your pet: ${stateLoadError}`
+              : "taking too long to load... there might be a connection issue."}
           </div>
-          <button
-            onClick={() => window.location.reload()}
-            className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 transition-colors"
-          >
-            refresh page
-          </button>
+          <div className="flex gap-3">
+            <button
+              onClick={handleRetry}
+              className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 transition-colors"
+              disabled={isRetrying}
+            >
+              {isRetrying ? "retrying..." : "retry"}
+            </button>
+            <button
+              onClick={() => window.location.reload()}
+              className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 transition-colors"
+            >
+              refresh page
+            </button>
+          </div>
+          <div className="text-center mt-4 text-sm text-gray-500">
+            if this keeps happening, please try clearing your browser cache.
+          </div>
         </div>
       );
     }
-    return <Loading />;
-  }
-
-  // Reset timeout state when we have a result
-  if (stateLoadingTimeout) {
-    setStateLoadingTimeout(false);
+    return <Loading autoRetryCount={autoRetryCount} isRetrying={isRetrying} />;
   }
 
   const { status } = stateResult;

@@ -45,52 +45,74 @@ export const getActiveGameState = query({
         return { status: 'needs_pet' };
       }
 
-      const pet = await ctx.db.get(petId);
-      console.log(`[getActiveGameState] pet retrieval took ${Date.now() - startTime}ms, pet: ${pet ? 'exists' : 'null'}`);
-      
-      if (!pet) {
-        return { status: 'needs_pet' };
+      // use try-catch to specifically handle pet retrieval errors
+      try {
+        const pet = await ctx.db.get(petId);
+        console.log(`[getActiveGameState] pet retrieval took ${Date.now() - startTime}ms, pet: ${pet ? 'exists' : 'null'}`);
+        
+        if (!pet) {
+          console.error(`[getActiveGameState] pet not found despite having petId ${petId}`);
+          return { status: 'needs_pet' };
+        }
+
+        // get all dilemmas from db - wrap in try-catch for better error handling
+        try {
+          const allDilemmas = await ctx.db.query('dilemmas')
+            .withIndex('by_userAndPetId', q => q.eq('userId', userId).eq('petId', petId))
+            .collect();
+          console.log(`[getActiveGameState] dilemmas query took ${Date.now() - startTime}ms, count: ${allDilemmas.length}`);
+
+          const { seenDilemmas, unseenDilemmaTitles, unresolvedDilemma } = getPartitionedDilemmas(allDilemmas);
+          console.log(`[getActiveGameState] dilemmas partitioning took ${Date.now() - startTime}ms`);
+
+          // Now determine the game state
+          if (pet.age >= 2 || !unseenDilemmaTitles || unseenDilemmaTitles.length === 0) {
+            return {
+              status: 'graduated',
+              seenDilemmas,
+              pet,
+            } as GameState;
+          }
+
+          if (unresolvedDilemma && unresolvedDilemma.outcome) {
+            const dilemma = dilemmaTemplates[unresolvedDilemma.title];
+            return { 
+              status: "has_unresolved_dilemma",
+              seenDilemmas,
+              unresolvedDilemma: dilemma,
+              question: unresolvedDilemma.outcome,
+              pet,
+            } as GameState;
+          }
+
+          return {
+            status: 'has_dilemmas',
+            seenDilemmas,
+            unseenDilemmaTitles,
+            pet,
+          } as GameState;
+        } catch (dilemmaError) {
+          // handle dilemma query errors specifically
+          console.error("[getActiveGameState] Error retrieving dilemmas:", dilemmaError);
+          throw new Error("Failed to retrieve dilemmas");
+        }
+      } catch (petError) {
+        // handle pet retrieval errors specifically
+        console.error("[getActiveGameState] Error retrieving pet:", petError);
+        throw new Error("Failed to retrieve pet data");
       }
-
-      // get all dilemmas from db
-      const allDilemmas = await ctx.db.query('dilemmas')
-        .withIndex('by_userAndPetId', q => q.eq('userId', userId).eq('petId', petId))
-        .collect();
-      console.log(`[getActiveGameState] dilemmas query took ${Date.now() - startTime}ms, count: ${allDilemmas.length}`);
-
-      const { seenDilemmas, unseenDilemmaTitles, unresolvedDilemma } = getPartitionedDilemmas(allDilemmas);
-      console.log(`[getActiveGameState] dilemmas partitioning took ${Date.now() - startTime}ms`);
-
-      // Now determine the game state
-      if (pet.age >= 2 || !unseenDilemmaTitles || unseenDilemmaTitles.length === 0) {
-        return {
-          status: 'graduated',
-          seenDilemmas,
-          pet,
-        } as GameState;
-      }
-
-      if (unresolvedDilemma && unresolvedDilemma.outcome) {
-        const dilemma = dilemmaTemplates[unresolvedDilemma.title];
-        return { 
-          status: "has_unresolved_dilemma",
-          seenDilemmas,
-          unresolvedDilemma: dilemma,
-          question: unresolvedDilemma.outcome,
-          pet,
-        } as GameState;
-      }
-
-      return {
-        status: 'has_dilemmas',
-        seenDilemmas,
-        unseenDilemmaTitles,
-        pet,
-      } as GameState;
     } catch (error) {
-      // handle any unexpected errors
-      console.error("[getActiveGameState] Unexpected error:", error);
-      return { status: 'not_authenticated' };
+      // capture and log the specific error message
+      const errorMessage = error instanceof Error ? error.message : "Unknown error";
+      console.error(`[getActiveGameState] Unexpected error: ${errorMessage}`, error);
+      
+      // gracefully handle auth-related errors
+      if (errorMessage.includes("auth") || errorMessage.includes("identity")) {
+        return { status: 'not_authenticated' };
+      }
+      
+      // re-throw to propagate the error to the client for better debugging
+      throw error;
     }
   },
 });
