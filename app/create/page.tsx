@@ -111,9 +111,9 @@ function Content() {
       {/* Outcomes for achievements */}
       <div className="fixed top-0 p-4 w-full max-w-lg z-30">
         <AnimatePresence>
-          {outcomes.map((outcome) => (
+          {outcomes.map((outcome, index) => (
             <motion.div
-              key={outcome.id}
+              key={index}
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}

@@ -27,6 +27,7 @@ const Viewport = React.memo(function Viewport({
   cleanupPoo,
   incrementStat,
   baseStats,
+  hasGraduated,
 }: {
   pet: Doc<"pets">;
   clarifyingQuestion: string | null;
@@ -37,6 +38,7 @@ const Viewport = React.memo(function Viewport({
   cleanupPoo: (id: number) => void;
   incrementStat: (stat: keyof BaseStatsType) => void;
   baseStats: BaseStatsType;
+  hasGraduated: boolean;
 }) {
   const [prevSprite, setPrevSprite] = useState<string | null>(null);
   const [isTransforming, setIsTransforming] = useState(false);
@@ -75,7 +77,7 @@ const Viewport = React.memo(function Viewport({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [petSprite]);
 
-  // add shake effect when stats are low
+  // add transparency effect when stats are low
   useEffect(() => {
     // shake when any stat is low
     // but not entirely 0
@@ -86,6 +88,13 @@ const Viewport = React.memo(function Viewport({
         (baseStats.sanity < 2 && baseStats.sanity > 0)
     );
   }, [baseStats]);
+
+  // undo effects when graduated
+  useEffect(() => {
+    if (hasGraduated) {
+      setIsAlmostDead(false);
+    }
+  }, [hasGraduated]);
 
   return (
     <div

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   Achievement,
   achievements,
@@ -14,16 +14,20 @@ import { EvolutionId } from "@/constants/evolutions";
 interface AchievementsSidebarProps {
   userAchievements: { achievementId: string; timestamp: number }[] | undefined;
   shownAchievements: AchievementId[];
+  onAchievementsSeen: (ids: AchievementId[]) => void;
 }
 
 export default function AchievementsSidebar({
   userAchievements,
   shownAchievements,
+  onAchievementsSeen,
 }: AchievementsSidebarProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedAchievement, setSelectedAchievement] =
     useState<Achievement | null>(null);
   const [newAchievements, setNewAchievements] = useState<AchievementId[]>([]);
+  const [isBlinking, setIsBlinking] = useState(false);
+  const blinkTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // track if there are any unread achievements
   useEffect(() => {
@@ -37,7 +41,39 @@ export default function AchievementsSidebar({
     );
 
     setNewAchievements(unshownAchievements);
+
+    // trigger blinking animation when new achievements are detected
+    if (unshownAchievements.length > 0) {
+      setIsBlinking(true);
+
+      // clear previous timeout if it exists
+      if (blinkTimeoutRef.current) {
+        clearTimeout(blinkTimeoutRef.current);
+      }
+
+      // stop blinking after 10 seconds
+      blinkTimeoutRef.current = setTimeout(() => {
+        setIsBlinking(false);
+      }, 10000);
+    }
+
+    // cleanup timeout on unmount
+    return () => {
+      if (blinkTimeoutRef.current) {
+        clearTimeout(blinkTimeoutRef.current);
+      }
+    };
   }, [userAchievements, shownAchievements]);
+
+  // handle opening the sidebar, also mark achievements as seen
+  const handleOpenSidebar = () => {
+    setIsOpen(true);
+
+    // mark all new achievements as seen when opening the sidebar
+    if (newAchievements.length > 0) {
+      onAchievementsSeen(newAchievements);
+    }
+  };
 
   // handle closing the achievement popup
   const closeAchievementPopup = () => {
@@ -105,7 +141,7 @@ export default function AchievementsSidebar({
       {/* floating sidebar tab */}
       <div
         className="fixed left-0 top-0 z-40 mt-20"
-        onMouseEnter={() => setIsOpen(true)}
+        onMouseEnter={handleOpenSidebar}
         onMouseLeave={handleMouseLeave}
       >
         <motion.div
@@ -115,7 +151,7 @@ export default function AchievementsSidebar({
         >
           <div
             className={`bg-white border-r-2 border-t-2 border-b-2 border-black py-4 px-2 cursor-pointer rounded-r-md flex flex-col items-center justify-center shadow-md ${
-              newAchievements.length > 0 ? "animate-pulse" : ""
+              isBlinking ? "animate-pulse" : ""
             }`}
           >
             <span className="text-xl">🏆</span>
@@ -159,7 +195,7 @@ export default function AchievementsSidebar({
                     );
 
                     return (
-                      <div
+                      <motion.div
                         key={achievement.id}
                         className={`border relative rounded-md p-2 ${
                           secret ? "cursor-not-allowed" : "cursor-pointer"
@@ -175,6 +211,19 @@ export default function AchievementsSidebar({
                             setSelectedAchievement(achievement);
                           }
                         }}
+                        // add animation for new achievements
+                        animate={
+                          isNew && unlocked
+                            ? {
+                                scale: [1, 1.03, 1],
+                                transition: {
+                                  repeat: Infinity,
+                                  repeatType: "reverse",
+                                  duration: 0.8,
+                                },
+                              }
+                            : {}
+                        }
                       >
                         <div className="flex items-center gap-2">
                           <div className="relative w-6 h-6 flex-shrink-0">
@@ -209,7 +258,7 @@ export default function AchievementsSidebar({
                             </span>
                           )}
                         </div>
-                      </div>
+                      </motion.div>
                     );
                   })}
                 </div>

@@ -16,7 +16,7 @@ import Header from "./components/Header";
 import { MoralStats } from "./components/MoralStats";
 import { AnimatePresence, motion } from "framer-motion";
 import HoverText from "@/components/HoverText";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Animation } from "@/constants/sprites";
 import { ObjectKey } from "@/constants/objects";
 import { getEvolutionTimeFrame } from "@/constants/evolutions";
@@ -35,13 +35,15 @@ export default function Play() {
   const [rip, setRip] = useState(false);
   const [dilemmaOpen, setDilemmaOpen] = useState(false);
   const [graduationOpen, setGraduationOpen] = useState(false);
-  const [shownAchievements, setShownAchievements] = useState<AchievementId[]>(
-    []
-  );
   const { outcomes, addOutcome, removeOutcome } = useOutcomes();
   const { userAchievements } = useAchievements(addOutcome);
 
-  // initialize shown achievements from localStorage
+  // State for tracking which achievements have been shown to the user
+  const [shownAchievements, setShownAchievements] = useState<AchievementId[]>(
+    []
+  );
+
+  // Load shown achievements from localStorage on mount
   useEffect(() => {
     const savedShownAchievements = localStorage.getItem("shown_achievements");
     if (savedShownAchievements) {
@@ -49,26 +51,18 @@ export default function Play() {
     }
   }, []);
 
-  // update shown achievements when user views them in the sidebar
-  useEffect(() => {
-    if (!userAchievements) return;
-
-    // mark all achievements as shown when they're viewed in the sidebar
-    const achievementIds = userAchievements.map(
-      (a) => a.achievementId as AchievementId
-    );
-    const updatedShownAchievements = [
-      ...new Set([...shownAchievements, ...achievementIds]),
-    ];
-
-    if (updatedShownAchievements.length !== shownAchievements.length) {
-      setShownAchievements(updatedShownAchievements);
+  // Callback for when achievements are seen
+  const handleAchievementsSeen = useCallback((ids: AchievementId[]) => {
+    setShownAchievements((prev) => {
+      const newShownAchievements = [...prev, ...ids];
+      // Update localStorage
       localStorage.setItem(
         "shown_achievements",
-        JSON.stringify(updatedShownAchievements)
+        JSON.stringify(newShownAchievements)
       );
-    }
-  }, [userAchievements, shownAchievements]);
+      return newShownAchievements;
+    });
+  }, []);
 
   const stateResult = useQuery(api.state.getActiveGameState);
   const {
@@ -115,7 +109,7 @@ export default function Play() {
   const { pet, seenDilemmas } = stateResult;
   const evolution = getEvolution(pet.evolutionId as EvolutionId);
   const timeFrame = getEvolutionTimeFrame(pet.age);
-  const hasGraduated = status === "graduated" || status === "out_of_dilemmas";
+  const hasGraduated = status === "graduated";
 
   return (
     <>
@@ -125,6 +119,7 @@ export default function Play() {
       <AchievementsSidebar
         userAchievements={userAchievements}
         shownAchievements={shownAchievements}
+        onAchievementsSeen={handleAchievementsSeen}
       />
 
       {/* Outcomes */}
@@ -208,6 +203,7 @@ export default function Play() {
           >
             <Viewport
               pet={pet}
+              hasGraduated={hasGraduated}
               cursorObject={cursorObject}
               poos={poos}
               cleanupPoo={cleanupPoo}

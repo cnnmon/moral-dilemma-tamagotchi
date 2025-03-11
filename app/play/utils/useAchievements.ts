@@ -1,20 +1,134 @@
 import { useCallback, useEffect, useState, useRef } from "react";
 import { useMutation, useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
-import { AchievementId, getAchievement } from "@/constants/achievements";
+import { AchievementId, getAchievement, getStage1EvolutionAchievementIds, getStage2EvolutionAchievementIds } from "@/constants/achievements";
+import { EvolutionId } from "@/constants/evolutions";
 
 const ACHIEVEMENTS_STORAGE_KEY = "achievements";
 // don't use the shown achievements key in the hook, as we're managing this in the Play component
 // const SHOWN_ACHIEVEMENTS_KEY = "shown_achievements";
 
+// helper function to get achievement id for an evolution
+function getAchievementForEvolution(evolutionId: EvolutionId): AchievementId | null {
+  // skip for baby evolution
+  if (evolutionId === "baby") return null;
+  
+  return `evolve_to_${evolutionId}` as AchievementId;
+}
+
+// helper function to check if unlocking an achievement should also unlock collection achievements
+function checkCollectionAchievements(
+  unlockedAchievementIds: AchievementId[],
+  newAchievementId: AchievementId
+): AchievementId[] {
+  const result: AchievementId[] = [];
+  
+  // check if all stage 1 evolutions are unlocked
+  const stage1Ids = getStage1EvolutionAchievementIds();
+  const hasAllStage1 = stage1Ids.every(id => 
+    unlockedAchievementIds.includes(id) || id === newAchievementId
+  );
+  
+  if (hasAllStage1 && !unlockedAchievementIds.includes("collect_all_stage1")) {
+    result.push("collect_all_stage1");
+  }
+  
+  // check if all stage 2 evolutions are unlocked
+  const stage2Ids = getStage2EvolutionAchievementIds();
+  const hasAllStage2 = stage2Ids.every(id => 
+    unlockedAchievementIds.includes(id) || id === newAchievementId
+  );
+  
+  if (hasAllStage2 && !unlockedAchievementIds.includes("collect_all_stage2")) {
+    result.push("collect_all_stage2");
+  }
+  
+  // check if all evolutions are unlocked
+  if (hasAllStage1 && hasAllStage2 && !unlockedAchievementIds.includes("collect_all")) {
+    result.push("collect_all");
+  }
+  
+  return result;
+}
+
 export function useAchievements(addOutcome: (text: string, exitable?: boolean) => void) {
   const userAchievements = useQuery(api.achievements.getUserAchievements);
   const unlockAchievement = useMutation(api.achievements.unlockAchievement);
+  const stateResult = useQuery(api.state.getActiveGameState);
   const [achievements, setAchievements] = useState<AchievementId[]>([]);
+  const [previousEvolutionId, setPreviousEvolutionId] = useState<EvolutionId | null>(null);
+
   // we're no longer tracking shown achievements here
   // const [shownAchievements, setShownAchievements] = useState<AchievementId[]>([]);
   // flag to track if this is initial load
   const isInitialLoad = useRef(true);
+
+  // check for evolution achievements
+  useEffect(() => {
+    if (
+      !stateResult ||
+      stateResult.status === "not_authenticated" ||
+      stateResult.status === "needs_pet" ||
+      !userAchievements ||
+      !stateResult.pet.evolutionId
+    )
+      return;
+
+    const currentEvolutionId = stateResult.pet.evolutionId as EvolutionId;
+    if (previousEvolutionId === null) {
+      setPreviousEvolutionId(currentEvolutionId);
+      return;
+    }
+    
+    // Only process if evolution has changed
+    if (previousEvolutionId !== currentEvolutionId) {
+      const achievementId = getAchievementForEvolution(currentEvolutionId);
+      if (achievementId) {
+        // Check if the achievement is already unlocked
+        const isAlreadyUnlocked = userAchievements.some(
+          (a) => a.achievementId === achievementId
+        );
+
+        if (!isAlreadyUnlocked) {
+          // Unlock the achievement
+          unlockAchievement({ achievementId });
+
+          // Show the achievement notification
+          const achievement = getAchievement(achievementId);
+          if (!achievement) {
+            console.error(`Achievement ${achievementId} not found`);
+            return;
+          }
+          addOutcome(
+            `🏆 achievement unlocked: ${achievement.title} - ${achievement.description}`,
+            true
+          );
+
+          // Check if this unlocks any collection achievements
+          const unlockedAchievementIds = userAchievements.map(
+            (a) => a.achievementId as AchievementId
+          );
+          const collectionAchievements = checkCollectionAchievements(
+            unlockedAchievementIds,
+            achievementId
+          );
+
+          // Unlock any collection achievements
+          collectionAchievements.forEach((collectionId) => {
+            unlockAchievement({ achievementId: collectionId });
+            const collectionAchievement = getAchievement(collectionId);
+            addOutcome(
+              `🏆 achievement unlocked: ${collectionAchievement.title} - ${collectionAchievement.description}`,
+              true
+            );
+          });
+        }
+      }
+
+      // Update previous evolution ID
+      setPreviousEvolutionId(currentEvolutionId);
+    }
+  }, [stateResult, userAchievements, unlockAchievement, addOutcome, previousEvolutionId]);
 
   // initialize achievements from localStorage
   useEffect(() => {

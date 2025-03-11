@@ -16,12 +16,6 @@ export type GameState =
       achievements: Doc<"achievements">[]
     }
   | {
-      status: 'out_of_dilemmas',
-      seenDilemmas: Doc<"dilemmas">[],
-      pet: Doc<"pets">,
-      achievements: Doc<"achievements">[]
-    }
-  | {
       status: 'has_unresolved_dilemma',
       seenDilemmas: Doc<"dilemmas">[],
       unresolvedDilemma: DilemmaTemplate,
@@ -65,7 +59,7 @@ export const getActiveGameState = query({
     // get all achievements for this user
     const achievements = await ctx.runQuery(api.achievements.getUserAchievements);
 
-    if (pet.graduated) {
+    if (pet.age >= 2 || !unseenDilemmaTitles || unseenDilemmaTitles.length === 0) {
       return {
         status: 'graduated',
         seenDilemmas,
@@ -81,15 +75,6 @@ export const getActiveGameState = query({
         seenDilemmas,
         unresolvedDilemma: dilemma,
         question: unresolvedDilemma.outcome,
-        pet,
-        achievements,
-      };
-    }
-    
-    if (!unseenDilemmaTitles || unseenDilemmaTitles.length === 0) {
-      return { 
-        status: 'out_of_dilemmas',
-        seenDilemmas,
         pet,
         achievements,
       };
