@@ -1,11 +1,6 @@
 import { Suspense } from "react";
 import Scrapbook from "./components/Scrapbook";
 
-export const metadata = {
-  title: "Scrapbook | Princi(pal)",
-  description: "A collection of your graduated pets",
-};
-
 export default function ScrapbookPage() {
   return (
     <div className="flex flex-col items-center justify-center p-4 pt-[20%] sm:w-3xl w-full min-h-screen">
