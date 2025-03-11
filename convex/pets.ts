@@ -57,19 +57,6 @@ export const createPet = mutation({
         purity: 5,
         ego: 5,
       },
-      graduated: false,
-    });
-  },
-}); 
-
-// test only
-export const graduatePet = mutation({
-  args: {
-    petId: v.id('pets'),
-  },
-  handler: async (ctx, args) => {
-    return ctx.db.patch(args.petId, {
-      graduated: true,
     });
   },
 }); 

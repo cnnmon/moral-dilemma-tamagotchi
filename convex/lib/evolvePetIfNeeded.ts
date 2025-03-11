@@ -53,7 +53,6 @@ export function evolvePetIfNeeded(
   averageMoralStats: MoralDimensionsType
 ):
   | { evolutionId: EvolutionId; age: number; }
-  | { graduated: true }
   | undefined {
   const timeFrame = getEvolutionTimeFrame(pet.age);
   if (seenDilemmasCount < timeFrame) {
@@ -74,10 +73,8 @@ export function evolvePetIfNeeded(
       moralStatsWritten
     );
     console.log("🐦 stage 1 newEvolutionId", newEvolutionId);
-  } else if (pet.age === 2) {
-    return {
-      graduated: true,
-    };
+  } else {
+    return;
   }
 
   if (!newEvolutionId) {

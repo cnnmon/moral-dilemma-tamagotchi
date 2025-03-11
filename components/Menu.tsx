@@ -41,7 +41,7 @@ export default function Menu() {
             resume game: {currentPet.name}
           </a>
         )}
-        {currentPath !== "create" && (
+        {currentPath !== "create" && currentPath !== "about" && (
           <a href="/create" className="hover:text-zinc-800 no-drag">
             new pet
           </a>

@@ -26,7 +26,6 @@ export default defineSchema({
     personality: v.string(), // traits (> 150 characters)
     baseStats: v.object(baseStats), // ends game if 0
     moralStats: v.object(moralStats),
-    graduated: v.optional(v.boolean()), // whether the pet has graduated
   }).index("by_userId", ["userId"]),
 
   dilemmas: defineTable({

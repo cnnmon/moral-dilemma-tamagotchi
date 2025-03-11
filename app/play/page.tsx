@@ -9,6 +9,8 @@ import {
   useAchievements,
   useCurrentDilemma,
   useBaseStats,
+  useCachedState,
+  cacheGameState,
 } from "./utils";
 import Viewport from "./components/Viewport";
 import Dialog from "./components/Dialog";
@@ -48,6 +50,12 @@ export default function Play() {
     []
   );
 
+  // Track if we're using optimistic cached data
+  const [isOptimistic, setIsOptimistic] = useState(false);
+
+  // Use cached state for optimistic updates
+  const { cachedState, isUsingCachedState } = useCachedState();
+
   // Load shown achievements from localStorage on mount
   useEffect(() => {
     const savedShownAchievements = localStorage.getItem("shown_achievements");
@@ -74,55 +82,56 @@ export default function Play() {
   const stateResult = stateQuery;
   const stateError = stateQuery instanceof Error ? stateQuery : null;
 
-  // Function to manually retry loading state without a full page refresh
-  const handleRetry = useCallback(() => {
-    setIsRetrying(true);
-    setStateLoadingTimeout(false);
-    setStateLoadError(null);
+  // Determine which state to use - real or optimistic
+  // If stateResult is undefined (loading) but we have cached state, use cached state
+  const displayState =
+    stateResult !== undefined
+      ? stateResult
+      : isUsingCachedState && cachedState
+        ? cachedState
+        : undefined;
 
-    // Force a re-query by temporarily changing state
-    setTimeout(() => {
-      setIsRetrying(false);
-    }, 500);
-  }, []);
+  // Track if we're using optimistic rendering
+  useEffect(() => {
+    // We're using optimistic data if we have cached state but no stateResult yet
+    setIsOptimistic(stateResult === undefined && displayState !== undefined);
+
+    // Cache the state when it loads from server
+    if (stateResult !== undefined) {
+      cacheGameState(stateResult);
+    }
+  }, [stateResult, displayState]);
 
   // Add a timeout for state loading with better error handling
   useEffect(() => {
-    // reset error state on each load attempt if not retrying
     if (!isRetrying) {
       setStateLoadError(null);
     }
 
-    // Reset auto retry count when state successfully loads
-    if (stateResult !== undefined && autoRetryCount > 0) {
+    if (displayState !== undefined && autoRetryCount > 0) {
       setAutoRetryCount(0);
     }
 
     let autoRetryTimeoutId: NodeJS.Timeout | undefined;
-
-    // If state is undefined (loading) and not already retrying, set both timeouts
-    if (stateResult === undefined && !isRetrying) {
-      // long timeout for showing the refresh UI
+    if (displayState === undefined && !isRetrying) {
       const timeoutId = setTimeout(() => {
         console.log("state loading timeout reached");
         setStateLoadingTimeout(true);
       }, 15000); // 15 seconds timeout
-
       // quick timeout for auto retry
       if (autoRetryCount < MAX_AUTO_RETRIES) {
         autoRetryTimeoutId = setTimeout(() => {
           console.log(`auto retry attempt ${autoRetryCount + 1}`);
           setIsRetrying(true);
           setAutoRetryCount((prev) => prev + 1);
-
           // force a re-query
           setTimeout(() => {
             setIsRetrying(false);
           }, 500);
-        }, 2000); // retry after 2 seconds
+        }, 1000); // retry after 1 second
       }
 
-      // Clear timeouts if component unmounts or state loads
+      // clear timeouts if component unmounts or state loads
       return () => {
         clearTimeout(timeoutId);
         if (autoRetryTimeoutId) clearTimeout(autoRetryTimeoutId);
@@ -140,7 +149,7 @@ export default function Play() {
     return () => {
       if (autoRetryTimeoutId) clearTimeout(autoRetryTimeoutId);
     };
-  }, [stateResult, stateError, isRetrying, autoRetryCount]);
+  }, [displayState, stateError, isRetrying, autoRetryCount]);
 
   const {
     baseStats,
@@ -150,22 +159,32 @@ export default function Play() {
     recentDecrements,
     recentIncrements,
   } = useBaseStats({
-    stateResult,
+    stateResult: displayState,
     setAnimation,
     setRip,
     rip,
   });
+
   const {
     currentDilemma,
     onDilemmaProcessingStart,
     onDilemmaProcessingEnd,
     isProcessing,
   } = useCurrentDilemma({
-    stateResult,
+    stateResult: displayState,
   });
 
+  const handleRetry = useCallback(() => {
+    setIsRetrying(true);
+    setStateLoadingTimeout(false);
+    setStateLoadError(null);
+    setTimeout(() => {
+      setIsRetrying(false);
+    }, 500);
+  }, []);
+
   // Handle loading state with timeout fallback
-  if (stateResult === undefined) {
+  if (displayState === undefined) {
     // If we've hit the timeout or have an error, show a refresh button
     if (stateLoadingTimeout || stateLoadError) {
       return (
@@ -199,7 +218,19 @@ export default function Play() {
     return <Loading autoRetryCount={autoRetryCount} isRetrying={isRetrying} />;
   }
 
-  const { status } = stateResult;
+  // Optimistic UI overlay - shows when using cached data
+  const OptimisticIndicator = () => {
+    if (isOptimistic) {
+      return (
+        <div className="fixed bottom-4 left-4 bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-xs">
+          using cached data...
+        </div>
+      );
+    }
+    return null;
+  };
+
+  const { status } = displayState;
 
   // auth state
   if (status === "not_authenticated") {
@@ -214,10 +245,16 @@ export default function Play() {
   }
 
   // extract pet and seenDilemmas based on status
-  const { pet, seenDilemmas } = stateResult;
+  const { pet, seenDilemmas } = displayState;
   const evolution = getEvolution(pet.evolutionId as EvolutionId);
   const timeFrame = getEvolutionTimeFrame(pet.age);
-  const hasGraduated = status === "graduated";
+  const hasGraduated = pet.age >= 2;
+
+  // Handle unresolved dilemma question safely with type checking
+  const clarifyingQuestion =
+    status === "has_unresolved_dilemma" && "question" in displayState
+      ? displayState.question
+      : null;
 
   return (
     <>
@@ -229,6 +266,9 @@ export default function Play() {
         shownAchievements={shownAchievements}
         onAchievementsSeen={handleAchievementsSeen}
       />
+
+      {/* Show optimistic data indicator */}
+      <OptimisticIndicator />
 
       {/* Outcomes */}
       <div className="fixed top-0 p-4 w-full max-w-lg z-30">
@@ -322,11 +362,7 @@ export default function Play() {
               }}
               rip={rip}
               animation={animation}
-              clarifyingQuestion={
-                status === "has_unresolved_dilemma"
-                  ? stateResult.question
-                  : null
-              }
+              clarifyingQuestion={clarifyingQuestion}
               baseStats={baseStats}
             />
           </motion.div>
