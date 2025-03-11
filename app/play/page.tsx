@@ -232,6 +232,7 @@ export default function Play() {
               seenDilemmasCount={seenDilemmas.length}
               timeFrame={timeFrame}
               hasGraduated={hasGraduated}
+              hasRip={rip}
             />
           </motion.div>
 

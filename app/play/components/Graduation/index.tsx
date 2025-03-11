@@ -53,7 +53,7 @@ export default function Graduation({
 
   return (
     <div
-      className="p-1 sm:w-5xl overflow-y-auto h-screen outline-white"
+      className="p-1 sm:w-5xl overflow-y-auto h-screen outline-white flex justify-center items-center"
       onClick={(e) => e.stopPropagation()}
     >
       <Window

@@ -28,6 +28,8 @@ export default function AchievementsSidebar({
   const [newAchievements, setNewAchievements] = useState<AchievementId[]>([]);
   const [isBlinking, setIsBlinking] = useState(false);
   const blinkTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  // Track if this is the initial load
+  const initialLoadRef = useRef(true);
 
   // track if there are any unread achievements
   useEffect(() => {
@@ -40,21 +42,30 @@ export default function AchievementsSidebar({
       (id) => !shownAchievements.includes(id)
     );
 
-    setNewAchievements(unshownAchievements);
-
-    // trigger blinking animation when new achievements are detected
-    if (unshownAchievements.length > 0) {
-      setIsBlinking(true);
-
-      // clear previous timeout if it exists
-      if (blinkTimeoutRef.current) {
-        clearTimeout(blinkTimeoutRef.current);
+    // only set new achievements if this is not the initial load
+    if (initialLoadRef.current) {
+      initialLoadRef.current = false;
+      // mark initial achievements as seen
+      if (unshownAchievements.length > 0) {
+        onAchievementsSeen(unshownAchievements);
       }
+    } else {
+      setNewAchievements(unshownAchievements);
 
-      // stop blinking after 10 seconds
-      blinkTimeoutRef.current = setTimeout(() => {
-        setIsBlinking(false);
-      }, 10000);
+      // trigger blinking animation when new achievements are detected
+      if (unshownAchievements.length > 0) {
+        setIsBlinking(true);
+
+        // clear previous timeout if it exists
+        if (blinkTimeoutRef.current) {
+          clearTimeout(blinkTimeoutRef.current);
+        }
+
+        // stop blinking after 10 seconds
+        blinkTimeoutRef.current = setTimeout(() => {
+          setIsBlinking(false);
+        }, 10000);
+      }
     }
 
     // cleanup timeout on unmount
@@ -63,7 +74,7 @@ export default function AchievementsSidebar({
         clearTimeout(blinkTimeoutRef.current);
       }
     };
-  }, [userAchievements, shownAchievements]);
+  }, [userAchievements, shownAchievements, onAchievementsSeen]);
 
   // handle opening the sidebar, also mark achievements as seen
   const handleOpenSidebar = () => {
@@ -129,19 +140,16 @@ export default function AchievementsSidebar({
   const achievementsByCategory = {
     choice: Object.values(achievements)
       .filter((a) => a.category === "choice")
-      // deduplicate by ID if there are any duplicates
       .filter(
         (a, index, self) => index === self.findIndex((t) => t.id === a.id)
       ),
     evolution: Object.values(achievements)
       .filter((a) => a.category === "evolution")
-      // deduplicate by ID if there are any duplicates
       .filter(
         (a, index, self) => index === self.findIndex((t) => t.id === a.id)
       ),
     general: Object.values(achievements)
       .filter((a) => a.category === "general")
-      // deduplicate by ID if there are any duplicates
       .filter(
         (a, index, self) => index === self.findIndex((t) => t.id === a.id)
       ),
@@ -161,7 +169,7 @@ export default function AchievementsSidebar({
           transition={{ type: "spring", stiffness: 300, damping: 30 }}
         >
           <div
-            className={`bg-white border-r-2 border-t-2 border-b-2 border-black py-4 px-2 cursor-pointer rounded-r-md flex flex-col items-center justify-center ${
+            className={`bg-white border-r-2 border-t-2 border-b-2 border-black py-4 px-2 cursor-pointer flex flex-col items-center justify-center ${
               isBlinking ? "animate-pulse" : ""
             }`}
           >
@@ -176,7 +184,7 @@ export default function AchievementsSidebar({
 
         {/* sidebar content */}
         <motion.div
-          className="fixed left-0 top-0 h-screen w-60 bg-white border-r-2 border-black p-4 overflow-y-auto"
+          className="fixed left-0 top-0 h-screen w-60 bg-white p-4 overflow-y-auto border-r-2 border-black"
           initial={{ x: -240 }}
           animate={{ x: isOpen ? 0 : -240 }}
           transition={{ type: "spring", stiffness: 300, damping: 30 }}

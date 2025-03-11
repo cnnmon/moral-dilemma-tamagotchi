@@ -2,18 +2,26 @@ import React, { useMemo, useState, useEffect } from "react";
 import Image from "next/image";
 import { Background, VIEWPORT_WIDTH } from "@/components/Background";
 import { VIEWPORT_HEIGHT } from "@/components/Background";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { Animation, RIP_SPRITE, getSprite } from "@/constants/sprites";
 import { Doc } from "@/convex/_generated/dataModel";
 import { BaseStatKeys, BaseStatsType, PooType } from "@/constants/base";
 import { ObjectKey } from "@/constants/objects";
 import { EvolutionId } from "@/constants/evolutions";
 
+// local storage key for tracking if egg animation has been shown
+const EGG_CRACK_SHOWN_KEY = "egg_crack_animation_shown";
+
 function isSpriteTransformation(prevSprite: string, currentSprite: string) {
   // checks if first letter of sprite changed
   // this works due to naming convention (e.g. smol -> old)
-  const prevFirstLetter = prevSprite.split("/").pop()?.charAt(0);
-  const currentFirstLetter = currentSprite.split("/").pop()?.charAt(0);
+  const prevFirstLetter = prevSprite
+    .split("/")
+    [prevSprite.split("/").length - 1].charAt(0);
+  const currentFirstLetter = currentSprite
+    .split("/")
+    [currentSprite.split("/").length - 1].charAt(0);
+  console.log(prevFirstLetter, currentFirstLetter);
   return prevFirstLetter !== currentFirstLetter;
 }
 
@@ -43,6 +51,22 @@ const Viewport = React.memo(function Viewport({
   const [prevSprite, setPrevSprite] = useState<string | null>(null);
   const [isTransforming, setIsTransforming] = useState(false);
   const [isAlmostDead, setIsAlmostDead] = useState(false);
+  // state to track egg crack animation
+  const [showEggCrack, setShowEggCrack] = useState(false);
+
+  // egg crack animation should be shown on first render
+  useEffect(() => {
+    const eggCrackShown = localStorage.getItem(EGG_CRACK_SHOWN_KEY);
+
+    if (!eggCrackShown) {
+      setShowEggCrack(true);
+      const timer = setTimeout(() => {
+        setShowEggCrack(false);
+        localStorage.setItem(EGG_CRACK_SHOWN_KEY, "true");
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, []);
 
   const petSprite = useMemo(() => {
     if (rip) {
@@ -66,10 +90,9 @@ const Viewport = React.memo(function Viewport({
     if (prevSprite && prevSprite !== petSprite) {
       if (isSpriteTransformation(prevSprite, petSprite)) {
         setIsTransforming(true);
-        // reset transformation after animation completes
         const timer = setTimeout(() => {
           setIsTransforming(false);
-        }, 1500); // total animation duration
+        }, 1500);
         return () => clearTimeout(timer);
       }
     }
@@ -140,27 +163,54 @@ const Viewport = React.memo(function Viewport({
       )}
       <Background hasOverlay backgroundSrcs={["/background.png", "/trees.gif"]}>
         <div className="relative">
-          {/* pet sprite */}
           <div className="relative">
-            <Image
-              src={petSprite}
-              alt="birb"
-              width={VIEWPORT_WIDTH / 5}
-              height={VIEWPORT_HEIGHT / 5}
-              onMouseEnter={() => {
-                if (cursorObject === "burger") {
-                  incrementStat(BaseStatKeys.hunger);
-                } else if (cursorObject === "bandaid") {
-                  incrementStat(BaseStatKeys.health);
-                } else if (cursorObject === "ball") {
-                  incrementStat(BaseStatKeys.happiness);
-                }
-              }}
-              priority
-              className={`translate-y-[30%] cursor-grab no-select ${
-                isAlmostDead ? "animate-pulse" : ""
-              }`}
-            />
+            <AnimatePresence>
+              {showEggCrack && (
+                <motion.div
+                  className="absolute top-13 left-[-3px] w-full h-full z-10 flex items-center justify-center"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.3, delay: 0.1 }}
+                >
+                  <Image
+                    src="/egg_crack.gif"
+                    alt="egg cracking"
+                    width={VIEWPORT_WIDTH / 3}
+                    height={VIEWPORT_HEIGHT / 3}
+                    className="absolute z-10"
+                    priority
+                  />
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3, delay: 0.1 }}
+            >
+              <Image
+                src={petSprite}
+                alt="birb"
+                width={VIEWPORT_WIDTH / 5}
+                height={VIEWPORT_HEIGHT / 5}
+                onMouseEnter={() => {
+                  if (cursorObject === "burger") {
+                    incrementStat(BaseStatKeys.hunger);
+                  } else if (cursorObject === "bandaid") {
+                    incrementStat(BaseStatKeys.health);
+                  } else if (cursorObject === "ball") {
+                    incrementStat(BaseStatKeys.happiness);
+                  }
+                }}
+                priority
+                className={`translate-y-[30%] cursor-grab no-select ${
+                  isAlmostDead ? "animate-pulse" : ""
+                }`}
+              />
+            </motion.div>
           </div>
 
           {/* sparkles that appear during transformation */}

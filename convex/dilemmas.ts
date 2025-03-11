@@ -293,7 +293,6 @@ export const updateDilemmaAndPet = mutation({
 
       // incl. evolutionId, age, and graduated bool
       const evolutionAdditions = evolvePetIfNeeded(seenDilemmas.length, pet, averageMoralStats);
-
       const updatedBaseStats = {
         ...pet.baseStats,
         ...(args.newBaseStats && {

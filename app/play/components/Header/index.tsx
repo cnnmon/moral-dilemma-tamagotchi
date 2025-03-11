@@ -13,6 +13,7 @@ export default function Header({
   seenDilemmasCount,
   timeFrame,
   hasGraduated,
+  hasRip,
 }: {
   pet: Doc<"pets">;
   baseStats: BaseStatsType;
@@ -22,6 +23,7 @@ export default function Header({
   seenDilemmasCount: number;
   timeFrame: number;
   hasGraduated: boolean;
+  hasRip: boolean;
 }) {
   return (
     <div className="flex flex-col bg-white border-2 p-4 gap-2">
@@ -44,6 +46,8 @@ export default function Header({
       <div>
         {hasGraduated ? (
           <p className="text-zinc-500">{pet.name} has graduated.</p>
+        ) : hasRip ? (
+          <p className="text-zinc-500">{pet.name} has died.</p>
         ) : (
           <Stat
             label={pet.age < 2 ? "until evolution" : "until graduation"}

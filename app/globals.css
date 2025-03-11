@@ -92,9 +92,9 @@ button:disabled {
 }
 
 /* minimalist scrollbar styles */
+
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 1px;
 }
 
 ::-webkit-scrollbar-track {
@@ -102,12 +102,11 @@ button:disabled {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.3);
-  border-radius: 4px;
+  background: #666;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 0, 0, 0.5);
+  background: #888;
 }
 
 /* firefox scrollbar */

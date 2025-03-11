@@ -74,7 +74,7 @@ export function evolvePetIfNeeded(
       moralStatsWritten
     );
     console.log("🐦 stage 1 newEvolutionId", newEvolutionId);
-  } else {
+  } else if (pet.age === 2) {
     return {
       graduated: true,
     };
