@@ -17,12 +17,12 @@ export const dilemmaTemplates: Record<string, DilemmaTemplate> = {
   },
   bigcheese: {
     id: "bigcheese",
-    text: "{pet} sees a crumpled can of Big Cheese rolling down the road on the way to trip several babies who just learned how to walk. {pet} is bleeding out. should {pet} pick up the can of Big Cheese?",
+    text: "{pet} sees a massive jug of Big Cheese rolling down the road on the way to trip several babies who just learned how to walk. {pet} is bleeding out. should {pet} pick up the jug of Big Cheese?",
     attribute: [MoralDimensions.compassion],
   },
   lostchild: {
     id: "lostchild",
-    text: "{pet} sees a lost child crying at the mall. {pet} could help, but what if the child is part of a scam?",
+    text: "{pet} sees a lost child crying at the mall. should {pet} help or keep their spot 1 hour into the Black Friday sale line?",
     attribute: [MoralDimensions.compassion],
   },
   sickfriend: {
@@ -32,13 +32,28 @@ export const dilemmaTemplates: Record<string, DilemmaTemplate> = {
   },
   homelesscat: {
     id: "homelesscat",
-    text: "{pet} finds a stray cat in the rain. it looks up at {pet}, hungry and cold. should {pet} take responsibility for it?",
+    text: "{pet} finds a stray cat in the rain. it looks up at {pet}, hungry and cold. should {pet} take responsibility or ignore it?",
     attribute: [MoralDimensions.compassion],
   },
   sickcoworker: {
     id: "sickcoworker",
     text: "{pet}'s coworker definitely has COVID but is refusing to leave work. should {pet} offer to cover their tasks or just keep distance?",
     attribute: [MoralDimensions.compassion],
+  },
+  scammer: {
+    id: "scammer",
+    text: "{pet}'s friend is desperately asking for money but other friends say it's going towards a pyramid scheme. should {pet} give money anyway or tell them to stop?",
+    attribute: [MoralDimensions.compassion, MoralDimensions.ego],
+  },
+  overstaying: {
+    id: "overstaying",
+    text: "{pet} is at a friend's house and notices their friend getting tired. should {pet} leave or wait to be asked to leave?",
+    attribute: [MoralDimensions.compassion],
+  },
+  fire: {
+    id: "fire",
+    text: "a fire breaks out. should {pet} choose to save their cherished stuffed animal or their neighbor?",
+    attribute: [MoralDimensions.compassion, MoralDimensions.ego],
   },
 
   // retribution dilemmas
@@ -64,20 +79,25 @@ export const dilemmaTemplates: Record<string, DilemmaTemplate> = {
   },
   badreview: {
     id: "badreview",
-    text: "{pet}'s waiter was rude and the food was cold. should {pet} leave a scathing online review?",
+    text: "{pet}'s waiter was rude and the food was cold. should {pet} leave a scathing online review or leave a tip anyway?",
     attribute: [MoralDimensions.retribution],
   },
   friendlies: {
     id: "friendlies",
-    text: "{pet}'s friend is kind of annoying. should {pet} call them out or hope they will change naturally?",
+    text: "{pet}'s friend is being shittalked in a private group chat. {pet} has somewhat joined in in the past. should {pet} expose the chat, along with their messages, or keep quiet?",
     attribute: [MoralDimensions.retribution, MoralDimensions.devotion],
   },
   whistleblower: {
     id: "whistleblower",
-    text: "{pet} discovers their company is dumping chemicals in a local river. reporting it would cost hundreds of jobs, including {pet}'s. should {pet} blow the whistle?",
+    text: "{pet} discovers their company is dumping chemicals in a local river. reporting it would cost hundreds of jobs, including {pet}'s. should {pet} blow the whistle or hide it?",
     attribute: [MoralDimensions.retribution, MoralDimensions.purity],
   },
-  
+  bully: {
+    id: "bully",
+    text: "{pet}'s childhood rival sincerely apologizes. should {pet} accept the apology or remind them of past humiliations?",
+    attribute: [MoralDimensions.retribution, MoralDimensions.devotion],
+  },
+
   // devotion dilemmas
   talentshow: {
     id: "talentshow",
@@ -91,7 +111,7 @@ export const dilemmaTemplates: Record<string, DilemmaTemplate> = {
   },
   debate: {
     id: "debate",
-    text: "{pet} sees classmates arguing. should {pet} speak their true opinion and risk being disliked, or just agree with the most popular side?",
+    text: "{pet} gets into a heated online debate where they realize their side is wrong. should {pet} admit defeat or double down?",
     attribute: [MoralDimensions.devotion, MoralDimensions.ego],
   },
   phd: {
@@ -111,8 +131,18 @@ export const dilemmaTemplates: Record<string, DilemmaTemplate> = {
   },
   shipoftheseus: {
     id: "shipoftheseus",
-    text: "{pet}'s toy ship has been repaired so many times that every part has been replaced. is it the same ship? does it still hold sentimental value?",
+    text: "{pet}'s toy ship has been repaired so many times that every part has been replaced. is it the same ship?",
     attribute: [MoralDimensions.devotion, MoralDimensions.purity],
+  },
+  cheating: {
+    id: "cheating",
+    text: "{pet} discovers that their best friend is cheating on their partner. should {pet} tell the truth or stay silent?",
+    attribute: [MoralDimensions.devotion, MoralDimensions.compassion],
+  },
+  socialmedia: {
+    id: "socialmedia",
+    text: "{pet}'s friend shares an offensive post online. should {pet} privately suggest they delete it or publicly shame them to gain followers?",
+    attribute: [MoralDimensions.ego, MoralDimensions.purity],
   },
 
   // dominance dilemmas
@@ -133,18 +163,23 @@ export const dilemmaTemplates: Record<string, DilemmaTemplate> = {
   },
   gamenight: {
     id: "gamenight",
-    text: "{pet} is winning against their friend at their favorite board game. should {pet} show no mercy or subtly let their friend catch up?",
+    text: "{pet} is crushing their friend in a game they deeply care about. should {pet} show no mercy or ease up?",
     attribute: [MoralDimensions.dominance, MoralDimensions.compassion],
   },
   bunkbeds: {
     id: "bunkbeds",
-    text: "{pet} is in charge of assigning rooms at a retreat. should {pet} give the long distance couple attending one of the bunk beds or the private room?",
+    text: "{pet} is in charge of assigning rooms at a retreat. should {pet} assign the long distance couple attending one of the bunk beds or their own private room?",
     attribute: [MoralDimensions.dominance, MoralDimensions.compassion],
   },
   restaurantmistake: {
     id: "restaurantmistake",
     text: "{pet} finds a diamond wedding ring in the mail, clearly meant for another address. should {pet} try to return it or pocket the ring?",
     attribute: [MoralDimensions.dominance, MoralDimensions.purity],
+  },
+  hallmonitor: {
+    id: "hallmonitor",
+    text: "{pet} is the hall monitor at school when their friend gets in trouble. should {pet} lead with leniency or strict discipline?",
+    attribute: [MoralDimensions.dominance, MoralDimensions.devotion],
   },
   
   // purity dilemmas
@@ -165,13 +200,28 @@ export const dilemmaTemplates: Record<string, DilemmaTemplate> = {
   },
   fastfashion: {
     id: "fastfashion",
-    text: "should {pet} buy from a trendy fast-fashion brand or spend more and look less cool at an ethical company?",
+    text: "should {pet} buy from a trendy fast-fashion brand?",
     attribute: [MoralDimensions.purity, MoralDimensions.ego],
   },
   simulationtheory: {
     id: "simulationtheory",
     text: "{pet} becomes convinced they're living in a computer simulation. should {pet} try to 'break out' by doing increasingly bizarre things, or continue living normally?",
+    attribute: [MoralDimensions.purity, MoralDimensions.compassion],
+  },
+  flushtoilet: {
+    id: "flushtoilet",
+    text: "{pet} used the bathroom at a friend's house and clogged the toilet. there's no plunger. should they flush it or leave it?",
     attribute: [MoralDimensions.purity],
+  },
+  meat: {
+    id: "meat",
+    text: "{pet} is shocked to find out about factory farming cruelty, but they love meat. should they go vegetarian or excuse the cruelty?",
+    attribute: [MoralDimensions.purity, MoralDimensions.compassion],
+  },
+  trash: {
+    id: "trash",
+    text: "{pet} drops a small piece of trash on the ground. should they pick it up or walk away?",
+    attribute: [MoralDimensions.purity, MoralDimensions.compassion],
   },
   
   // ego dilemmas
@@ -195,26 +245,68 @@ export const dilemmaTemplates: Record<string, DilemmaTemplate> = {
     text: "{pet} discovers a legal loophole that would let them claim a larger share of a family inheritance than their siblings. should {pet} exploit it or split everything equally?",
     attribute: [MoralDimensions.ego, MoralDimensions.compassion],
   },
-  
-  // gag dilemmas
-  icecube: {
-    id: "icecube",
-    text: "an ice cube falls from {pet}'s freezer as they grab ice cream. should {pet} kick it under the refrigerator or pick it up?",
+  promotion: {
+    id: "promotion",
+    text: "{pet} can get a promotion by sabotaging their coworker. should {pet} do it or let fairness prevail?",
+    attribute: [MoralDimensions.ego, MoralDimensions.purity],
+  },
+  sickday: {
+    id: "sickday",
+    text: "{pet}'s friend desperately needs help moving, but {pet} is feeling incredibly lazy. should {pet} feign illness or help out?",
+    attribute: [MoralDimensions.ego, MoralDimensions.compassion],
+  },
+  pbjs: {
+    id: "pbjs",
+    text: "{pet}'s friend made a custom cake for {pet}'s birthday. {pet} has recently become prediabetic. should {pet} eat the cake or awkwardly refuse?",
+    attribute: [MoralDimensions.ego, MoralDimensions.purity],
+  },
+  egg: {
+    id: "egg",
+    text: "{pet} overs an over-easy egg at a diner. it comes out over-medium. should {pet} eat it or send it back?",
+    attribute: [MoralDimensions.ego, MoralDimensions.purity],
+  },
+
+  // higher stakes
+  cher: {
+    id: "cher",
+    text: "{pet} shares an apartment with a roommate they met online. one day, {pet} comes home earlier than expected and sees their roommate dressed up in your clothes, dancing to your favorite song in your room.",
+    attribute: [MoralDimensions.devotion, MoralDimensions.compassion],
+  },
+  keycarving: {
+    id: "keycarving",
+    text: "{pet} needs to make spare keys for a friend. {pet} heads to the local locksmith and presents the key. he politely nods and rummages through a drawer containing many keys. he hands {pet} a copy of the key, no carving necessary. should {pet} tell their friend or accept it because he seems nice?",
+    attribute: [MoralDimensions.compassion, MoralDimensions.devotion],
+  },
+  digitalpet: {
+    id: "digitalpet",
+    text: "{pet} finds themself at the bottom of a cliff, when another digital pet falls from the top and shatters both of their knees. they are writhing in pain and screaming for help. should {pet} help them?",
+    attribute: [MoralDimensions.compassion, MoralDimensions.ego],
+  },
+  goodintentionsroad: {
+    id: "goodintentionsroad",
+    text: "{pet} comes along a path paved with good intentions. should {pet} take it?",
     attribute: [MoralDimensions.purity],
   },
-  flushtoilet: {
-    id: "flushtoilet",
-    text: "{pet} used the bathroom. should they flush the toilet?",
-    attribute: [MoralDimensions.purity],
+  cockroach: {
+    id: "cockroach",
+    text: "{pet} sees a cockroach. should {pet} kill it?",
+    attribute: [MoralDimensions.purity, MoralDimensions.compassion],
   },
-  alienabduction: {
-    id: "alienabduction",
-    text: "{pet} is abducted by aliens who offer to reveal the secrets of the universe, but {pet} will never be able to return to Earth. should {pet} accept this cosmic knowledge or demand to be returned home?",
-    attribute: [MoralDimensions.purity, MoralDimensions.ego],
+  butterfly: {
+    id: "butterfly",
+    text: "{pet} sees a butterfly. should {pet} kill it?",
+    attribute: [MoralDimensions.purity, MoralDimensions.compassion],
   },
-  pizzacrust: {
-    id: "pizzacrust",
-    text: "{pet} is eating pizza. should they eat the crust or leave it on the plate?",
-    attribute: [MoralDimensions.purity],
+
+  // bad person dilemmas
+  saltfries: {
+    id: "saltfries",
+    text: "{pet} pretends to have a salt allergy so a fast food place has to make a fresh batch of fries. should {pet} salt them in front of the workers or wait until they're out of sight?",
+    attribute: [MoralDimensions.ego, MoralDimensions.purity],
+  },
+  traintracks: {
+    id: "traintracks",
+    text: "There's like some people on a train track or something, and then on the other side is like-wait no wait let me try again. Your mom and like 5 random dudes are on a track and on the other side-oh fuck I'm really high-on the other side there's like a bus of children… with malaria. Do you do it?",
+    attribute: [MoralDimensions.compassion],
   },
 };

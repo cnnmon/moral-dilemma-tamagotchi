@@ -113,7 +113,7 @@ export default function Play() {
           setAutoRetryCount((prev) => prev + 1);
 
           setTimeout(() => setIsRetrying(false), 500);
-        }, 1000);
+        }, 3000);
       }
     }
 

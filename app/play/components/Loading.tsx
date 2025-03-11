@@ -14,7 +14,7 @@ export default function Loading({
 
   // show retry count if we've done any automatic retries
   if (autoRetryCount > 0) {
-    return <div className="animate-pulse">loading... (maybe refresh?)</div>;
+    return <div className="animate-pulse">loading...</div>;
   }
 
   // default loading state

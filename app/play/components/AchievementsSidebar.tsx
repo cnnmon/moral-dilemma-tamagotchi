@@ -292,15 +292,18 @@ export default function AchievementsSidebar({
       {/* Achievement detail popup */}
       <AnimatePresence>
         {selectedAchievement && (
-          <div
+          <motion.div
             className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
             onClick={closeAchievementPopup}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
           >
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
-              className="bg-white  p-5 max-w-md w-full m-4"
+              className="bg-white rounded-md p-5 max-w-md w-full m-4"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex items-center gap-3 mb-3">
@@ -353,7 +356,7 @@ export default function AchievementsSidebar({
                 close
               </button>
             </motion.div>
-          </div>
+          </motion.div>
         )}
       </AnimatePresence>
     </>
