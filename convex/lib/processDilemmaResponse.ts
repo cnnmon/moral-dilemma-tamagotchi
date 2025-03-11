@@ -6,12 +6,11 @@ import { Doc } from '../_generated/dataModel';
 interface ProcessDilemmaParams {
   pet: Doc<"pets">;
   dilemma: DilemmaTemplate;
-  selectedChoice: string;
   responseText: string;
 }
 
 // get prompt based on pet's stage with improved template handling
-function getPrompt(pet: Doc<"pets">, dilemma: DilemmaTemplate, selectedChoice: string, responseText: string) {
+function getPrompt(pet: Doc<"pets">, dilemma: DilemmaTemplate, responseText: string) {
   const age = pet.age;
   let prompt: string | undefined;
 
@@ -36,7 +35,6 @@ function getPrompt(pet: Doc<"pets">, dilemma: DilemmaTemplate, selectedChoice: s
   // more efficient replacement with a single pass
   const replacements = {
     '{dilemma}': dilemma.text,
-    '{choice}': selectedChoice,
     '{response}': responseText,
     '{personality}': pet.personality,
     '{dilemma.attribute}': dilemma.attribute.join(', '),
@@ -63,10 +61,9 @@ function getPrompt(pet: Doc<"pets">, dilemma: DilemmaTemplate, selectedChoice: s
 export default async function processDilemmaResponse({
   pet,
   dilemma,
-  selectedChoice,
   responseText,
 }: ProcessDilemmaParams): Promise<unknown> {
-  const formattedPrompt = getPrompt(pet, dilemma, selectedChoice, responseText);
+  const formattedPrompt = getPrompt(pet, dilemma, responseText);
   console.log('🤖 formatted prompt:', formattedPrompt);
 
   try {

@@ -1,6 +1,5 @@
 import { DilemmaTemplate } from "@/constants/dilemmas";
 import { BaseStatsType } from "@/constants/base";
-import Choices from "@/components/Choices";
 import { useMutation, useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useEffect } from "react";
@@ -35,7 +34,6 @@ export default function Dialog({
   const [currentDilemmaId, setCurrentDilemmaId] = useState<
     string | undefined
   >();
-  const [selectedChoice, setSelectedChoice] = useState<number | null>(null);
   const submitResponse = useMutation(api.dilemmas.processDilemma);
 
   // subscribe to updates for the current dilemma
@@ -58,7 +56,6 @@ export default function Dialog({
       console.log("🚀 Resolved dilemma:", dilemmaUpdate.outcome);
       onOutcome(dilemmaUpdate.outcome);
       setCurrentDilemmaId(undefined);
-      setSelectedChoice(null);
       onProcessingEnd?.();
       setIsOpen(false);
     }
@@ -79,11 +76,6 @@ export default function Dialog({
     onProcessingStart?.();
     console.log("🚀 Submitting response:", response);
 
-    if (selectedChoice === null) {
-      onOutcome("you must select a choice");
-      return;
-    }
-
     try {
       const result = await submitResponse({
         dilemma: {
@@ -91,7 +83,6 @@ export default function Dialog({
           text: dilemmaText,
         },
         newBaseStats: baseStats,
-        selectedChoice: dilemma.responses[selectedChoice].text,
         responseText: response,
       });
 
@@ -125,24 +116,13 @@ export default function Dialog({
         isOpen={isOpen}
         setIsOpen={(isOpen) => {
           setIsOpen(isOpen);
-          if (!isOpen) {
-            setSelectedChoice(null);
-          }
         }}
-        isTextareaOpen={selectedChoice !== null}
+        isTextareaOpen={true}
         placeholder={`as ${petName}'s caretaker, explain your choice...`}
         handleSubmit={handleSubmit}
         isDisabled={disabled}
       >
-        <Choices
-          disabled={disabled}
-          dilemmaText={dilemmaText}
-          selectedChoice={selectedChoice}
-          setSelectedChoice={setSelectedChoice}
-          choices={dilemma.responses.map((response) => ({
-            text: response.text.replace(/{pet}/g, petName),
-          }))}
-        />
+        <p>{dilemmaText}</p>
       </WindowTextarea>
     </div>
   );

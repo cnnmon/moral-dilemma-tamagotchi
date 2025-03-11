@@ -20,9 +20,9 @@ export enum EvolutionIdEnum {
   EMPATH = "empath",
   DEVOUT = "devout",
   WATCHER = "watcher",
-  KNIGHT = "knight",
   SOLDIER = "soldier",
-  ALPHA = "alpha",
+  TEACHERSPET = "teacher's pet",
+  HEDONIST = "hedonist",
   NPC = "npc",
   
   // Stage 2
@@ -43,9 +43,9 @@ export type Stage1EvolutionId =
   | EvolutionIdEnum.EMPATH 
   | EvolutionIdEnum.DEVOUT 
   | EvolutionIdEnum.WATCHER 
-  | EvolutionIdEnum.KNIGHT 
   | EvolutionIdEnum.SOLDIER 
-  | EvolutionIdEnum.ALPHA 
+  | EvolutionIdEnum.TEACHERSPET 
+  | EvolutionIdEnum.HEDONIST 
   | EvolutionIdEnum.NPC;
 
 export type Stage2EvolutionId = 
@@ -94,9 +94,9 @@ export const stage0Evolutions: Record<EvolutionIdEnum.BABY, Stage0Evolution> = {
       [attributes[MoralDimensions.compassion].high]: EvolutionIdEnum.EMPATH,
       [attributes[MoralDimensions.purity].high]: EvolutionIdEnum.DEVOUT,
       [attributes[MoralDimensions.retribution].high]: EvolutionIdEnum.WATCHER,
-      [attributes[MoralDimensions.devotion].high]: EvolutionIdEnum.KNIGHT,
+      [attributes[MoralDimensions.devotion].high]: EvolutionIdEnum.TEACHERSPET,
       [attributes[MoralDimensions.dominance].high]: EvolutionIdEnum.SOLDIER,
-      [attributes[MoralDimensions.ego].high]: EvolutionIdEnum.ALPHA,
+      [attributes[MoralDimensions.ego].high]: EvolutionIdEnum.HEDONIST,
     }
   }
 }
@@ -133,8 +133,8 @@ export const stage1Evolutions: Record<Stage1EvolutionId, Stage1Evolution> = {
   },
 
   // loyal (devotion) -> evolves based on ego
-  [EvolutionIdEnum.KNIGHT]: { 
-    id: EvolutionIdEnum.KNIGHT,
+  [EvolutionIdEnum.SOLDIER]: { 
+    id: EvolutionIdEnum.SOLDIER,
     description: "faithful protector questioning if loyalty demands self-sacrifice",
     nextStages: {
       [attributes[MoralDimensions.ego].high]: EvolutionIdEnum.GODFATHER,
@@ -143,8 +143,8 @@ export const stage1Evolutions: Record<Stage1EvolutionId, Stage1Evolution> = {
   },
 
   // authoritarian (dominance) -> evolves based on purity
-  [EvolutionIdEnum.SOLDIER]: { 
-    id: EvolutionIdEnum.SOLDIER,
+  [EvolutionIdEnum.TEACHERSPET]: { 
+    id: EvolutionIdEnum.TEACHERSPET,
     description: "disciplined enforcer choosing between rigid virtue or pragmatic power",
     nextStages: {
       [attributes[MoralDimensions.purity].high]: `${EvolutionIdEnum.SAINT}_soldier`,
@@ -153,12 +153,12 @@ export const stage1Evolutions: Record<Stage1EvolutionId, Stage1Evolution> = {
   },
 
   // self-serving (ego) -> evolves based on compassion
-  [EvolutionIdEnum.ALPHA]: { 
-    id: EvolutionIdEnum.ALPHA,
+  [EvolutionIdEnum.HEDONIST]: { 
+    id: EvolutionIdEnum.HEDONIST,
     description: "independent spirit deciding between solitary freedom or leading others",
     nextStages: {
       [attributes[MoralDimensions.compassion].low]: EvolutionIdEnum.SIGMA,
-      [attributes[MoralDimensions.compassion].high]: `${EvolutionIdEnum.CULTLEADER}_alpha`,
+      [attributes[MoralDimensions.compassion].high]: `${EvolutionIdEnum.CULTLEADER}_${EvolutionIdEnum.HEDONIST}`,
     },
   },
 
@@ -174,11 +174,11 @@ export const stage1Evolutions: Record<Stage1EvolutionId, Stage1Evolution> = {
 }
 
 export const stage2Evolutions: Record<string, Stage2Evolution> = {
-  "cultleader_empath": { // empathetic + personally integrous
+  [`${EvolutionIdEnum.CULTLEADER}_${EvolutionIdEnum.EMPATH}`]: { // empathetic + personally integrous
     id: EvolutionIdEnum.CULTLEADER,
     description: "compassionate visionary creating community through emotional connection",
   },
-  "saint_empath": { // virtuous + forgiving
+  [`${EvolutionIdEnum.SAINT}_${EvolutionIdEnum.EMPATH}`]: { // virtuous + forgiving
     id: EvolutionIdEnum.SAINT,
     description: "selfless hero bearing others' burdens",
   },
@@ -202,11 +202,11 @@ export const stage2Evolutions: Record<string, Stage2Evolution> = {
     id: EvolutionIdEnum.ARISTOCRAT,
     description: "privileged elite enjoying power and pleasure",
   },
-  "saint_soldier": { // authoritarian + virtuous
+  [`${EvolutionIdEnum.SAINT}_${EvolutionIdEnum.SOLDIER}`]: { // authoritarian + virtuous
     id: EvolutionIdEnum.SAINT,
     description: "noble ruler guided by higher principles",
   },
-  "cultleader_alpha": { // self-serving + empathetic
+  [`${EvolutionIdEnum.CULTLEADER}_${EvolutionIdEnum.HEDONIST}`]: { // self-serving + empathetic
     id: EvolutionIdEnum.CULTLEADER,
     description: "charismatic leader building following for personal gain",
   },

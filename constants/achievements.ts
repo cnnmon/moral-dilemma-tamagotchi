@@ -1,4 +1,4 @@
-import { Stage1EvolutionId, Stage2EvolutionId } from "./evolutions";
+import { Stage1EvolutionId, Stage2EvolutionId, EvolutionIdEnum } from "./evolutions";
 
 // achievement types
 export type AchievementCategory = "choice" | "evolution" | "general";
@@ -67,23 +67,23 @@ export const achievements: Record<AchievementId, Achievement> = {
   },
   
   // stage 1 evolutions
-  evolve_to_empath: createEvolutionAchievement("empath", 1, "heart of gold", "your pet evolved into an empath", "❤️"),
-  evolve_to_devout: createEvolutionAchievement("devout", 1, "true believer", "your pet evolved into a devout", "🙏"),
-  evolve_to_watcher: createEvolutionAchievement("watcher", 1, "eyes wide open", "your pet evolved into a watcher", "👁️"),
-  evolve_to_knight: createEvolutionAchievement("knight", 1, "chivalrous spirit", "your pet evolved into a knight", "🛡️"),
-  evolve_to_soldier: createEvolutionAchievement("soldier", 1, "duty calls", "your pet evolved into a soldier", "⚔️"),
-  evolve_to_alpha: createEvolutionAchievement("alpha", 1, "born leader", "your pet evolved into an alpha", "👑"),
-  evolve_to_npc: createEvolutionAchievement("npc", 1, "background character", "your pet evolved into an NPC", "🤖"),
-  
+  evolve_to_empath: createEvolutionAchievement(EvolutionIdEnum.EMPATH, 1, "heart of gold", "your pet evolved into an empath", "❤️"),
+  evolve_to_devout: createEvolutionAchievement(EvolutionIdEnum.DEVOUT, 1, "true believer", "your pet evolved into a devout", "🙏"),
+  evolve_to_watcher: createEvolutionAchievement(EvolutionIdEnum.WATCHER, 1, "always watching", "your pet evolved into a watcher", "👁️"),
+  evolve_to_soldier: createEvolutionAchievement(EvolutionIdEnum.SOLDIER, 1, "duty calls", "your pet evolved into a soldier", "⚔️"),
+  evolve_to_hedonist: createEvolutionAchievement(EvolutionIdEnum.HEDONIST, 1, "pleasure seeker", "your pet evolved into a hedonist", "🎭"),
+  ["evolve_to_teacher's pet"]: createEvolutionAchievement(EvolutionIdEnum.TEACHERSPET, 1, "number one student", "your pet evolved into a teacher's pet", "📚"),
+  evolve_to_npc: createEvolutionAchievement(EvolutionIdEnum.NPC, 1, "background character", "your pet evolved into an NPC", "🤖"),
+
   // stage 2 evolutions
-  evolve_to_gavel: createEvolutionAchievement("gavel", 2, "judge, jury, executioner", "your pet evolved into a gavel", "⚖️"),
-  evolve_to_vigilante: createEvolutionAchievement("vigilante", 2, "dark justice", "your pet evolved into a vigilante", "🦹"),
-  evolve_to_godfather: createEvolutionAchievement("godfather", 2, "family first", "your pet evolved into a godfather", "🤵"),
-  evolve_to_guardian: createEvolutionAchievement("guardian", 2, "sworn protector", "your pet evolved into a guardian", "🛡️"),
-  evolve_to_aristocrat: createEvolutionAchievement("aristocrat", 2, "noble birth", "your pet evolved into an aristocrat", "👸"),
-  evolve_to_sigma: createEvolutionAchievement("sigma", 2, "own path", "your pet evolved into a sigma", "🐺"),
-  evolve_to_saint: createEvolutionAchievement("saint", 2, "divine blessing", "your pet evolved into a saint", "😇"),
-  evolve_to_cultleader: createEvolutionAchievement("cultleader", 2, "charismatic leader", "your pet evolved into a cult leader", "🧙"),
+  evolve_to_gavel: createEvolutionAchievement(EvolutionIdEnum.GAVEL, 2, "judge, jury, executioner", "your pet evolved into a gavel", "⚖️"),
+  evolve_to_vigilante: createEvolutionAchievement(EvolutionIdEnum.VIGILANTE, 2, "justice happens in the shadows", "your pet evolved into a vigilante", "🦹"),
+  evolve_to_godfather: createEvolutionAchievement(EvolutionIdEnum.GODFATHER, 2, "head of the family", "your pet evolved into a godfather", "🤵"),
+  evolve_to_guardian: createEvolutionAchievement(EvolutionIdEnum.GUARDIAN, 2, "sworn protector", "your pet evolved into a guardian", "🛡️"),
+  evolve_to_aristocrat: createEvolutionAchievement(EvolutionIdEnum.ARISTOCRAT, 2, "nobleman", "your pet evolved into an aristocrat", "👸"),
+  evolve_to_sigma: createEvolutionAchievement(EvolutionIdEnum.SIGMA, 2, "sigma rizz", "your pet evolved into a sigma", "🐺"),
+  evolve_to_saint: createEvolutionAchievement(EvolutionIdEnum.SAINT, 2, "divine blessing", "your pet evolved into a saint", "😇"),
+  evolve_to_cultleader: createEvolutionAchievement(EvolutionIdEnum.CULTLEADER, 2, "the enlightened one", "your pet evolved into a cult leader", "🧙"),
   
   // collection achievements
   collect_all_stage1: {

@@ -22,21 +22,21 @@ const SPRITES: {
   },
   1: {
     [Animation.IDLE]: {
-      empath: "/birb/mid_idle.gif",
-      devout: "/birb/mid_idle.gif",
-      watcher: "/birb/mid_idle.gif",
-      knight: "/birb/mid_idle.gif",
-      soldier: "/birb/mid_idle.gif",
-      alpha: "/birb/mid_idle.gif",
-      npc: "/birb/mid_idle.gif",
+      empath: "/birb/empath_idle.gif",
+      devout: "/birb/devout_idle.gif",
+      watcher: "/birb/watcher_idle.gif",
+      soldier: "/birb/soldier_idle.gif",
+      "teacher's pet": "/birb/tp_idle.gif",
+      hedonist: "/birb/hedonist_idle.gif",
+      npc: "/birb/mid_happy.gif",
     },
     [Animation.HAPPY]: {
-      empath: "/birb/mid_happy.gif",
-      devout: "/birb/mid_happy.gif",
-      watcher: "/birb/mid_happy.gif",
-      knight: "/birb/mid_happy.gif",
-      soldier: "/birb/mid_happy.gif",
-      alpha: "/birb/mid_happy.gif",
+      empath: "/birb/empath_happy.gif",
+      devout: "/birb/devout_happy.gif",
+      watcher: "/birb/watcher_happy.gif",
+      soldier: "/birb/soldier_happy.gif",
+      "teacher's pet": "/birb/tp_happy.gif",
+      hedonist: "/birb/hedonist_happy.gif",
       npc: "/birb/mid_happy.gif",
     },
   },
@@ -70,8 +70,7 @@ export function getSprite(age: number, animation: Animation, evolution: Evolutio
   if (age === 0) {
     return SPRITES[0][animation].baby;
   } else if (age === 1) {
-    // they're all the same for now
-    return SPRITES[1][animation].alpha;
+    return SPRITES[1][animation][evolution as Stage1EvolutionId];
   } else {
     // remove underscore and anything after
     // this info is about what stage 1 evolution led to this one

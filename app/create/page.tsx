@@ -41,6 +41,8 @@ function Content() {
   }, [userId, selectedChoice, earnAchievement]);
 
   const handleSubmit = async (name: string) => {
+    // clear all local storage
+    localStorage.clear();
     // start game
     await createPet({ name });
     window.location.href = "/play";

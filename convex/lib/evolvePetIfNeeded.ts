@@ -1,5 +1,6 @@
 import {
   EvolutionId,
+  EvolutionIdEnum,
   getEvolution,
   getEvolutionTimeFrame,
   stage0Evolutions,
@@ -26,7 +27,7 @@ function evolveFromBabyToStage1(
       return nextEvolution;
     }
   }
-  return "npc";
+  return EvolutionIdEnum.NPC;
 }
 
 function evolveFromStage1ToStage2(
@@ -40,10 +41,10 @@ function evolveFromStage1ToStage2(
         attribute.description as MoralStatAttribute
       ];
     if (nextEvolution) {
-      return nextEvolution;
+      return nextEvolution as EvolutionId;
     }
   }
-  return "npc";
+  return EvolutionIdEnum.NPC;
 }
 
 export function evolvePetIfNeeded(
