@@ -10,17 +10,24 @@ export default function Menu() {
   const currentPet = useQuery(api.pets.getActivePet);
 
   useEffect(() => {
-    if (window !== undefined) {
+    if (typeof window !== "undefined") {
       setCurrentPath(window.location.pathname.slice(1));
+      const handleRouteChange = () => {
+        setCurrentPath(window.location.pathname.slice(1));
+      };
+      window.addEventListener("popstate", handleRouteChange);
+      return () => {
+        window.removeEventListener("popstate", handleRouteChange);
+      };
     }
-    // important because does not update properly if rerouted
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [window.location.pathname]);
+  }, []);
 
   const pathToText = {
+    "": "princi/pal",
     play: "home > living room",
     create: "adoption center",
     about: "about princi/pal",
+    scrapbook: "pet scrapbook",
   };
 
   return (
@@ -38,21 +45,63 @@ export default function Menu() {
         </motion.span>
       </AnimatePresence>
       <div className="flex gap-2">
-        {currentPet && currentPath !== "play" && (
-          <a href="/play" className="hover:text-zinc-800 no-drag">
-            resume game: {currentPet.name}
-          </a>
-        )}
-        {currentPath !== "create" && currentPath !== "about" && (
-          <a href="/create" className="hover:text-zinc-800 no-drag">
-            new pet
-          </a>
-        )}
-        {currentPath !== "about" && (
-          <a href="/about" className="hover:text-zinc-800 no-drag">
-            about
-          </a>
-        )}
+        <AnimatePresence>
+          {currentPet && currentPath !== "play" && (
+            <motion.a
+              href="/play"
+              className="hover:text-zinc-800 no-drag"
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3, delay: 0.2 }}
+            >
+              resume game: {currentPet.name}
+            </motion.a>
+          )}
+        </AnimatePresence>
+
+        <AnimatePresence>
+          {currentPath !== "create" &&
+            currentPath !== "about" &&
+            currentPath !== "scrapbook" && (
+              <motion.a
+                href="/create"
+                className="hover:text-zinc-800 no-drag"
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: 0.3 }}
+              >
+                new pet
+              </motion.a>
+            )}
+        </AnimatePresence>
+
+        <AnimatePresence>
+          {currentPath !== "scrapbook" && (
+            <motion.a
+              href="/scrapbook"
+              className="hover:text-zinc-800 no-drag"
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3, delay: 0.4 }}
+            >
+              scrapbook
+            </motion.a>
+          )}
+        </AnimatePresence>
+
+        <AnimatePresence>
+          {currentPath !== "about" && (
+            <motion.a
+              href="/about"
+              className="hover:text-zinc-800 no-drag"
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3, delay: 0.5 }}
+            >
+              about
+            </motion.a>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );

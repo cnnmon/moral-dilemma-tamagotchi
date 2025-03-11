@@ -1,6 +1,6 @@
 import { v } from 'convex/values';
 import { mutation, query } from './_generated/server';
-import { getUserAndPetId } from './user';
+import { getUserAndPetId, getUserId } from './user';
 
 // get the user's pet status and data
 export const getActivePet = query({
@@ -58,5 +58,25 @@ export const createPet = mutation({
         ego: 5,
       },
     });
+  },
+});
+
+// get all pets for a user (for scrapbook)
+export const getAllPetsForUser = query({
+  args: {},
+  handler: async (ctx) => {
+    const userId = await getUserId(ctx);
+    if (!userId) {
+      return [];
+    }
+    
+    // get all pets for this user
+    const pets = await ctx.db
+      .query('pets')
+      .withIndex('by_userId', q => q.eq('userId', userId))
+      .order('desc')
+      .collect();
+    
+    return pets;
   },
 }); 

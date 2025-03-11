@@ -186,6 +186,7 @@ export default function Graduation({
                 </div>
               </div>
             </div>
+
             {/* history section */}
             <div className="mt-2">
               <p className="font-medium border-b border-zinc-200 pb-1 mb-1 text-sm">
@@ -199,16 +200,18 @@ export default function Graduation({
                       day {currentPage} of {totalPages || 1}
                     </div>
 
-                    <div className="w-full bg-white p-2 border-2 border-zinc-800 text-sm relative h-10">
+                    <div className="w-full bg-white p-2 border-2 border-zinc-800 text-sm relative h-15 overflow-y-scroll">
                       {dilemma.outcome || "no history"}
                     </div>
 
                     {dilemma.title && (
                       <div className="text-center mt-1 text-sm italic text-zinc-500">
-                        {dilemmaTemplates[dilemma.title].text.replace(
-                          /{pet}/g,
-                          pet.name
-                        )}
+                        {dilemma.title in dilemmaTemplates
+                          ? dilemmaTemplates[dilemma.title].text.replace(
+                              /{pet}/g,
+                              pet.name
+                            )
+                          : "dilemma not found"}
                       </div>
                     )}
                   </div>
@@ -224,14 +227,14 @@ export default function Graduation({
                 <div className="flex justify-between items-center mt-1">
                   <a
                     onClick={goToPreviousPage}
-                    className={`underline ${currentPage === 1 ? "text-zinc-300" : "text-zinc-700 hover:bg-zinc-100"}`}
+                    className={`underline ${currentPage === 1 ? "text-zinc-300 pointer-events-none" : "text-zinc-700 hover:bg-zinc-100"}`}
                   >
                     ← prev
                   </a>
 
                   <a
                     onClick={goToNextPage}
-                    className={`underline ${currentPage === totalPages || totalPages === 0 ? "text-zinc-300" : "text-zinc-700 hover:bg-zinc-100"}`}
+                    className={`underline ${currentPage === totalPages || totalPages === 0 ? "text-zinc-300 pointer-events-none" : "text-zinc-700 hover:bg-zinc-100"}`}
                   >
                     next →
                   </a>

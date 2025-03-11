@@ -184,11 +184,13 @@ export const generateResponse = internalAction({
 
     // if the response is not ok, it is a clarifying question
     if (!parsedResponse.ok) {
-      const clarifyingQuestion = parsedResponse.outcome;
-      // special case: we check if the "question" changes to see if we should reenable player input; because of this, we should never repeat the same question.
+      let clarifyingQuestion = parsedResponse.outcome;
+      // special case: we check if the "question" changes to see if we should reenable player input
+      // because of this, we should never repeat the same question.
       if (args.existingOutcome === clarifyingQuestion) {
-        parsedResponse.outcome = "oops, I got confused. could you rephrase that?";
+        clarifyingQuestion = `oops, I got confused. ${clarifyingQuestion}`;
       }
+
       await ctx.runMutation(api.dilemmas.updateDilemmaAndPet, {
         dilemmaId: args.dilemmaId,
         petId: pet._id,
