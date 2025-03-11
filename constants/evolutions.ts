@@ -272,8 +272,32 @@ function getStatUsed(statKey: MoralStatAttribute): {
 export function getEvolutions(finalEvolutionId: Stage2EvolutionId): EvolutionPath[] {
   // get stage 2 evolution
   const stage2Evolution = stage2Evolutions[finalEvolutionId];
+  
   if (!stage2Evolution) {
-    throw new Error(`invalid stage 2 evolution id: ${finalEvolutionId}`);
+    // gracefully handle
+    return [{
+      stage: "stage 2",
+      id: EvolutionIdEnum.NPC,
+      description: stage2Evolutions[EvolutionIdEnum.NPC].description,
+      statUsed: {
+        dimension: MoralDimensions.compassion,
+        value: "low",
+        name: attributes[MoralDimensions.compassion].low
+      }
+    }, {
+      stage: "stage 1",
+      id: EvolutionIdEnum.NPC,
+      description: stage1Evolutions[EvolutionIdEnum.NPC].description,
+      statUsed: {
+        dimension: MoralDimensions.compassion,
+        value: "low",
+        name: attributes[MoralDimensions.compassion].low
+      }
+    }, {
+      stage: "stage 0",
+      id: EvolutionIdEnum.BABY,
+      description: stage0Evolutions[EvolutionIdEnum.BABY].description
+    }]
   }
 
   // find stage 1 evolution and the stat that led to stage 2
