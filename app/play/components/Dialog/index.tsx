@@ -76,22 +76,42 @@ export default function Dialog({
     onProcessingStart?.();
     console.log("🚀 Submitting response:", response);
 
+    // create a timeout promise that rejects after 15 seconds
+    const timeoutPromise = new Promise((_, reject) => {
+      setTimeout(() => {
+        reject(new Error("request timed out"));
+      }, 15000); // 15 seconds timeout
+    });
+
     try {
-      const result = await submitResponse({
-        dilemma: {
-          title: dilemma.id,
-          text: dilemmaText,
-        },
-        newBaseStats: baseStats,
-        responseText: response,
-      });
+      // race the api call against the timeout
+      const result = (await Promise.race([
+        submitResponse({
+          dilemma: {
+            title: dilemma.id,
+            text: dilemmaText,
+          },
+          newBaseStats: baseStats,
+          responseText: response,
+        }),
+        timeoutPromise,
+      ])) as Awaited<ReturnType<typeof submitResponse>>;
 
       // store the dilemma id to subscribe to updates
       setCurrentDilemmaId(result.dilemmaId);
     } catch (error) {
       console.error("❌ Error processing response:", error);
-      onOutcome("something went wrong! try again?");
+
+      // specific error message for timeout
+      if (error instanceof Error && error.message === "request timed out") {
+        onOutcome("the request took too long. please try again!");
+      } else {
+        onOutcome("something went wrong! try again?");
+      }
+
+      // ensure processing is ended and dialog is closed on error
       onProcessingEnd?.();
+      setCurrentDilemmaId(undefined);
     }
   };
 
