@@ -1,6 +1,4 @@
-![principal-feb18-2](https://github.com/user-attachments/assets/843f5f33-d079-4316-8352-15ffc44138e1)
-
-(this is a wip!)
+![principal](https://github.com/user-attachments/assets/01bee0fe-9d5d-499a-a3ae-883a7d3effa3)
 
 principal is a tamagotchi with moral dilemmas. like a tamagotchi, you can feed, play, and heal. now you can also talk! dilemmas are presented and the user must choose between their options and rationalize why. based on your responses, your pet learns, grows, and evolves.
 
