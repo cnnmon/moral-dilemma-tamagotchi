@@ -64,7 +64,15 @@ export default function Menu({
         <AnimatePresence>
           {currentPetName && (
             <motion.a
-              href="/create"
+              onClick={() => {
+                if (
+                  confirm(
+                    `are you sure you want to abandon ${currentPetName}? look at ${currentPetName}'s big ol eyes ( •̯́ ^ •̯̀)`
+                  )
+                ) {
+                  window.location.href = "/create";
+                }
+              }}
               className="hover:text-zinc-800 no-drag"
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}

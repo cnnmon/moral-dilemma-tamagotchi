@@ -230,7 +230,9 @@ export default function Play() {
   return (
     <>
       <Menu page="play" currentPetName={pet.name} />
-      <HoverText hoverText={hoverText} cursorObject={cursorObject} />
+      {!hasGraduated && (
+        <HoverText hoverText={hoverText} cursorObject={cursorObject} />
+      )}
       <AchievementsSidebar
         userAchievements={userAchievements}
         shownAchievements={shownAchievements}
@@ -279,7 +281,6 @@ export default function Play() {
             >
               <Graduation
                 pet={pet}
-                seenDilemmas={seenDilemmas}
                 graduationOpen={graduationOpen}
                 setGraduationOpen={setGraduationOpen}
               />
@@ -342,19 +343,21 @@ export default function Play() {
               className="w-full"
             >
               <Window title="°˖✧◝(⁰▿⁰)◜✧˖°">
-                <p>
-                  happy graduation! after {seenDilemmas.length} days of moral
-                  growth, {pet.name} has learned a lot from you and is ready to
-                  start a new journey.
-                </p>
-                <div className="flex gap-2 items-center">
+                <div className="flex flex-col gap-1">
+                  <p>
+                    happy graduation! after {seenDilemmas.length} days of moral
+                    growth, {pet.name} has learned a lot from you and is ready
+                    to start a new journey.
+                  </p>
                   <a
                     onClick={() => setGraduationOpen(true)}
                     className="underline"
                   >
                     🎓 collect graduation certificate
                   </a>
-                  <span className="text-zinc-500">or</span>
+                  <a href="/scrapbook" className="underline">
+                    check out scrapbook
+                  </a>
                   <a href="/create" className="underline">
                     adopt a new pet
                   </a>

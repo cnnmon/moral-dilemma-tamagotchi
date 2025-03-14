@@ -7,10 +7,11 @@ interface ProcessDilemmaParams {
   pet: Doc<"pets">;
   dilemma: DilemmaTemplate;
   responseText: string;
+  clarifyingQuestion?: string;
 }
 
 // get prompt based on pet's stage with improved template handling
-function getPrompt(pet: Doc<"pets">, dilemma: DilemmaTemplate, responseText: string) {
+function getPrompt(pet: Doc<"pets">, dilemma: DilemmaTemplate, responseText: string, clarifyingQuestion?: string) {
   const age = pet.age;
   let prompt: string | undefined;
 
@@ -37,7 +38,6 @@ function getPrompt(pet: Doc<"pets">, dilemma: DilemmaTemplate, responseText: str
     '{dilemma}': dilemma.text,
     '{response}': responseText,
     '{personality}': pet.personality,
-    '{dilemma.attribute}': dilemma.attribute.join(', '),
     '{morals.compassion}': (Math.round(pet.moralStats.compassion * 100) / 100).toString(),
     '{morals.retribution}': (Math.round(pet.moralStats.retribution * 100) / 100).toString(),
     '{morals.devotion}': (Math.round(pet.moralStats.devotion * 100) / 100).toString(),
@@ -54,6 +54,12 @@ function getPrompt(pet: Doc<"pets">, dilemma: DilemmaTemplate, responseText: str
     formattedPrompt = formattedPrompt.replace(new RegExp(key, 'g'), value);
   }
 
+  if (clarifyingQuestion) {
+    formattedPrompt += `\n\nyou have already asked the following clarifying question: ${clarifyingQuestion}. do not repeat the same question and you caretaker will get annoyed if you ask too many questions.
+    
+    if the response has any reasoning whatsoever, allow the advice. you may ask a **markedly different** clarifying question if and only if it is extremely unclear.`;
+  }
+
   return formattedPrompt;
 }
 
@@ -62,8 +68,9 @@ export default async function processDilemmaResponse({
   pet,
   dilemma,
   responseText,
+  clarifyingQuestion,
 }: ProcessDilemmaParams): Promise<unknown> {
-  const formattedPrompt = getPrompt(pet, dilemma, responseText);
+  const formattedPrompt = getPrompt(pet, dilemma, responseText, clarifyingQuestion);
   console.log('🤖 formatted prompt:', formattedPrompt);
 
   try {

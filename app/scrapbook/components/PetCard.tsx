@@ -2,15 +2,14 @@ import { Doc } from "@/convex/_generated/dataModel";
 import { getSprite, Animation } from "@/constants/sprites";
 import { EvolutionId } from "@/constants/evolutions";
 import Image from "next/image";
-import { useMemo, useState } from "react";
-import Graduation from "@/app/play/components/Graduation";
-import { useQuery } from "convex/react";
-import { api } from "@/convex/_generated/api";
 
-export default function PetCard({ pet }: { pet: Doc<"pets"> }) {
-  const dilemmas = useQuery(api.dilemmas.getSeenDilemmas, { petId: pet._id });
-  const seenDilemmas = useMemo(() => dilemmas || [], [dilemmas]);
-  const [graduationOpen, setGraduationOpen] = useState(false);
+export default function PetCard({
+  pet,
+  setSelectedPet,
+}: {
+  pet: Doc<"pets">;
+  setSelectedPet: (pet: Doc<"pets">) => void;
+}) {
   const sprite = getSprite(
     pet.age,
     Animation.HAPPY,
@@ -28,7 +27,7 @@ export default function PetCard({ pet }: { pet: Doc<"pets"> }) {
       {/* polaroid-style card */}
       <div
         className="bg-white border-2 border-zinc-800 p-2 shadow-md hover:shadow-lg transition-all cursor-pointer transform hover:-translate-y-1 rotate-1 hover:rotate-0 duration-300"
-        onClick={() => setGraduationOpen(true)}
+        onClick={() => setSelectedPet(pet)}
       >
         <div className="bg-zinc-100 border-2 border-zinc-800 p-1 mb-2 h-32 flex items-center justify-center overflow-hidden">
           <Image
@@ -49,21 +48,6 @@ export default function PetCard({ pet }: { pet: Doc<"pets"> }) {
         </div>
         <div className="absolute top-1 right-1 w-4 h-4 bg-zinc-200 rounded-full border border-zinc-300"></div>
       </div>
-
-      {/* graduation modal */}
-      {graduationOpen && (
-        <div
-          className="fixed top-0 w-full z-30 inset-0 flex justify-center items-center bg-white/50"
-          onClick={() => setGraduationOpen(false)}
-        >
-          <Graduation
-            pet={pet}
-            seenDilemmas={seenDilemmas}
-            graduationOpen={graduationOpen}
-            setGraduationOpen={setGraduationOpen}
-          />
-        </div>
-      )}
     </>
   );
 }

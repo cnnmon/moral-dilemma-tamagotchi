@@ -27,7 +27,10 @@ export default function About() {
             </a>{" "}
             by <a href="https://tiffanywang.me/">tiff</a>
             <br />
-            big thanks to gavin for dilemma writing help (*ˊᵕˋ)
+            big thanks to gavin for dilemma writing help—
+            <a href="https://x.com/garvin_laughri">
+              he pinky promises to write more often
+            </a>
           </p>
         </div>
       </Window>

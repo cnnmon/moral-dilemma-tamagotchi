@@ -1,13 +1,16 @@
 import PetCard from "./PetCard";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { Doc } from "@/convex/_generated/dataModel";
+import Graduation from "@/app/play/components/Graduation";
 
 export default function Scrapbook({
   petsQuery,
 }: {
   petsQuery?: Array<Doc<"pets">>;
 }) {
+  const [selectedPet, setSelectedPet] = useState<Doc<"pets"> | null>(null);
   const pets = useMemo(() => petsQuery || [], [petsQuery]);
+
   if (petsQuery === undefined) {
     return (
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-8 p-8 bg-zinc-200">
@@ -39,12 +42,28 @@ export default function Scrapbook({
   }
 
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-4 gap-8 p-8 bg-zinc-200">
-      {graduatedPets.map((pet) => (
-        <div key={pet._id} className="relative">
-          <PetCard pet={pet} />
+    <>
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-8 p-8 bg-zinc-200">
+        {graduatedPets.map((pet) => (
+          <div key={pet._id} className="relative">
+            <PetCard pet={pet} setSelectedPet={setSelectedPet} />
+          </div>
+        ))}
+      </div>
+
+      {/* graduation modal */}
+      {selectedPet && (
+        <div
+          className="fixed top-0 w-full z-30 inset-0 flex justify-center items-center bg-white/50"
+          onClick={() => setSelectedPet(null)}
+        >
+          <Graduation
+            pet={selectedPet}
+            graduationOpen={selectedPet !== null}
+            setGraduationOpen={() => setSelectedPet(null)}
+          />
         </div>
-      ))}
-    </div>
+      )}
+    </>
   );
 }

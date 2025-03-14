@@ -167,6 +167,7 @@ export const generateResponse = internalAction({
           pet,
           dilemma,
           responseText: args.responseText,
+          clarifyingQuestion: args.existingOutcome,
         });
         return JSON.parse(generatedResponse as string);
       })();

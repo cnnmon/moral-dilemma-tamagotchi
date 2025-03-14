@@ -1,12 +1,8 @@
-import { useCallback, useEffect, useState, useRef } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useMutation, useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { AchievementId, getAchievement, getStage1EvolutionAchievementIds, getStage2EvolutionAchievementIds } from "@/constants/achievements";
 import { EvolutionId } from "@/constants/evolutions";
-
-const ACHIEVEMENTS_STORAGE_KEY = "achievements";
-// don't use the shown achievements key in the hook, as we're managing this in the Play component
-// const SHOWN_ACHIEVEMENTS_KEY = "shown_achievements";
 
 // helper function to get achievement id for an evolution
 function getAchievementForEvolution(evolutionId: EvolutionId): AchievementId | null {
@@ -58,13 +54,7 @@ export function useAchievements(addOutcome: (text: string, exitable?: boolean) =
   const userAchievements = useQuery(api.achievements.getUserAchievements);
   const unlockAchievement = useMutation(api.achievements.unlockAchievement);
   const stateResult = useQuery(api.state.getActiveGameState);
-  const [achievements, setAchievements] = useState<AchievementId[]>([]);
   const [previousEvolutionId, setPreviousEvolutionId] = useState<EvolutionId | null>(null);
-
-  // we're no longer tracking shown achievements here
-  // const [shownAchievements, setShownAchievements] = useState<AchievementId[]>([]);
-  // flag to track if this is initial load
-  const isInitialLoad = useRef(true);
 
   // check for evolution achievements
   useEffect(() => {
@@ -83,20 +73,17 @@ export function useAchievements(addOutcome: (text: string, exitable?: boolean) =
       return;
     }
     
-    // Only process if evolution has changed
     if (previousEvolutionId !== currentEvolutionId) {
       const achievementId = getAchievementForEvolution(currentEvolutionId);
       if (achievementId) {
-        // Check if the achievement is already unlocked
         const isAlreadyUnlocked = userAchievements.some(
           (a) => a.achievementId === achievementId
         );
 
         if (!isAlreadyUnlocked) {
-          // Unlock the achievement
           unlockAchievement({ achievementId });
 
-          // Show the achievement notification
+          // show the achievement notification
           const achievement = getAchievement(achievementId);
           if (!achievement) {
             console.error(`Achievement ${achievementId} not found`);
@@ -107,7 +94,7 @@ export function useAchievements(addOutcome: (text: string, exitable?: boolean) =
             true
           );
 
-          // Check if this unlocks any collection achievements
+          // check if this unlocks any collection achievements
           const unlockedAchievementIds = userAchievements.map(
             (a) => a.achievementId as AchievementId
           );
@@ -116,7 +103,7 @@ export function useAchievements(addOutcome: (text: string, exitable?: boolean) =
             achievementId
           );
 
-          // Unlock any collection achievements
+          // unlock any collection achievements
           collectionAchievements.forEach((collectionId) => {
             // check if collection achievement is already unlocked
             const isCollectionAlreadyUnlocked = userAchievements.some(
@@ -135,56 +122,10 @@ export function useAchievements(addOutcome: (text: string, exitable?: boolean) =
         }
       }
 
-      // Update previous evolution ID
+      // update previous evolution id
       setPreviousEvolutionId(currentEvolutionId);
     }
   }, [stateResult, userAchievements, unlockAchievement, addOutcome, previousEvolutionId]);
-
-  // initialize achievements from localStorage
-  useEffect(() => {
-    const savedAchievements = localStorage.getItem(ACHIEVEMENTS_STORAGE_KEY);
-    if (savedAchievements) {
-      setAchievements(JSON.parse(savedAchievements));
-    }
-    
-    // We've moved shown achievements management to the Play component
-    // const savedShownAchievements = localStorage.getItem(SHOWN_ACHIEVEMENTS_KEY);
-    // if (savedShownAchievements) {
-    //   setShownAchievements(JSON.parse(savedShownAchievements));
-    // }
-  }, []);
-
-  useEffect(() => {
-    if (!userAchievements) return;
-    
-    const newAchievements = userAchievements.map(a => a.achievementId as AchievementId);
-    
-    // update local storage with all achievements
-    localStorage.setItem(ACHIEVEMENTS_STORAGE_KEY, JSON.stringify(newAchievements));
-    
-    // find achievements that weren't in the previous state
-    const actuallyNewAchievements = newAchievements.filter(
-      achievementId => !achievements.includes(achievementId)
-    );
-    
-    // only show toast for actually new achievements and not on initial load
-    if (actuallyNewAchievements.length > 0 && !isInitialLoad.current) {
-      // We don't filter by shown achievements anymore, always show notifications for new achievements
-      actuallyNewAchievements.forEach(achievementId => {
-        const achievement = getAchievement(achievementId);
-        addOutcome(`🏆 achievement unlocked: ${achievement.title} - ${achievement.description}`, true);
-      });
-    }
-    
-    // after first render, set initial load to false
-    if (isInitialLoad.current) {
-      isInitialLoad.current = false;
-    }
-    
-    // update state with all achievements
-    setAchievements(newAchievements);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userAchievements]);
 
   const earnAchievement = useCallback(async (achievementId: AchievementId) => {
     const isAlreadyUnlocked = userAchievements?.some(
