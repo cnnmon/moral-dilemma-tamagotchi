@@ -3,6 +3,7 @@ import { BaseStats } from "./BaseStats";
 import { BaseStatsType } from "@/constants/base";
 import { Evolution } from "@/constants/evolutions";
 import Stat from "./Stat";
+import { motion } from "framer-motion";
 
 export default function Header({
   pet,
@@ -34,12 +35,29 @@ export default function Header({
           recentIncrements={recentIncrements}
           hasGraduated={hasGraduated}
         />
-
         <div className="flex flex-col sm:items-end text-right">
           <p className="flex items-center text-zinc-500">
-            <b>level {pet.age}</b>—{evolution.id}
+            <b>level {pet.age + 1}/3</b>—{evolution.id}
           </p>
-          <p className="text-sm max-w-48">{evolution.description}</p>
+          <motion.div
+            key={pet.personality}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.3 }}
+            className="relative"
+          >
+            <motion.div
+              initial={{ opacity: 1 }}
+              animate={{ opacity: [1, 0, 1] }}
+              transition={{ duration: 0.2, times: [0, 0.5, 1] }}
+              key={`flicker-${pet.personality}`}
+            >
+              <p className="text-xs text-zinc-500 w-64 italic">
+                {evolution.description}.{" "}
+                {pet.personality || "no personality yet."}
+              </p>
+            </motion.div>
+          </motion.div>
         </div>
       </div>
 
@@ -52,7 +70,7 @@ export default function Header({
           <p className="text-zinc-500">{pet.name} has died.</p>
         ) : (
           <Stat
-            label={pet.age < 2 ? "until evolution" : "until graduation"}
+            label={pet.age < 2 ? "until next evolution" : "until graduation"}
             value={(seenDilemmasCount / timeFrame) * 100}
             displayValue={`${seenDilemmasCount}/${timeFrame} dilemmas`}
             dangerous={false}

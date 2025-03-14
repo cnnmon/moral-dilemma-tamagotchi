@@ -20,7 +20,7 @@ export default function Scrapbook({
     );
   }
 
-  const graduatedPets = pets; // pets.filter((pet) => pet.age >= 2);
+  const graduatedPets = pets.filter((pet) => pet.age >= 2);
   if (graduatedPets.length === 0) {
     return (
       <div className="p-4 bg-red-100 border-b-2 border-red-500">

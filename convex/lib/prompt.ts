@@ -29,7 +29,7 @@ prioritize the main attribute(s), but adjust others that are logically connected
 const standardResponse = `{
   "ok": true,
   "stats": {<update at least one moral stat, do not include unchanged stats>},
-  "personality": "<refined personality that evolves from experience (<200 chars)>",
+  "personality": "<refined personality that evolves from experience (<150 chars)>",
   "outcome": "<specific experience from this situation with clear consequences>",
 }`;
 

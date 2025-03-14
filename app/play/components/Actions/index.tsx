@@ -52,25 +52,25 @@ const ActionButton = memo(function ActionButton({
 const ACTIONS = [
   {
     src: "/actions/heal.png",
-    alt: "+ 30 health",
+    alt: "heal (+30 health)",
     object: "bandaid" as ObjectKey,
     type: "cursor",
   },
   {
     src: "/actions/feed.png",
-    alt: "+ 30 hunger",
+    alt: "feed (+30 hunger)",
     object: "burger" as ObjectKey,
     type: "cursor",
   },
   {
     src: "/actions/play.png",
-    alt: "+ 30 happiness",
+    alt: "play (+30 happiness)",
     object: "ball" as ObjectKey,
     type: "cursor",
   },
   {
     src: "/actions/talk.png",
-    alt: "+ 30 sanity",
+    alt: "new dilemma! (+30 sanity)",
     type: "dilemma",
   },
 ];

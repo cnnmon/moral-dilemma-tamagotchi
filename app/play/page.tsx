@@ -332,10 +332,6 @@ export default function Play() {
             />
           </motion.div>
 
-          <div className="sm:absolute sm:bottom-0 sm:right-0 sm:p-4 w-full z-20 pointer-events-none">
-            <MoralStats moralStats={pet.moralStats} />
-          </div>
-
           {/* graduated or active pet ui */}
           {hasGraduated ? (
             <motion.div
@@ -375,17 +371,14 @@ export default function Play() {
                   isProcessing={isProcessing}
                   rip={rip}
                 />
+
                 <motion.div
-                  key="personality"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.3, delay: 0.3 }}
+                  transition={{ duration: 0.5 }}
                 >
-                  <div
-                    className="border-2 border-black p-2 bg-zinc-100 sm:max-w-3xs text-sm mb-2 w-full"
-                    key={pet.personality}
-                  >
-                    {pet.personality || "no personality yet."}
+                  <div className="border-2 border-black p-2 bg-zinc-100 sm:max-w-3xs text-sm mb-2 w-full">
+                    <MoralStats moralStats={pet.moralStats} />
                   </div>
                 </motion.div>
               </div>
