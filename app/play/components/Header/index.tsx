@@ -26,8 +26,8 @@ export default function Header({
   hasRip: boolean;
 }) {
   return (
-    <div className="flex flex-col bg-white border-2 p-4 gap-2">
-      <div className="flex flex-col sm:flex-row gap-4 sm:gap-0 w-full justify-between">
+    <div className="flex flex-col bg-white border-2">
+      <div className="flex flex-col sm:flex-row gap-4 sm:gap-0 w-full justify-between p-4">
         <BaseStats
           baseStats={baseStats}
           recentDecrements={recentDecrements}
@@ -43,7 +43,9 @@ export default function Header({
         </div>
       </div>
 
-      <div>
+      <hr className="border-1" />
+
+      <div className="p-4">
         {hasGraduated ? (
           <p className="text-zinc-500">{pet.name} has graduated.</p>
         ) : hasRip ? (

@@ -10,6 +10,7 @@ import HoverText from "@/components/HoverText";
 export default function SignInPage() {
   const { isSignedIn } = useAuth();
   const [hoverText, setHoverText] = useState<string | null>(null);
+  const [isMounted, setIsMounted] = useState(false);
   const router = useRouter();
 
   // if already signed in
@@ -19,9 +20,12 @@ export default function SignInPage() {
     }
   }, [isSignedIn, router]);
 
-  // don't show sign in page while redirecting
-  if (isSignedIn) {
-    return null;
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  if (!isMounted) {
+    return null; // return nothing on the server side
   }
 
   return (

@@ -29,6 +29,7 @@ import Actions from "./components/Actions";
 import AchievementsSidebar from "./components/AchievementsSidebar";
 import { AchievementId } from "@/constants/achievements";
 import { BaseStatKeys } from "@/constants/base";
+import Menu from "@/components/Menu";
 
 export default function Play() {
   // core state
@@ -228,8 +229,8 @@ export default function Play() {
 
   return (
     <>
+      <Menu page="play" currentPetName={pet.name} />
       <HoverText hoverText={hoverText} cursorObject={cursorObject} />
-
       <AchievementsSidebar
         userAchievements={userAchievements}
         shownAchievements={shownAchievements}
