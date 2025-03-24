@@ -5,8 +5,7 @@ import { VIEWPORT_HEIGHT } from "@/components/Background";
 import { AnimatePresence, motion } from "framer-motion";
 import { Animation, RIP_SPRITE, getSprite } from "@/constants/sprites";
 import { Doc } from "@/convex/_generated/dataModel";
-import { BaseStatKeys, BaseStatsType, PooType } from "@/constants/base";
-import { ObjectKey } from "@/constants/objects";
+import { BaseStatsType, PooType } from "@/constants/base";
 import { EvolutionId } from "@/constants/evolutions";
 
 // local storage key for tracking if egg animation has been shown
@@ -27,23 +26,19 @@ function isSpriteTransformation(prevSprite: string, currentSprite: string) {
 const Viewport = React.memo(function Viewport({
   pet,
   clarifyingQuestion,
-  cursorObject,
   animation,
   rip,
   poos,
   cleanupPoo,
-  incrementStat,
   baseStats,
   hasGraduated,
 }: {
   pet: Doc<"pets">;
   clarifyingQuestion: string | null;
-  cursorObject: ObjectKey | null;
   animation: Animation;
   rip: boolean;
   poos: PooType[];
   cleanupPoo: (id: number) => void;
-  incrementStat: (stat: keyof BaseStatsType) => void;
   baseStats: BaseStatsType;
   hasGraduated: boolean;
 }) {
@@ -189,15 +184,6 @@ const Viewport = React.memo(function Viewport({
                 alt="birb"
                 width={VIEWPORT_WIDTH / 5}
                 height={VIEWPORT_HEIGHT / 5}
-                onMouseEnter={() => {
-                  if (cursorObject === "burger") {
-                    incrementStat(BaseStatKeys.hunger);
-                  } else if (cursorObject === "bandaid") {
-                    incrementStat(BaseStatKeys.health);
-                  } else if (cursorObject === "ball") {
-                    incrementStat(BaseStatKeys.happiness);
-                  }
-                }}
                 priority
                 className={`translate-y-[30%] cursor-grab no-select ${
                   isAlmostDead ? "animate-pulse" : ""

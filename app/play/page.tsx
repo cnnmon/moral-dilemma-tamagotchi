@@ -20,7 +20,6 @@ import { AnimatePresence, motion } from "framer-motion";
 import HoverText from "@/components/HoverText";
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { Animation } from "@/constants/sprites";
-import { ObjectKey } from "@/constants/objects";
 import { getEvolutionTimeFrame, getEvolution } from "@/constants/evolutions";
 import { EvolutionId } from "@/constants/evolutions";
 import Window from "@/components/Window";
@@ -35,7 +34,6 @@ export default function Play() {
   // core state
   const [animation, setAnimation] = useState<Animation>(Animation.IDLE);
   const [hoverText, setHoverText] = useState<string | null>(null);
-  const [cursorObject, setCursorObject] = useState<ObjectKey | null>(null);
   const [rip, setRip] = useState(false);
   const [dilemmaOpen, setDilemmaOpen] = useState(false);
   const [graduationOpen, setGraduationOpen] = useState(false);
@@ -163,7 +161,6 @@ export default function Play() {
   const handleIncrementStat = useCallback(
     (stat: BaseStatKeys) => {
       incrementStat(stat);
-      setCursorObject(null);
     },
     [incrementStat]
   );
@@ -230,9 +227,7 @@ export default function Play() {
   return (
     <>
       <Menu page="play" currentPetName={pet.name} />
-      {!hasGraduated && (
-        <HoverText hoverText={hoverText} cursorObject={cursorObject} />
-      )}
+      {!hasGraduated && <HoverText hoverText={hoverText} />}
       <AchievementsSidebar
         userAchievements={userAchievements}
         shownAchievements={shownAchievements}
@@ -302,10 +297,8 @@ export default function Play() {
             <Viewport
               pet={pet}
               hasGraduated={hasGraduated}
-              cursorObject={cursorObject}
               poos={poos}
               cleanupPoo={cleanupPoo}
-              incrementStat={handleIncrementStat}
               rip={rip}
               animation={animation}
               clarifyingQuestion={clarifyingQuestion}
@@ -348,7 +341,6 @@ export default function Play() {
             <div className="flex sm:flex-row flex-col gap-2 w-full">
               <div className="flex flex-col gap-2">
                 <Actions
-                  setCursorObject={setCursorObject}
                   setHoverText={setHoverText}
                   openDilemma={() => setDilemmaOpen(true)}
                   isProcessing={isProcessing}

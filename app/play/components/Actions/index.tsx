@@ -7,9 +7,6 @@ import { BaseStatsType } from "@/constants/base";
 const WIDTH = 35;
 const HEIGHT = 35;
 
-// check if it's a mobile device
-const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-
 const ActionButton = memo(function ActionButton({
   src,
   alt,
@@ -18,9 +15,6 @@ const ActionButton = memo(function ActionButton({
   setHoverText,
   isLast,
   hasWarning,
-  onMobileTap,
-  stat,
-  type,
 }: {
   src: string;
   alt: string;
@@ -29,19 +23,12 @@ const ActionButton = memo(function ActionButton({
   setHoverText: (text: string | null) => void;
   isLast: boolean;
   hasWarning: boolean;
-  onMobileTap: (stat: keyof BaseStatsType) => void;
-  stat: keyof BaseStatsType;
   type: "cursor" | "dilemma";
 }) {
   const handleClick = useCallback(() => {
     if (disabled) return;
-
-    if (isMobile && type === "cursor") {
-      onMobileTap(stat);
-    } else {
-      onClick();
-    }
-  }, [disabled, onClick, onMobileTap, stat, type]);
+    onClick();
+  }, [disabled, onClick]);
 
   return (
     <motion.div
@@ -116,7 +103,6 @@ const ACTIONS = [
 export default function Actions({
   rip,
   setHoverText,
-  setCursorObject,
   isProcessing,
   openDilemma,
   baseStats,
@@ -124,7 +110,6 @@ export default function Actions({
 }: {
   rip: boolean;
   setHoverText: (text: string | null) => void;
-  setCursorObject: (object: ObjectKey | null) => void;
   openDilemma: () => void;
   isProcessing: boolean;
   baseStats: BaseStatsType;
@@ -146,7 +131,7 @@ export default function Actions({
           disabled={rip || (action.type === "dilemma" && isProcessing)}
           onClick={() =>
             action.type === "cursor"
-              ? setCursorObject(action.object as ObjectKey)
+              ? handleIncrementStat(action.stat)
               : openDilemma()
           }
           setHoverText={setHoverText}
@@ -156,8 +141,6 @@ export default function Actions({
             baseStats[action.stat] < 2 &&
             baseStats[action.stat] > 0
           }
-          onMobileTap={handleIncrementStat}
-          stat={action.stat}
           type={action.type}
         />
       ))}

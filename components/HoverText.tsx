@@ -1,17 +1,9 @@
 import { useEffect, useState } from "react";
-import Image from "next/image";
-import { ObjectKey, OBJECTS } from "@/constants/objects";
 
 // check if it's a mobile device
 const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
-export default function HoverText({
-  hoverText,
-  cursorObject,
-}: {
-  hoverText: string | null;
-  cursorObject?: ObjectKey | null;
-}) {
+export default function HoverText({ hoverText }: { hoverText: string | null }) {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
@@ -31,21 +23,6 @@ export default function HoverText({
 
   return (
     <div className="z-40 pointer-events-none">
-      {cursorObject && (
-        <Image
-          src={OBJECTS[cursorObject]}
-          alt={cursorObject}
-          className="absolute"
-          width={50}
-          height={50}
-          style={{
-            top: mousePosition.y,
-            left: mousePosition.x,
-            transform: "translate(-20px, -20px)",
-            pointerEvents: "none",
-          }}
-        />
-      )}
       {hoverText && (
         <p
           className="absolute px-2 border-2 bg-zinc-100 flex justify-center items-center"
