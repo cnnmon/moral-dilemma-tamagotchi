@@ -84,6 +84,6 @@ export function getSprite(animation: Animation, evolution: EvolutionId) {
   } else if (Object.keys(SPRITES[2][animation]).includes(evolutionId)) {
     return SPRITES[2][animation][evolutionId as Stage2EvolutionId];
   } else {
-    throw new Error(`Invalid evolution: ${evolution}`);
+    return SPRITES[1][animation].npc;
   }
 }
