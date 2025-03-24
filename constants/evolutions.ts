@@ -4,7 +4,7 @@ import { MoralDimensions, MoralStatAttribute, attributes } from "./morals";
 const evolutionTimeFrame = {
   0: 4, // in age 0 until age 1 evolution
   1: 7, // in age 1 until age 2 evolution
-  2: 8, // until graduation unlocks
+  2: 9, // until graduation unlocks
 }
 
 export function getEvolutionTimeFrame(age: number): number {

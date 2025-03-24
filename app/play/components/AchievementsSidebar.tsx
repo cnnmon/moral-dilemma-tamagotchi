@@ -376,18 +376,6 @@ export default function AchievementsSidebar({
   const getEvolutionSprite = (achievementId: string) => {
     if (!achievementId.startsWith("evolve_to_")) return null;
     const evolutionId = achievementId.replace("evolve_to_", "");
-    const age = [
-      "gavel",
-      "vigilante",
-      "godfather",
-      "guardian",
-      "aristocrat",
-      "sigma",
-      "saint",
-      "cultleader",
-    ].includes(evolutionId)
-      ? 2
-      : 1;
     try {
       return getSprite(Animation.IDLE, evolutionId as EvolutionId);
     } catch (error) {
