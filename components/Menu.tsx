@@ -18,7 +18,7 @@ export default function Menu({
 }) {
   if (page === "about" || page === "scrapbook") {
     return (
-      <div className="text-sm text-zinc-500 p-4 z-10 flex gap-4 justify-between w-full sm:w-2xl mb-2">
+      <div className="text-sm text-zinc-500 flex gap-4 justify-between w-full px-4 sm:w-2xl mb-2">
         <AnimatePresence>
           <motion.span
             initial={{ opacity: 0 }}

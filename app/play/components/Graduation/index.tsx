@@ -45,21 +45,16 @@ export default function Graduation({
   const totalPages = Math.ceil((seenDilemmas?.length || 0) / 1);
   const dilemma = seenDilemmas?.[currentPage - 1];
 
-  // handle page navigation
   const goToPreviousPage = () => {
-    if (currentPage > 1) {
-      setCurrentPage(currentPage - 1);
-    }
+    if (currentPage > 1) setCurrentPage(currentPage - 1);
   };
   const goToNextPage = () => {
-    if (currentPage < totalPages) {
-      setCurrentPage(currentPage + 1);
-    }
+    if (currentPage < totalPages) setCurrentPage(currentPage + 1);
   };
 
   return (
     <div
-      className="p-1 outline-white flex justify-center items-center"
+      className="flex justify-center items-center p-4 w-full sm:w-2xl"
       onClick={(e) => e.stopPropagation()}
     >
       <Window
@@ -67,21 +62,21 @@ export default function Graduation({
         isOpen={graduationOpen}
         setIsOpen={() => setGraduationOpen(false)}
       >
-        <div className="md:w-6xl overflow-y-auto gap-2">
-          {/* corner designs */}
-          <div className="absolute top-0 left-0 w-5 h-5 border-r-2 border-b-2 border-zinc-800 -translate-x-2 -translate-y-2"></div>
-          <div className="absolute top-0 right-0 w-5 h-5 border-l-2 border-b-2 border-zinc-800 translate-x-2 -translate-y-2"></div>
-          <div className="absolute bottom-0 left-0 w-5 h-5 border-r-2 border-t-2 border-zinc-800 -translate-x-2 translate-y-2"></div>
-          <div className="absolute bottom-0 right-0 w-5 h-5 border-l-2 border-t-2 border-zinc-800 translate-x-2 translate-y-2"></div>
+        <div className="w-full h-full flex flex-col h-[50vh] overflow-y-auto">
+          {/* certificate border */}
+          <div className="relative border-2 border-zinc-800 p-4 md:p-6 flex-1 overflow-y-auto">
+            {/* corner decorations */}
+            <div className="absolute top-0 left-0 w-4 h-4 border-r-2 border-b-2 border-zinc-800 -translate-x-1 -translate-y-1"></div>
+            <div className="absolute top-0 right-0 w-4 h-4 border-l-2 border-b-2 border-zinc-800 translate-x-1 -translate-y-1"></div>
+            <div className="absolute bottom-0 left-0 w-4 h-4 border-r-2 border-t-2 border-zinc-800 -translate-x-1 translate-y-1"></div>
+            <div className="absolute bottom-0 right-0 w-4 h-4 border-l-2 border-t-2 border-zinc-800 translate-x-1 translate-y-1"></div>
 
-          <div className="border-2 border-zinc-800 p-3 relative h-145 overflow-y-auto ">
-            {/* layout with 2 columns */}
-            <div className="flex flex-col md:flex-row gap-3">
-              {/* left column: pet image and info */}
-              <div className="md:w-2/5">
-                {/* pet info section */}
-                <div className="flex flex-col items-center mb-3">
-                  <div className="border-2 border-zinc-800 p-2 mb-1 bg-white">
+            <div className="flex flex-col md:flex-row gap-6 md:gap-8">
+              {/* left column: pet info */}
+              <div className="md:w-1/2 space-y-6">
+                {/* pet image and basic info */}
+                <div className="flex flex-col items-center">
+                  <div className="border border-zinc-800 p-2 bg-white mb-3">
                     <Image
                       src={
                         hoveredEvolution
@@ -102,22 +97,19 @@ export default function Graduation({
                       className="mx-auto"
                     />
                   </div>
-                  <div className="text-center">
-                    <p className="font-bold text-lg">{pet.name}</p>
-                    <p className="text-sm mb-1">
-                      graduated after {seenDilemmas.length} difficult moral
-                      dilemmas
-                    </p>
-                    <p className="italic text-zinc-600 border-t border-b border-zinc-200 py-1 px-2 text-sm inline-block">
-                      {pet.personality}
-                    </p>
-                  </div>
+                  <h2 className="text-xl font-bold mb-1">{pet.name}</h2>
+                  <p className="text-sm text-zinc-600 mb-2">
+                    graduated after {seenDilemmas.length} moral dilemmas
+                  </p>
+                  <p className="text-sm italic text-zinc-500 border-t border-b border-zinc-200 py-1 px-3">
+                    {pet.personality}
+                  </p>
                 </div>
 
                 {/* official seal */}
-                <div className="text-center mb-0">
-                  <div className="inline-block border-2 border-zinc-800 rounded-full p-1 mb-1">
-                    <div className="w-14 h-14 flex items-center justify-center border-2 border-zinc-400 rounded-full">
+                <div className="flex justify-center">
+                  <div className="border border-zinc-800 rounded-full p-1">
+                    <div className="w-12 h-12 flex items-center justify-center border border-zinc-400 rounded-full">
                       <span className="text-[10px] font-bold tracking-widest uppercase rotate-45">
                         official
                       </span>
@@ -125,17 +117,16 @@ export default function Graduation({
                   </div>
                 </div>
 
-                {/* history section */}
-                <div className="mt-2">
-                  <p className="font-medium border-b border-zinc-200 pb-1 mb-1 text-sm">
-                    memories:
-                  </p>
-
-                  <div className="min-h-[80px] p-1">
+                {/* memories section */}
+                <div>
+                  <h3 className="text-sm font-medium border-b border-zinc-200 pb-1 mb-3">
+                    memories
+                  </h3>
+                  <div className="min-h-[120px]">
                     {seenDilemmas.length > 0 && dilemma ? (
-                      <div className="flex flex-col items-center">
-                        <div className="w-full bg-white p-2 border-2 border-zinc-800 text-sm relative h-30 overflow-y-scroll">
-                          <p className="text-xs italic text-zinc-500">
+                      <div className="space-y-2">
+                        <div className="bg-white p-3 border border-zinc-800 text-sm">
+                          <p className="text-xs italic text-zinc-500 mb-2">
                             {dilemma.title && (
                               <span>
                                 {dilemma.title in dilemmaTemplates
@@ -146,90 +137,95 @@ export default function Graduation({
                               </span>
                             )}
                           </p>
-                          <hr className="my-1 border-zinc-200" />
-                          <p>you said: &quot;{dilemma.responseText}&quot;.</p>
+                          <hr className="my-2 border-zinc-200" />
+                          <p className="mb-1">
+                            you said: &quot;{dilemma.responseText}&quot;
+                          </p>
                           <p>{dilemma.outcome || "no history"}</p>
                         </div>
-
-                        <div className="text-center mt-1 text-[10px] text-zinc-500">
-                          day {currentPage} of {totalPages || 1}
+                        <div className="flex justify-between items-center text-xs text-zinc-500">
+                          <span>
+                            day {currentPage} of {totalPages || 1}
+                          </span>
+                          <div className="space-x-3">
+                            <button
+                              onClick={goToPreviousPage}
+                              className={`underline ${
+                                currentPage === 1
+                                  ? "text-zinc-300 pointer-events-none"
+                                  : "text-zinc-700 hover:bg-zinc-100"
+                              }`}
+                            >
+                              ← prev
+                            </button>
+                            <button
+                              onClick={goToNextPage}
+                              className={`underline ${
+                                currentPage === totalPages || totalPages === 0
+                                  ? "text-zinc-300 pointer-events-none"
+                                  : "text-zinc-700 hover:bg-zinc-100"
+                              }`}
+                            >
+                              next →
+                            </button>
+                          </div>
                         </div>
                       </div>
                     ) : (
-                      <div className="flex items-center justify-center h-full">
-                        <p className="text-zinc-400 italic text-sm">
-                          no memories available
-                        </p>
-                      </div>
+                      <p className="text-zinc-400 italic text-sm text-center py-8">
+                        no memories available
+                      </p>
                     )}
-
-                    {/* navigation controls */}
-                    <div className="flex justify-between items-center mt-1 text-sm">
-                      <a
-                        onClick={goToPreviousPage}
-                        className={`underline ${currentPage === 1 ? "text-zinc-300 pointer-events-none" : "text-zinc-700 hover:bg-zinc-100"}`}
-                      >
-                        ← prev
-                      </a>
-
-                      <a
-                        onClick={goToNextPage}
-                        className={`underline ${currentPage === totalPages || totalPages === 0 ? "text-zinc-300 pointer-events-none" : "text-zinc-700 hover:bg-zinc-100"}`}
-                      >
-                        next →
-                      </a>
-                    </div>
                   </div>
                 </div>
               </div>
 
-              {/* right column: moral attributes and evolutions */}
-              <div className="md:w-3/5 flex flex-col">
-                {/* evolutions section */}
-                <div className="mb-3">
-                  <p className="font-medium border-b border-zinc-200 pb-1 mb-1 text-sm">
-                    evolution journey:
-                  </p>
-                  <p className="pl-1 flex flex-col gap-1">
+              {/* right column: evolution and morals */}
+              <div className="md:w-1/2 space-y-6">
+                {/* evolution journey */}
+                <div>
+                  <h3 className="text-sm font-medium border-b border-zinc-200 pb-1 mb-3">
+                    evolution journey
+                  </h3>
+                  <div className="space-y-3">
                     {pastEvolutions.map((evolution, index) => (
-                      <span
+                      <div
                         key={`${evolution.id}-${index}`}
-                        className="leading-none hover:bg-black hover:text-white"
+                        className="group cursor-pointer"
                         onMouseEnter={() => {
                           setHoveredEvolution({
                             age: 3 - index - 1,
                             evolution: evolution.id,
                           });
                         }}
-                        onMouseLeave={() => {
-                          setHoveredEvolution(null);
-                        }}
+                        onMouseLeave={() => setHoveredEvolution(null)}
                       >
-                        <span className="flex items-start text-sm last:mb-0">
-                          <span className="mr-1">level {3 - index}:</span>
+                        <div className="text-sm">
+                          <span className="font-medium">
+                            level {3 - index}:
+                          </span>{" "}
                           <span className="font-bold">{evolution.id}</span>
                           {index < pastEvolutions.length - 1 && (
-                            <span className="ml-1 opacity-50">
+                            <span className="text-zinc-500 ml-1">
                               — because you made choices that were very{" "}
                               {evolution.statUsed?.name}
                             </span>
                           )}
-                          <br />
-                        </span>
-                        <span className="italic text-sm opacity-50">
+                        </div>
+                        <p className="text-xs text-zinc-500 italic mt-1">
                           {evolution.description}
-                        </span>
-                      </span>
+                        </p>
+                      </div>
                     ))}
-                  </p>
+                  </div>
                 </div>
 
                 {/* moral attributes */}
-                <div className="mb-2">
-                  <p className="font-medium border-b border-zinc-200 pb-1 mb-1 text-sm">
-                    moral attributes:
-                  </p>
-                  <div className="space-y-1">
+                <div>
+                  <h3 className="text-sm font-medium border-b border-zinc-200 pb-1 mb-3">
+                    moral attributes
+                  </h3>
+                  <div className="space-y-2">
                     {Object.entries(pet.moralStats).map(([key, value]) => {
                       const normalizedValue = Math.min(Math.max(value, 0), 10);
                       const position = (normalizedValue / 10) * 100;
@@ -237,31 +233,27 @@ export default function Graduation({
                       return (
                         <div
                           key={key}
-                          className="relative border-l-2 border-r-2 border-zinc-800 px-4 py-0.5 leading-none"
+                          className="border-x border-zinc-800 px-3 py-1"
                         >
-                          <div className="flex justify-between">
-                            <span className="italic font-medium">
+                          <div className="flex justify-between items-center mb-1">
+                            <span className="font-medium">
                               {key}{" "}
                               {moralAttributeEmojis[key as MoralDimensions]}
                             </span>
-                            <span className="text-zinc-500">
+                            <span className="text-zinc-500 text-sm">
                               {value.toFixed(1)}
                             </span>
                           </div>
-
-                          <div className="flex justify-between items-center text-sm text-zinc-500 mt-0.5 italic">
-                            <span className="w-1/3 text-left truncate">
+                          <div className="flex items-center gap-2 text-xs text-zinc-500">
+                            <span className="w-1/4 truncate">
                               {attrLabels.low}
                             </span>
-
-                            {/* position indicator */}
-                            <div className="relative w-[90%] h-2 bg-zinc-200">
+                            <div className="flex-1 h-1.5 bg-zinc-200 relative">
                               <div
-                                className="absolute top-0 h-4 w-1 bg-zinc-800 -mt-1"
+                                className="absolute top-0 h-3 w-0.5 bg-zinc-800 -mt-0.75"
                                 style={{ left: `${position}%` }}
-                              ></div>
+                              />
                             </div>
-
                             <span className="w-1/4 text-right">
                               {attrLabels.high}
                             </span>

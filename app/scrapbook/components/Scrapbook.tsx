@@ -13,10 +13,10 @@ export default function Scrapbook({
 
   if (petsQuery === undefined) {
     return (
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-8 p-4 sm:p-8 bg-zinc-200">
+      <div className="grid grid-cols-2 sm:grid-cols-4 bg-zinc-200">
         {[...Array(4)].map((_, index) => (
           <div key={index} className="relative">
-            <div className="h-40 sm:h-50 bg-zinc-300 w-36 animate-pulse flex items-center justify-center"></div>
+            <div className="h-60 bg-zinc-300 w-36 animate-pulse flex items-center justify-center"></div>
           </div>
         ))}
       </div>
@@ -56,7 +56,7 @@ export default function Scrapbook({
       {/* graduation modal */}
       {selectedPet && (
         <div
-          className="fixed top-0 w-full z-30 inset-0 flex justify-center items-center bg-white/50 p-4 sm:p-0"
+          className="fixed top-0 w-full z-30 inset-0 flex justify-center items-center bg-white/50"
           onClick={() => setSelectedPet(null)}
         >
           <Graduation
