@@ -195,32 +195,63 @@ const AchievementTab = ({
   newAchievementsCount: number;
   onMouseEnter: () => void;
   onMouseLeave: () => void;
-}) => (
-  <div
-    className="fixed left-0 top-0 z-40 mt-20"
-    onMouseEnter={onMouseEnter}
-    onMouseLeave={onMouseLeave}
-  >
-    <motion.div
-      className="relative flex items-center"
-      animate={{ x: isOpen ? 240 : 0 }}
-      transition={{ type: "spring", stiffness: 300, damping: 30 }}
+}) => {
+  const [scrollOpacity, setScrollOpacity] = useState(1);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // check if we're on mobile
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 640); // sm breakpoint
+    };
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
+  // track scroll position
+  useEffect(() => {
+    if (!isMobile) return;
+
+    const handleScroll = () => {
+      const scrollPosition = window.scrollY;
+      // start fading at 50px, fully fade out at 150px
+      const opacity = Math.max(0, 1 - (scrollPosition - 50) / 100);
+      setScrollOpacity(opacity);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [isMobile]);
+
+  return (
+    <div
+      className={`fixed left-0 top-0 z-40 mt-20 ${scrollOpacity < 0.1 ? "pointer-events-none" : ""}`}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
+      style={{ opacity: isMobile ? scrollOpacity : 1 }}
     >
-      <div
-        className={`bg-white border-r-2 border-t-2 border-b-2 border-black py-4 px-2 cursor-pointer flex flex-col items-center justify-center ${
-          isBlinking ? "animate-pulse" : ""
-        }`}
+      <motion.div
+        className="relative flex items-center"
+        animate={{ x: isOpen ? 240 : 0 }}
+        transition={{ type: "spring", stiffness: 300, damping: 30 }}
       >
-        <span className="text-xl">🏆</span>
-        {newAchievementsCount > 0 && (
-          <div className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-            {newAchievementsCount}
-          </div>
-        )}
-      </div>
-    </motion.div>
-  </div>
-);
+        <div
+          className={`bg-white border-r-2 border-t-2 border-b-2 border-black py-4 px-2 cursor-pointer flex flex-col items-center justify-center ${
+            isBlinking ? "animate-pulse" : ""
+          }`}
+        >
+          <span className="text-xl">🏆</span>
+          {newAchievementsCount > 0 && (
+            <div className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+              {newAchievementsCount}
+            </div>
+          )}
+        </div>
+      </motion.div>
+    </div>
+  );
+};
 
 // achievement sidebar content component
 const AchievementSidebarContent = ({
