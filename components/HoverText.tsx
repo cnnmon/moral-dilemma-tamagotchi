@@ -2,6 +2,9 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import { ObjectKey, OBJECTS } from "@/constants/objects";
 
+// check if it's a mobile device
+const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
 export default function HoverText({
   hoverText,
   cursorObject,
@@ -20,6 +23,11 @@ export default function HoverText({
       window.removeEventListener("mousemove", updateMousePosition);
     };
   }, []);
+
+  // don't render on mobile devices
+  if (isMobile) {
+    return null;
+  }
 
   return (
     <div className="z-40 pointer-events-none">

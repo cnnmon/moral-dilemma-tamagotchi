@@ -123,17 +123,19 @@ const AchievementPopup = ({
 
   return (
     <div
-      className="fixed inset-0 p-2 sm:p-0 flex items-center justify-center z-50 pointer-events-none"
-      onClick={(e) => {
-        e.stopPropagation();
-        onClose();
-      }}
+      className="fixed inset-0 p-2 sm:p-0 flex items-center justify-center z-50 bg-black/20"
+      onClick={() => onClose()}
     >
-      <div className="max-w-lg pointer-events-auto">
+      <div
+        className="max-w-lg pointer-events-auto"
+        onClick={(e) => e.stopPropagation()}
+      >
         <Window
           title={`${isCompleted ? "[completed!]" : ""} ${achievement.title}`}
           isOpen={true}
-          setIsOpen={() => onClose()}
+          setIsOpen={() => {
+            onClose();
+          }}
         >
           <div className="flex flex-col sm:flex-row items-start gap-4 mb-3 pt-2 px-2">
             <div className="border-2 p-4 w-36 h-36 sm:w-auto sm:h-auto flex items-center justify-center bg-white">
