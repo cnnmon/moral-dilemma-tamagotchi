@@ -9,6 +9,7 @@ import MoralAttributes from "./MoralAttributes";
 import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
 import { EvolutionId } from "@/constants/evolutions";
+
 export default function Graduation({
   pet,
   graduationOpen,
@@ -28,12 +29,12 @@ export default function Graduation({
 
   return (
     <AnimatePresence mode="wait">
-      <div
-        className="fixed inset-0 p-4 w-full bg-black/20 flex justify-center z-30"
+      <motion.div
+        className="fixed inset-0 flex items-start md:items-center justify-center md:p-4 z-30"
         onClick={() => setGraduationOpen(false)}
       >
         <motion.div
-          className="w-full flex flex-col overflow-y-auto md:w-[70%] md:h-full"
+          className="w-full max-w-4xl max-h-screen overflow-y-auto"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 20 }}
@@ -45,30 +46,28 @@ export default function Graduation({
             isOpen={graduationOpen}
             setIsOpen={() => setGraduationOpen(false)}
           >
-            <div className="w-full flex flex-col md:overflow-visible overflow-y-auto">
-              <Certificate>
-                <div className="flex flex-col md:flex-row gap-6 md:gap-8 p-2">
-                  <PetInfo
+            <Certificate>
+              <div className="flex flex-col md:flex-row gap-6 md:gap-8 p-2">
+                <PetInfo
+                  pet={pet}
+                  seenDilemmas={seenDilemmas}
+                  hoveredEvolutionId={hoveredEvolutionId}
+                />
+                <div className="md:w-1/2 space-y-6">
+                  <EvolutionJourney
                     pet={pet}
-                    seenDilemmas={seenDilemmas}
                     hoveredEvolutionId={hoveredEvolutionId}
+                    onHover={(evolutionId) =>
+                      setHoveredEvolutionId(evolutionId)
+                    }
                   />
-                  <div className="md:w-1/2 space-y-6">
-                    <EvolutionJourney
-                      pet={pet}
-                      hoveredEvolutionId={hoveredEvolutionId}
-                      onHover={(evolutionId) =>
-                        setHoveredEvolutionId(evolutionId)
-                      }
-                    />
-                    <MoralAttributes pet={pet} />
-                  </div>
+                  <MoralAttributes pet={pet} />
                 </div>
-              </Certificate>
-            </div>
+              </div>
+            </Certificate>
           </Window>
         </motion.div>
-      </div>
+      </motion.div>
     </AnimatePresence>
   );
 }

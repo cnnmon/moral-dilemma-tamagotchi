@@ -46,47 +46,6 @@ function PetImageSection({
   );
 }
 
-// navigation controls component
-function NavigationControls({
-  currentPage,
-  totalPages,
-  onPrevious,
-  onNext,
-}: {
-  currentPage: number;
-  totalPages: number;
-  onPrevious: () => void;
-  onNext: () => void;
-}) {
-  return (
-    <div className="flex justify-between items-center text-xs text-zinc-500 mb-4">
-      <a
-        onClick={onPrevious}
-        className={`underline no-drag ${
-          currentPage === 1
-            ? "text-zinc-300 pointer-events-none"
-            : "text-zinc-700 hover:bg-zinc-100"
-        }`}
-      >
-        ← prev
-      </a>
-      <span>
-        day {currentPage} of {totalPages || 1}
-      </span>
-      <a
-        onClick={onNext}
-        className={`underline no-drag ${
-          currentPage === totalPages || totalPages === 0
-            ? "text-zinc-300 pointer-events-none"
-            : "text-zinc-700 hover:bg-zinc-100"
-        }`}
-      >
-        next →
-      </a>
-    </div>
-  );
-}
-
 // memory card component
 function MemoryCard({
   dilemma,
@@ -134,19 +93,34 @@ function MemoriesSection({
   const dilemma = seenDilemmas?.[currentPage - 1];
   return (
     <div>
-      <h3 className="text-sm font-medium border-b border-zinc-200 pb-1 mb-3">
-        highlights
-      </h3>
+      <div className="flex justify-between items-center text-xs mb-4 border-b border-zinc-200 pb-1">
+        <a
+          onClick={onPrevious}
+          className={`underline text-zinc-500 no-drag ${
+            currentPage === 1
+              ? "text-zinc-300 pointer-events-none"
+              : "text-zinc-700 hover:bg-zinc-100"
+          }`}
+        >
+          ← prev
+        </a>
+        <h3 className="text-sm font-medium">memories</h3>
+        <a
+          onClick={onNext}
+          className={`underline text-zinc-500 no-drag ${
+            currentPage === totalPages || totalPages === 0
+              ? "text-zinc-300 pointer-events-none"
+              : "text-zinc-700 hover:bg-zinc-100"
+          }`}
+        >
+          next →
+        </a>
+      </div>
+      <p className="text-xs text-zinc-500">
+        day {currentPage} of {totalPages || 1}
+      </p>
       {seenDilemmas.length > 0 && dilemma ? (
-        <>
-          <NavigationControls
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPrevious={onPrevious}
-            onNext={onNext}
-          />
-          <MemoryCard dilemma={dilemma} petName={petName} />
-        </>
+        <MemoryCard dilemma={dilemma} petName={petName} />
       ) : (
         <p className="text-zinc-400 italic text-sm text-center py-8">
           no memories available
