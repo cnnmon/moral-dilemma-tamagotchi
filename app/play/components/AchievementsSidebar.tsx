@@ -10,6 +10,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
 import { getSprite, Animation } from "@/constants/sprites";
 import { EvolutionId } from "@/constants/evolutions";
+import Window from "@/components/Window";
 
 interface AchievementsSidebarProps {
   userAchievements: { achievementId: string; timestamp: number }[] | undefined;
@@ -19,18 +20,18 @@ interface AchievementsSidebarProps {
 
 const AchievementCard = ({
   achievement,
-  isUnlocked,
+  isCompleted,
   isNew,
   onClick,
   getEvolutionSprite,
 }: {
   achievement: Achievement;
-  isUnlocked: boolean;
+  isCompleted: boolean;
   isNew: boolean;
   onClick: () => void;
   getEvolutionSprite: (achievementId: string) => string | null;
 }) => {
-  const secret = achievement.secret && !isUnlocked;
+  const secret = achievement.secret && !isCompleted;
   const evolutionSprite = getEvolutionSprite(achievement.id);
 
   return (
@@ -39,7 +40,7 @@ const AchievementCard = ({
         secret ? "cursor-not-allowed" : "cursor-pointer"
       } transition-all 
       ${
-        isUnlocked
+        isCompleted
           ? "border-green-500 bg-green-500/10"
           : "border-zinc-300 bg-zinc-100/50"
       }
@@ -50,7 +51,7 @@ const AchievementCard = ({
         }
       }}
       animate={
-        isNew && isUnlocked
+        isNew && isCompleted
           ? {
               scale: [1, 1.03, 1],
               transition: {
@@ -65,7 +66,7 @@ const AchievementCard = ({
       <div className="flex items-center gap-2">
         <div className="relative w-6 h-6 flex-shrink-0">
           {!secret ? (
-            evolutionSprite && isUnlocked ? (
+            evolutionSprite && isCompleted ? (
               <Image
                 src={evolutionSprite}
                 alt={achievement.title}
@@ -87,7 +88,7 @@ const AchievementCard = ({
         <h3 className="text-xs font-medium">
           {secret ? "???" : achievement.title}
         </h3>
-        {isNew && isUnlocked && (
+        {isNew && isCompleted && (
           <span className="text-xs ml-auto font-bold text-yellow-600">
             New!
           </span>
@@ -99,86 +100,84 @@ const AchievementCard = ({
 
 const AchievementPopup = ({
   achievement,
-  isUnlocked,
+  isCompleted,
   onClose,
   userAchievements,
   getEvolutionSprite,
 }: {
   achievement: Achievement;
-  isUnlocked: boolean;
+  isCompleted: boolean;
   onClose: () => void;
   userAchievements: { achievementId: string; timestamp: number }[] | undefined;
   getEvolutionSprite: (achievementId: string) => string | null;
 }) => {
-  const evolutionSprite = getEvolutionSprite(achievement.id);
-  const getUnlockDate = (id: string) => {
+  const getCompletionDate = (id: string) => {
     if (!userAchievements) return null;
     const achievement = userAchievements.find((a) => a.achievementId === id);
     if (!achievement) return null;
     return new Date(achievement.timestamp).toLocaleDateString();
   };
 
+  const evolutionSprite = getEvolutionSprite(achievement.id);
+  const completionDate = getCompletionDate(achievement.id);
+
   return (
-    <motion.div
-      className="fixed w-full h-full bg-black/20 flex items-center justify-center z-50 mt-[-100px]"
-      onClick={onClose}
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
+    <div
+      className="fixed inset-0 p-2 sm:p-0 flex items-center justify-center z-50 pointer-events-none"
+      onClick={(e) => {
+        e.stopPropagation();
+        onClose();
+      }}
     >
-      <motion.div
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1 }}
-        exit={{ opacity: 0, scale: 0.9 }}
-        className="bg-white rounded-md p-4 w-fit max-w-[280px]"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="flex items-center gap-3 mb-3">
-          {evolutionSprite && isUnlocked ? (
-            <Image
-              src={evolutionSprite}
-              alt={achievement.title}
-              width={48}
-              height={48}
-            />
-          ) : (
-            <div className="w-12 h-12 flex items-center justify-center rounded-full bg-gray-100">
-              <span className="text-2xl">{achievement.emoji}</span>
-            </div>
-          )}
-          <div>
-            <h2 className="text-xl font-medium">{achievement.title}</h2>
-            <div className="flex items-center gap-2">
-              <span
-                className={`text-xs px-2 py-0.5 rounded-full ${
-                  achievement.rarity === "legendary"
-                    ? "bg-purple-100 text-purple-800"
-                    : achievement.rarity === "rare"
-                      ? "bg-blue-100 text-blue-800"
-                      : achievement.rarity === "uncommon"
-                        ? "bg-green-100 text-green-800"
-                        : "bg-gray-100 text-gray-800"
-                }`}
-              >
-                {achievement.rarity}
-              </span>
-              {isUnlocked && (
-                <span className="text-xs text-green-600">
-                  unlocked {getUnlockDate(achievement.id)}
-                </span>
+      <div className="max-w-lg pointer-events-auto">
+        <Window
+          title={`${isCompleted ? "[completed!]" : ""} ${achievement.title}`}
+          isOpen={true}
+          setIsOpen={() => onClose()}
+        >
+          <div className="flex flex-col sm:flex-row items-start gap-4 mb-3 pt-2 px-2">
+            <div className="border-2 p-4 flex items-center justify-center bg-white">
+              {evolutionSprite && isCompleted ? (
+                <Image
+                  src={evolutionSprite}
+                  alt={achievement.title}
+                  width={140}
+                  height={140}
+                />
+              ) : (
+                <div className="w-18 h-18 flex items-center justify-center rounded-full bg-gray-100">
+                  <span className="text-2xl">{achievement.emoji}</span>
+                </div>
               )}
             </div>
+            <div>
+              <p className="text-sm font-bold">{achievement.title}</p>
+              <div className="flex items-center gap-2">
+                <span
+                  className={`text-xs px-2 py-0.5 rounded ${
+                    achievement.rarity === "legendary"
+                      ? "bg-purple-200 text-purple-800"
+                      : achievement.rarity === "rare"
+                        ? "bg-blue-200 text-blue-800"
+                        : achievement.rarity === "uncommon"
+                          ? "bg-green-200 text-green-800"
+                          : "bg-gray-200 text-gray-800"
+                  }`}
+                >
+                  {achievement.rarity}
+                </span>
+                {isCompleted && (
+                  <span className="text-xs text-green-600">
+                    completed {completionDate}
+                  </span>
+                )}
+              </div>
+              <p>{achievement.description}</p>
+            </div>
           </div>
-        </div>
-        <p className="mb-4">{achievement.description}</p>
-        <button
-          onClick={onClose}
-          className="w-full py-2 text-center border border-gray-300 rounded-md hover:bg-gray-50"
-        >
-          close
-        </button>
-      </motion.div>
-    </motion.div>
+        </Window>
+      </div>
+    </div>
   );
 };
 
@@ -227,15 +226,19 @@ const AchievementSidebarContent = ({
   userAchievements,
   newAchievements,
   onAchievementClick,
-  isUnlocked,
+  isCompleted,
   getEvolutionSprite,
+  onMouseEnter,
+  onMouseLeave,
 }: {
   isOpen: boolean;
   userAchievements: { achievementId: string; timestamp: number }[] | undefined;
   newAchievements: AchievementId[];
   onAchievementClick: (achievement: Achievement) => void;
-  isUnlocked: (id: string) => boolean;
+  isCompleted: (id: string) => boolean;
   getEvolutionSprite: (achievementId: string) => string | null;
+  onMouseEnter: () => void;
+  onMouseLeave: () => void;
 }) => {
   const achievementsByCategory = {
     choice: Object.values(achievements)
@@ -256,46 +259,64 @@ const AchievementSidebarContent = ({
   };
 
   return (
-    <motion.div
-      className="fixed left-0 top-0 h-screen w-60 bg-white p-4 overflow-y-auto border-r-2 border-black z-30 absolute"
-      initial={{ x: -240 }}
-      animate={{ x: isOpen ? 0 : -240 }}
-      transition={{ type: "spring", stiffness: 300, damping: 30 }}
-    >
-      <div className="mb-4">
-        <div className="flex flex-col items-start gap-2">
-          <p className="text-xl font-bold">achievements</p>
-          <p className="text-xs text-zinc-500">
-            {userAchievements
-              ? new Set(userAchievements.map((a) => a.achievementId)).size
-              : 0}{" "}
-            of 20 unlocked
-          </p>
-        </div>
-      </div>
-
-      {Object.entries(achievementsByCategory).map(
-        ([category, categoryAchievements]) => (
-          <div key={category} className="mb-4">
-            <h2 className="text-sm mb-2 capitalize">{category}</h2>
-            <div className="flex flex-col gap-2">
-              {categoryAchievements.map((achievement) => (
-                <AchievementCard
-                  key={achievement.id}
-                  achievement={achievement}
-                  isUnlocked={isUnlocked(achievement.id)}
-                  isNew={newAchievements.includes(
-                    achievement.id as AchievementId
-                  )}
-                  onClick={() => onAchievementClick(achievement)}
-                  getEvolutionSprite={getEvolutionSprite}
-                />
-              ))}
+    <div className="z-30">
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            className="fixed inset-0 bg-black/20"
+            onClick={onMouseLeave}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+          />
+        )}
+      </AnimatePresence>
+      <motion.div
+        className="fixed left-0 top-0 h-screen w-60 bg-white overflow-y-auto border-r-2 border-black pointer-events-auto"
+        initial={{ x: -240 }}
+        animate={{ x: isOpen ? 0 : -240 }}
+        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+        onMouseEnter={onMouseEnter}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="p-4">
+          <div className="mb-4">
+            <div className="flex flex-col items-start gap-2">
+              <p className="text-xl font-bold">achievements</p>
+              <p className="text-xs text-zinc-500">
+                {userAchievements
+                  ? new Set(userAchievements.map((a) => a.achievementId)).size
+                  : 0}{" "}
+                of 20 unlocked
+              </p>
             </div>
           </div>
-        )
-      )}
-    </motion.div>
+
+          {Object.entries(achievementsByCategory).map(
+            ([category, categoryAchievements]) => (
+              <div key={category} className="mb-4">
+                <h2 className="text-sm mb-2 capitalize">{category}</h2>
+                <div className="flex flex-col gap-2">
+                  {categoryAchievements.map((achievement) => (
+                    <AchievementCard
+                      key={achievement.id}
+                      achievement={achievement}
+                      isCompleted={isCompleted(achievement.id)}
+                      isNew={newAchievements.includes(
+                        achievement.id as AchievementId
+                      )}
+                      onClick={() => onAchievementClick(achievement)}
+                      getEvolutionSprite={getEvolutionSprite}
+                    />
+                  ))}
+                </div>
+              </div>
+            )
+          )}
+        </div>
+      </motion.div>
+    </div>
   );
 };
 
@@ -359,15 +380,16 @@ export default function AchievementsSidebar({
     }
   };
 
-  // only close the sidebar if no achievement is selected
-  const handleMouseLeave = () => {
+  // handle closing the sidebar
+  const handleCloseSidebar = () => {
+    // don't close if there's a popup open
     if (!selectedAchievement) {
       setIsOpen(false);
     }
   };
 
-  // check if an achievement is unlocked
-  const isUnlocked = (id: string) => {
+  // check if an achievement is completed
+  const isCompleted = (id: string) => {
     if (!userAchievements) return false;
     return userAchievements.some((a) => a.achievementId === id);
   };
@@ -391,7 +413,7 @@ export default function AchievementsSidebar({
         isBlinking={isBlinking}
         newAchievementsCount={newAchievements.length}
         onMouseEnter={handleOpenSidebar}
-        onMouseLeave={handleMouseLeave}
+        onMouseLeave={handleCloseSidebar}
       />
 
       <AchievementSidebarContent
@@ -399,15 +421,17 @@ export default function AchievementsSidebar({
         userAchievements={userAchievements}
         newAchievements={newAchievements}
         onAchievementClick={setSelectedAchievement}
-        isUnlocked={isUnlocked}
+        isCompleted={isCompleted}
         getEvolutionSprite={getEvolutionSprite}
+        onMouseEnter={handleOpenSidebar}
+        onMouseLeave={handleCloseSidebar}
       />
 
       <AnimatePresence>
         {selectedAchievement && (
           <AchievementPopup
             achievement={selectedAchievement}
-            isUnlocked={isUnlocked(selectedAchievement.id)}
+            isCompleted={isCompleted(selectedAchievement.id)}
             onClose={() => setSelectedAchievement(null)}
             userAchievements={userAchievements}
             getEvolutionSprite={getEvolutionSprite}

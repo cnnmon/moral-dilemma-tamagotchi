@@ -29,7 +29,7 @@ export default function Graduation({
   return (
     <AnimatePresence mode="wait">
       <div
-        className="fixed inset-0 p-4 w-full bg-black/20 flex justify-center"
+        className="fixed inset-0 p-4 w-full bg-black/20 flex justify-center z-30"
         onClick={() => setGraduationOpen(false)}
       >
         <motion.div
