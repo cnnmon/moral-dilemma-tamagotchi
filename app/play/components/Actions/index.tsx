@@ -44,12 +44,20 @@ const ActionButton = memo(function ActionButton({
   }, [disabled, onClick, onMobileTap, stat, type]);
 
   return (
-    <div
+    <motion.div
       className={`flex justify-center items-center w-full sm:w-14 h-11 group transition-opacity duration-300 ${
         !disabled && "hover:bg-zinc-200"
-      } ${isLast ? "border-0" : "border-r-2"} ${
-        hasWarning ? "border-red-500" : ""
-      }`}
+      } ${isLast ? "border-0" : "border-r-2"}`}
+      animate={{
+        backgroundColor: hasWarning
+          ? ["#ef4444", "#f87171", "#ef4444"]
+          : "#f4f4f5",
+      }}
+      transition={{
+        duration: 1,
+        repeat: hasWarning ? Infinity : 0,
+        ease: "easeInOut",
+      }}
       style={{
         cursor: disabled ? "not-allowed" : "pointer",
       }}
@@ -71,7 +79,7 @@ const ActionButton = memo(function ActionButton({
           height={HEIGHT}
         />
       </div>
-    </div>
+    </motion.div>
   );
 });
 
