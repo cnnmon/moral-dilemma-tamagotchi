@@ -35,7 +35,7 @@ export default function Header({
           recentIncrements={recentIncrements}
           hasGraduated={hasGraduated}
         />
-        <div className="flex flex-col sm:items-end text-right">
+        <div className="flex flex-col sm:items-end sm:text-right">
           <p className="flex items-center text-zinc-500">
             <b>level {pet.age + 1}/3</b>—{evolution.id}
           </p>

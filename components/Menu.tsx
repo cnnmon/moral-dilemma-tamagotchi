@@ -18,7 +18,7 @@ export default function Menu({
 }) {
   if (page === "about" || page === "scrapbook") {
     return (
-      <div className="fixed top-0 text-sm text-zinc-500 p-4 z-10 flex gap-4 justify-between w-full">
+      <div className="fixed top-0 text-sm text-zinc-500  z-10 flex gap-4 justify-between">
         <AnimatePresence>
           <motion.span
             initial={{ opacity: 0 }}
@@ -47,7 +47,7 @@ export default function Menu({
   }
 
   return (
-    <div className="fixed top-0 text-sm text-zinc-500 p-4 z-10 flex gap-4 justify-between w-full">
+    <div className="text-sm text-zinc-500 p-4 z-10 flex gap-4 justify-between w-full sm:w-2xl mb-2">
       <AnimatePresence>
         <motion.span
           initial={{ opacity: 0 }}
@@ -60,7 +60,7 @@ export default function Menu({
           }`}
         </motion.span>
       </AnimatePresence>
-      <div className="flex flex-col gap-2 text-right">
+      <div className="flex flex-col text-right">
         <AnimatePresence>
           {currentPetName && (
             <motion.a
@@ -78,7 +78,7 @@ export default function Menu({
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3, delay: 0.3 }}
             >
-              abandon {currentPetName}
+              new pet
             </motion.a>
           )}
         </AnimatePresence>

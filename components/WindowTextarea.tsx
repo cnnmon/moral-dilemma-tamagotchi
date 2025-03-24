@@ -23,7 +23,7 @@ export default function WindowTextarea({
   exitable?: boolean;
 }) {
   return (
-    <>
+    <div className="flex flex-col gap-2">
       <Window
         exitable={exitable}
         title={title}
@@ -32,9 +32,10 @@ export default function WindowTextarea({
       >
         {children}
       </Window>
-      <div className="fixed z-30 bottom-0 left-0 w-full flex justify-center items-center pointer-events-none">
+
+      <div className="sm:fixed z-30 bottom-0 left-0 w-full flex justify-center items-center pointer-events-none">
         <div
-          className="w-full max-w-2xl p-8 transition-all duration-300"
+          className="w-full sm:max-w-2xl sm:p-8 transition-all duration-300"
           style={{
             opacity: isOpen && isTextareaOpen ? 1 : 0,
             transform:
@@ -48,6 +49,6 @@ export default function WindowTextarea({
           />
         </div>
       </div>
-    </>
+    </div>
   );
 }

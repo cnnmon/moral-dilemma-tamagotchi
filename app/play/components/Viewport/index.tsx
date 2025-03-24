@@ -50,7 +50,6 @@ const Viewport = React.memo(function Viewport({
   const [prevSprite, setPrevSprite] = useState<string | null>(null);
   const [isTransforming, setIsTransforming] = useState(false);
   const [isAlmostDead, setIsAlmostDead] = useState(false);
-  // state to track egg crack animation
   const [showEggCrack, setShowEggCrack] = useState(false);
 
   // egg crack animation should be shown on first render
@@ -121,7 +120,6 @@ const Viewport = React.memo(function Viewport({
   return (
     <div
       style={{
-        width: VIEWPORT_WIDTH,
         maxWidth: VIEWPORT_WIDTH,
         height: VIEWPORT_HEIGHT,
       }}

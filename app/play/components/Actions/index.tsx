@@ -1,10 +1,14 @@
 import { ObjectKey } from "@/constants/objects";
 import { motion } from "framer-motion";
 import Image from "next/image";
-import { memo } from "react";
+import { memo, useCallback } from "react";
+import { BaseStatsType } from "@/constants/base";
 
 const WIDTH = 35;
 const HEIGHT = 35;
+
+// check if it's a mobile device
+const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
 const ActionButton = memo(function ActionButton({
   src,
@@ -13,6 +17,10 @@ const ActionButton = memo(function ActionButton({
   disabled,
   setHoverText,
   isLast,
+  hasWarning,
+  onMobileTap,
+  stat,
+  type,
 }: {
   src: string;
   alt: string;
@@ -20,31 +28,49 @@ const ActionButton = memo(function ActionButton({
   disabled: boolean;
   setHoverText: (text: string | null) => void;
   isLast: boolean;
+  hasWarning: boolean;
+  onMobileTap: (stat: keyof BaseStatsType) => void;
+  stat: keyof BaseStatsType;
+  type: "cursor" | "dilemma";
 }) {
+  const handleClick = useCallback(() => {
+    if (disabled) return;
+
+    if (isMobile && type === "cursor") {
+      onMobileTap(stat);
+    } else {
+      onClick();
+    }
+  }, [disabled, onClick, onMobileTap, stat, type]);
+
   return (
     <div
       className={`flex justify-center items-center w-full sm:w-14 h-11 group transition-opacity duration-300 ${
         !disabled && "hover:bg-zinc-200"
-      } ${isLast ? "border-0" : "border-r-2"}`}
+      } ${isLast ? "border-0" : "border-r-2"} ${
+        hasWarning ? "border-red-500" : ""
+      }`}
       style={{
         cursor: disabled ? "not-allowed" : "pointer",
       }}
       onMouseEnter={() => !disabled && setHoverText(alt)}
       onMouseLeave={() => !disabled && setHoverText(null)}
-      onClick={() => !disabled && onClick()}
+      onClick={handleClick}
     >
-      <Image
-        className={`no-drag ${
-          !disabled && "group-hover:scale-120 transition-all duration-300"
-        }`}
-        style={{
-          opacity: disabled ? 0.5 : 1,
-        }}
-        src={src}
-        alt={alt}
-        width={WIDTH}
-        height={HEIGHT}
-      />
+      <div className="relative">
+        <Image
+          className={`no-drag ${
+            !disabled && "group-hover:scale-120 transition-all duration-300"
+          }`}
+          style={{
+            opacity: disabled ? 0.5 : 1,
+          }}
+          src={src}
+          alt={alt}
+          width={WIDTH}
+          height={HEIGHT}
+        />
+      </div>
     </div>
   );
 });
@@ -54,24 +80,28 @@ const ACTIONS = [
     src: "/actions/heal.png",
     alt: "heal (+30 health)",
     object: "bandaid" as ObjectKey,
-    type: "cursor",
+    type: "cursor" as const,
+    stat: "health" as keyof BaseStatsType,
   },
   {
     src: "/actions/feed.png",
     alt: "feed (+30 hunger)",
     object: "burger" as ObjectKey,
-    type: "cursor",
+    type: "cursor" as const,
+    stat: "hunger" as keyof BaseStatsType,
   },
   {
     src: "/actions/play.png",
     alt: "play (+30 happiness)",
     object: "ball" as ObjectKey,
-    type: "cursor",
+    type: "cursor" as const,
+    stat: "happiness" as keyof BaseStatsType,
   },
   {
     src: "/actions/talk.png",
     alt: "new dilemma! (+30 sanity)",
-    type: "dilemma",
+    type: "dilemma" as const,
+    stat: "sanity" as keyof BaseStatsType,
   },
 ];
 
@@ -81,12 +111,16 @@ export default function Actions({
   setCursorObject,
   isProcessing,
   openDilemma,
+  baseStats,
+  handleIncrementStat,
 }: {
   rip: boolean;
   setHoverText: (text: string | null) => void;
   setCursorObject: (object: ObjectKey | null) => void;
   openDilemma: () => void;
   isProcessing: boolean;
+  baseStats: BaseStatsType;
+  handleIncrementStat: (stat: keyof BaseStatsType) => void;
 }) {
   return (
     <motion.div
@@ -109,6 +143,14 @@ export default function Actions({
           }
           setHoverText={setHoverText}
           isLast={index === ACTIONS.length - 1}
+          hasWarning={
+            action.stat &&
+            baseStats[action.stat] < 2 &&
+            baseStats[action.stat] > 0
+          }
+          onMobileTap={handleIncrementStat}
+          stat={action.stat}
+          type={action.type}
         />
       ))}
     </motion.div>

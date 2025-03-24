@@ -373,6 +373,8 @@ export default function Play() {
                   openDilemma={() => setDilemmaOpen(true)}
                   isProcessing={isProcessing}
                   rip={rip}
+                  baseStats={baseStats}
+                  handleIncrementStat={handleIncrementStat}
                 />
 
                 <motion.div

@@ -120,10 +120,10 @@ export default function Dialog({
       <div className="flex w-full h-full">
         <Window title={`${petName} has died :(`}>
           <p>maybe you should take better care of them next time...</p>
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col">
             <a href="/create">adopt a new pet</a>
             <a onClick={() => window.location.reload()} className="underline">
-              use dark magic to revive this pet
+              use dark magic to revive {petName}
             </a>
           </div>
         </Window>
