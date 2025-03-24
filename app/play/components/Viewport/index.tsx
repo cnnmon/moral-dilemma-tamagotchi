@@ -114,7 +114,7 @@ const Viewport = React.memo(function Viewport({
         maxWidth: VIEWPORT_WIDTH,
         height: VIEWPORT_HEIGHT,
       }}
-      className="flex items-center justify-center"
+      className="flex items-center justify-center no-drag"
     >
       {poos.map(({ id, x, y }) => {
         const left = x;

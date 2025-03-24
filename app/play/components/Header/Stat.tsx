@@ -70,7 +70,7 @@ export default function Stat({
       }`}
       style={containerStyle}
     >
-      {label && <p className="min-w-30">{label}</p>}
+      {label && <p className="min-w-30 text-sm">{label}</p>}
       <div className="border-2 h-3 border-black relative" style={barStyle}>
         {value === 0 && !hideSkull ? (
           <div className="absolute inset-0 mt-1 flex items-center justify-center text-sm">
@@ -89,10 +89,10 @@ export default function Stat({
       {displayValue && (
         <p
           className={`text-xs ${
-            displayValue.length > 10 ? "w-28" : ""
+            displayValue.length > 10 ? "w-36" : ""
           } text-right`}
         >
-          {displayValue}
+          <i>{displayValue}</i>
         </p>
       )}
       <AnimatePresence>
