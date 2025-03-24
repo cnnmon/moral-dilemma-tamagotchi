@@ -136,7 +136,7 @@ const AchievementPopup = ({
           setIsOpen={() => onClose()}
         >
           <div className="flex flex-col sm:flex-row items-start gap-4 mb-3 pt-2 px-2">
-            <div className="border-2 p-4 flex items-center justify-center bg-white">
+            <div className="border-2 p-4 w-36 h-36 sm:w-auto sm:h-auto flex items-center justify-center bg-white">
               {evolutionSprite && isCompleted ? (
                 <Image
                   src={evolutionSprite}
