@@ -261,33 +261,13 @@ export default function Play() {
       </div>
 
       {/* graduation modal */}
-      <AnimatePresence mode="wait">
-        {graduationOpen && (
-          <motion.div
-            key="graduation-container"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed top-0 w-full z-30 inset-0 flex justify-center items-center bg-white/50"
-            onClick={() => setGraduationOpen(false)}
-          >
-            <motion.div
-              key="graduated-content"
-              initial={{ y: 20 }}
-              animate={{ y: 0 }}
-              exit={{ y: 20 }}
-              transition={{ duration: 0.3 }}
-              className="flex w-full justify-center items-center"
-            >
-              <Graduation
-                pet={pet}
-                graduationOpen={graduationOpen}
-                setGraduationOpen={setGraduationOpen}
-              />
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {graduationOpen && (
+        <Graduation
+          pet={pet}
+          graduationOpen={graduationOpen}
+          setGraduationOpen={setGraduationOpen}
+        />
+      )}
 
       <AnimatePresence mode="wait">
         <div className="flex flex-col gap-2 sm:w-2xl p-4 justify-center items-center sm:mt-[-30px] w-full">

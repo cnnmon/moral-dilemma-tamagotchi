@@ -66,21 +66,24 @@ const SPRITES: {
   },
 };
 
-export function getSprite(age: number, animation: Animation, evolution: EvolutionId) {
-  if (age === 0) {
+export function getSprite(animation: Animation, evolution: EvolutionId) {
+  if (evolution === "baby") {
     return SPRITES[0][animation].baby;
-  } else if (age === 1) {
-    return SPRITES[1][animation][evolution as Stage1EvolutionId];
-  } else {
-    // remove underscore and anything after
-    // this info is about what stage 1 evolution led to this one
-    // as there are multiple paths to some evolutions
-    const stage2Evolution = evolution.includes('_') ? evolution.split('_')[0] as Stage2EvolutionId : evolution as Stage2EvolutionId;
+  } 
 
-    // gracefully handle invalid evolution ids
-    if (!(stage2Evolution in SPRITES[2][animation])) {
-      return SPRITES[2][animation].npc;
-    }
-    return SPRITES[2][animation][stage2Evolution];
+  // remove underscore and anything after
+  // this info is about what stage 1 evolution led to this one
+  // as there are multiple paths to some evolutions
+  const evolutionId = evolution.includes("_")
+    ? evolution.split("_")[0] as EvolutionId
+    : evolution as EvolutionId;
+
+  // if evolution is stage 1
+  if (Object.keys(SPRITES[1][animation]).includes(evolutionId)) {
+    return SPRITES[1][animation][evolutionId as Stage1EvolutionId];
+  } else if (Object.keys(SPRITES[2][animation]).includes(evolutionId)) {
+    return SPRITES[2][animation][evolutionId as Stage2EvolutionId];
+  } else {
+    throw new Error(`Invalid evolution: ${evolution}`);
   }
 }

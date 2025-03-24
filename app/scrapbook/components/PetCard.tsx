@@ -10,11 +10,7 @@ export default function PetCard({
   pet: Doc<"pets">;
   setSelectedPet: (pet: Doc<"pets">) => void;
 }) {
-  const sprite = getSprite(
-    pet.age,
-    Animation.HAPPY,
-    pet.evolutionId as EvolutionId
-  );
+  const sprite = getSprite(Animation.HAPPY, pet.evolutionId as EvolutionId);
   const creationDate = new Date(pet._creationTime);
   const formattedDate = `${creationDate.toLocaleDateString("en-US", {
     month: "short",

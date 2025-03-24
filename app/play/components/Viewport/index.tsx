@@ -70,11 +70,7 @@ const Viewport = React.memo(function Viewport({
     if (rip) {
       return RIP_SPRITE;
     }
-    const sprite = getSprite(
-      pet.age,
-      animation,
-      pet.evolutionId as EvolutionId
-    );
+    const sprite = getSprite(animation, pet.evolutionId as EvolutionId);
     if (!sprite) {
       throw new Error(
         `no sprite found for ${pet.age}, ${animation}, ${pet.evolutionId}`

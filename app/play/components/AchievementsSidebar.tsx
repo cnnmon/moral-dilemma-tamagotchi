@@ -120,7 +120,7 @@ const AchievementPopup = ({
 
   return (
     <motion.div
-      className="fixed w-full h-full bg-black/50 flex items-center justify-center z-50 mt-[-100px]"
+      className="fixed w-full h-full bg-black/20 flex items-center justify-center z-50 mt-[-100px]"
       onClick={onClose}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
@@ -389,7 +389,7 @@ export default function AchievementsSidebar({
       ? 2
       : 1;
     try {
-      return getSprite(age, Animation.IDLE, evolutionId as EvolutionId);
+      return getSprite(Animation.IDLE, evolutionId as EvolutionId);
     } catch (error) {
       console.error(error);
       return null;

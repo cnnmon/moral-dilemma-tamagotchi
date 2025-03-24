@@ -1,14 +1,14 @@
 import PetCard from "./PetCard";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { Doc } from "@/convex/_generated/dataModel";
-import Graduation from "@/app/play/components/Graduation";
 
 export default function Scrapbook({
   petsQuery,
+  setSelectedPet,
 }: {
   petsQuery?: Array<Doc<"pets">>;
+  setSelectedPet: (pet: Doc<"pets"> | null) => void;
 }) {
-  const [selectedPet, setSelectedPet] = useState<Doc<"pets"> | null>(null);
   const pets = useMemo(() => petsQuery || [], [petsQuery]);
 
   if (petsQuery === undefined) {
@@ -52,20 +52,6 @@ export default function Scrapbook({
           </div>
         ))}
       </div>
-
-      {/* graduation modal */}
-      {selectedPet && (
-        <div
-          className="fixed top-0 w-full z-30 inset-0 flex justify-center items-center bg-white/50"
-          onClick={() => setSelectedPet(null)}
-        >
-          <Graduation
-            pet={selectedPet}
-            graduationOpen={selectedPet !== null}
-            setGraduationOpen={() => setSelectedPet(null)}
-          />
-        </div>
-      )}
     </>
   );
 }
