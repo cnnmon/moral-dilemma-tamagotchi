@@ -26,7 +26,7 @@ export default function PetCard({
     <>
       {/* polaroid-style card */}
       <div
-        className="bg-white border-2 border-zinc-800 p-2 shadow-md hover:shadow-lg transition-all cursor-pointer transform hover:-translate-y-1 rotate-1 hover:rotate-0 duration-300"
+        className="bg-white border-2 border-zinc-800 p-2 shadow-md hover:shadow-lg transition-all cursor-pointer transform hover:-translate-y-1 rotate-1 hover:rotate-0 duration-300 w-36"
         onClick={() => setSelectedPet(pet)}
       >
         <div className="bg-zinc-100 border-2 border-zinc-800 p-1 mb-2 h-32 flex items-center justify-center overflow-hidden">

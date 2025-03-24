@@ -10,13 +10,13 @@ export default function ScrapbookPage() {
   const petsQuery = useQuery(api.pets.getAllPetsForUser);
 
   return (
-    <div className="flex flex-col items-center justify-center p-4 sm:w-3xl w-full min-h-screen">
+    <div className="flex flex-col items-center justify-center sm:w-2xl w-full min-h-screen">
       <Menu page="scrapbook" />
-      <Window title="family scrapbook" isOpen={true}>
-        <div className="flex flex-col items-center justify-center p-4">
+      <div className="px-4">
+        <Window title="family scrapbook" isOpen={true}>
           <Scrapbook petsQuery={petsQuery} />
-        </div>
-      </Window>
+        </Window>
+      </div>
     </div>
   );
 }
