@@ -27,7 +27,7 @@ change at least 1-3 stats based on the dilemma and caretaker's advice. example f
 const standardResponse = `{
   "ok": true,
   "stats": {<update at least one moral stat, do not include unchanged stats>},
-  "personality": "<refined personality that evolves from experience (<150 chars)>",
+  "personality": "<refined personality that evolves from experience (<200 chars)>",
   "outcome": "<specific experience from this situation with clear consequences <150 chars>",
 }`;
 
@@ -117,7 +117,7 @@ carefully evaluate the caretaker's advice and reason against your established va
   "override": <boolean: true if you reject their advice>,
   "outcome": "<your own decision and how it relates to the caretaker's advice. start with ‼️ if you disagree. <150 chars>",
   "stats": {<moral stats reflecting your choice>},
-  "personality": "<reinforced personality showing your independence>",
+  "personality": "<reinforced personality showing your independence (<200 chars)>",
 }
 example outcomes:
 - "{pet} knows what they believe; doing {action} is important to them even if others disagree"
