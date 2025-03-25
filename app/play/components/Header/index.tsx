@@ -36,7 +36,7 @@ export default function Header({
           hasGraduated={hasGraduated}
         />
         <div className="flex flex-col sm:items-end sm:text-right">
-          <p className="flex items-center text-zinc-500">
+          <p className="flex items-center text-zinc-500 text-sm">
             <b>level {pet.age + 1}/3</b>—{evolution.id}
           </p>
           <motion.div

@@ -136,11 +136,7 @@ export default function Actions({
           }
           setHoverText={setHoverText}
           isLast={index === ACTIONS.length - 1}
-          hasWarning={
-            action.stat &&
-            baseStats[action.stat] < 2 &&
-            baseStats[action.stat] > 0
-          }
+          hasWarning={baseStats[action.stat] < 2}
           type={action.type}
         />
       ))}

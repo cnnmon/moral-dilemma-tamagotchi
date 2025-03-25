@@ -226,7 +226,6 @@ export default function Play() {
 
   return (
     <>
-      <Menu page="play" currentPetName={pet.name} />
       {!hasGraduated && <HoverText hoverText={hoverText} />}
       <AchievementsSidebar
         userAchievements={userAchievements}
@@ -266,6 +265,8 @@ export default function Play() {
 
       <AnimatePresence mode="wait">
         <div className="flex flex-col gap-2 sm:w-2xl p-4 justify-center items-center sm:mt-[-30px] w-full">
+          <Menu page="play" currentPetName={pet.name} />
+
           {/* pet stats */}
           <motion.div
             key="stats"

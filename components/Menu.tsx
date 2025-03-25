@@ -9,7 +9,7 @@ const pathToText = {
   scrapbook: "pet scrapbook",
 };
 
-export default function Menu({
+function MenuContent({
   page,
   currentPetName,
 }: {
@@ -18,7 +18,7 @@ export default function Menu({
 }) {
   if (page === "about" || page === "scrapbook") {
     return (
-      <div className="text-sm text-zinc-500 flex gap-4 justify-between w-full px-4 sm:w-2xl mb-2">
+      <>
         <AnimatePresence>
           <motion.span
             initial={{ opacity: 0 }}
@@ -29,25 +29,23 @@ export default function Menu({
             {`${pathToText[page]}`}
           </motion.span>
         </AnimatePresence>
-        <div className="flex gap-2">
-          <AnimatePresence>
-            <motion.a
-              href="/play"
-              className="hover:text-zinc-800 no-drag"
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3, delay: 0.3 }}
-            >
-              back
-            </motion.a>
-          </AnimatePresence>
-        </div>
-      </div>
+        <AnimatePresence>
+          <motion.a
+            href="/play"
+            className="hover:text-zinc-800 no-drag"
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: 0.3 }}
+          >
+            back
+          </motion.a>
+        </AnimatePresence>
+      </>
     );
   }
 
   return (
-    <div className="text-sm text-zinc-500 p-4 z-10 flex gap-4 justify-between w-full sm:w-2xl mb-2">
+    <>
       <AnimatePresence>
         <motion.span
           initial={{ opacity: 0 }}
@@ -60,53 +58,65 @@ export default function Menu({
           }`}
         </motion.span>
       </AnimatePresence>
-      <div className="flex flex-col text-right">
-        <AnimatePresence>
-          {currentPetName && (
-            <motion.a
-              onClick={() => {
-                if (
-                  confirm(
-                    `are you sure you want to abandon ${currentPetName}? look at ${currentPetName}'s big ol eyes ( •̯́ ^ •̯̀)`
-                  )
-                ) {
-                  window.location.href = "/create";
-                }
-              }}
-              className="hover:text-zinc-800 no-drag"
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3, delay: 0.3 }}
-            >
-              new pet
-            </motion.a>
-          )}
-        </AnimatePresence>
-
-        <AnimatePresence>
+      <AnimatePresence>
+        {currentPetName && (
           <motion.a
-            href="/scrapbook"
+            onClick={() => {
+              if (
+                confirm(
+                  `are you sure you want to abandon ${currentPetName}? look at ${currentPetName}'s big ol eyes ( •̯́ ^ •̯̀)`
+                )
+              ) {
+                window.location.href = "/create";
+              }
+            }}
             className="hover:text-zinc-800 no-drag"
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3, delay: 0.4 }}
+            transition={{ duration: 0.3, delay: 0.3 }}
           >
-            scrapbook
+            new pet
           </motion.a>
-        </AnimatePresence>
+        )}
+      </AnimatePresence>
 
-        <AnimatePresence>
-          <motion.a
-            href="/about"
-            className="hover:text-zinc-800 no-drag"
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3, delay: 0.5 }}
-          >
-            about
-          </motion.a>
-        </AnimatePresence>
-      </div>
+      <AnimatePresence>
+        <motion.a
+          href="/scrapbook"
+          className="hover:text-zinc-800 no-drag"
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: 0.4 }}
+        >
+          scrapbook
+        </motion.a>
+      </AnimatePresence>
+
+      <AnimatePresence>
+        <motion.a
+          href="/about"
+          className="hover:text-zinc-800 no-drag"
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: 0.5 }}
+        >
+          about
+        </motion.a>
+      </AnimatePresence>
+    </>
+  );
+}
+
+export default function Menu({
+  page,
+  currentPetName,
+}: {
+  page: "play" | "create" | "scrapbook" | "about";
+  currentPetName?: string;
+}) {
+  return (
+    <div className="w-full flex justify-between text-zinc-500">
+      <MenuContent page={page} currentPetName={currentPetName} />
     </div>
   );
 }

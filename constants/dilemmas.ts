@@ -217,7 +217,7 @@ export const dilemmaTemplates: Record<string, DilemmaTemplate> = {
   },
   keycarving: {
     id: "keycarving",
-    text: "{pet} needs to make spare keys for a friend. {pet} heads to the local locksmith and presents the key. he politely nods and rummages through a drawer containing many keys. he hands {pet} a copy of the key, no carving necessary. should {pet} tell their friend or accept it because he seems nice?",
+    text: "{pet} needs spare keys for a friend. at the locksmith, he gives {pet} a copy from a drawer of keys without carving. should {pet} tell their friend or accept it since he seems nice?",
   },
   digitalpet: {
     id: "digitalpet",
