@@ -10,7 +10,7 @@ export function MoralStats({
 
   return (
     <div
-      className="flex flex-col text-right w-30 min-h-30"
+      className="flex flex-col text-right w-40 min-h-30"
       style={{ zIndex: -2 }}
     >
       <AnimatePresence mode="popLayout">
@@ -42,7 +42,7 @@ export function MoralStats({
             layout
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="text-zinc-700 animate-pulse no-select"
+            className="text-zinc-700 animate-pulse no-select text-lg"
           >
             moral uncertainty
           </motion.span>

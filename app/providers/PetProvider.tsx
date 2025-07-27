@@ -54,24 +54,28 @@ function baseStatsReducer(
     case "INIT_STATS":
       return action.payload;
     case "DECREMENT_STATS":
-      return {
-        health: Math.max(
+      // choose one stat to decrement randomly (except sanity)
+      const statToDecrement =
+        Object.keys(state)[
+          Math.floor(Math.random() * Object.keys(state).length - 1)
+        ];
+
+      if (!statToDecrement) {
+        return state;
+      }
+
+      // decrement that stat & sanity
+      const newState = {
+        ...state,
+        [statToDecrement]: Math.max(
           0,
-          state.health - BASE_STATS_DECREMENT_VALUE * Math.random()
-        ),
-        hunger: Math.max(
-          0,
-          state.hunger - BASE_STATS_DECREMENT_VALUE * Math.random()
-        ),
-        happiness: Math.max(
-          0,
-          state.happiness - BASE_STATS_DECREMENT_VALUE * Math.random()
-        ),
-        sanity: Math.max(
-          0,
+          state[statToDecrement as keyof BaseStatsType] -
+            BASE_STATS_DECREMENT_VALUE * Math.random(),
           state.sanity - BASE_STATS_DECREMENT_VALUE * Math.random()
         ),
       };
+
+      return newState;
     case "INCREMENT_STAT":
       return {
         ...state,

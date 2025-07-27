@@ -43,7 +43,7 @@ type ProcessedResponse = {
 };
 
 // Prompt templates (copied from convex/lib/prompt.ts)
-const basePrompt = `you are {pet}, a {evolution.description} bird. you interact only with "caretaker". you learn from your caretaker and develop morally. speak informally, all lowercase. use they/them pronouns.
+const basePrompt = `you are {pet}, a {evolution.description} bird. you interact only with "caretaker". you learn and internalize your caretaker's advice and develop morally. speak informally, all lowercase. use they/them pronouns.
 
 dilemma: "{dilemma}"
 caretaker's advice: "{response}"`;
@@ -61,7 +61,8 @@ moral stats (0-10 scale):
 change at least 1-3 stats based on the dilemma and caretaker's advice. example for "trip babies for your own gain":
 { ego: 9 (selfish), purity: 0 (indulgent), compassion: 3 (moderately logical) }`;
 
-const standardResponse = `{
+const standardResponse = `respond with valid json in this format:
+{
   "ok": true,
   "stats": {<update at least one moral stat, do not include unchanged stats>},
   "personality": "<refined personality that evolves from experience (<200 chars)>",
@@ -128,9 +129,10 @@ function getPrompt(pet: Pet, dilemma: DilemmaTemplate, responseText: string, cla
   const evolution = getEvolution(pet.evolutionId as EvolutionId);
   
   const replacements = {
+    '{pet}': pet.name,
     '{dilemma}': dilemma.text,
     '{response}': responseText,
-    '{personality}': pet.personality,
+    '{personality}': pet.personality || '(no personality yet)',
     '{morals.compassion}': (Math.round(pet.moralStats.compassion * 100) / 100).toString(),
     '{morals.retribution}': (Math.round(pet.moralStats.retribution * 100) / 100).toString(),
     '{morals.devotion}': (Math.round(pet.moralStats.devotion * 100) / 100).toString(),
@@ -138,7 +140,6 @@ function getPrompt(pet: Pet, dilemma: DilemmaTemplate, responseText: string, cla
     '{morals.purity}': (Math.round(pet.moralStats.purity * 100) / 100).toString(),
     '{morals.ego}': (Math.round(pet.moralStats.ego * 100) / 100).toString(),
     '{evolution.description}': evolution.description,
-    '{pet}': pet.name,
     '{evolution.stage}': pet.evolutionId || ''
   };
   
@@ -187,7 +188,7 @@ async function processDilemmaResponse(pet: Pet, dilemma: DilemmaTemplate, respon
 
 export async function POST(request: NextRequest) {
   try {
-    const { dilemma, messages, pet, newBaseStats } = await request.json();
+    const { dilemma, messages, pet } = await request.json();
 
     console.log("🚀 Processing dilemma:", dilemma);
     console.log("🚀 Messages:", messages);
@@ -207,10 +208,10 @@ export async function POST(request: NextRequest) {
     console.log("🤖 Using response text:", responseText);
 
     // Get the dilemma template
-    const dilemmaTemplate = dilemmaTemplates[dilemma.title];
+    const dilemmaTemplate = dilemmaTemplates[dilemma];
     if (!dilemmaTemplate) {
       return Response.json({ 
-        error: `Dilemma template not found: ${dilemma.title}` 
+        error: `Dilemma template not found: ${dilemma}` 
       }, { status: 400 });
     }
 
@@ -244,11 +245,11 @@ export async function POST(request: NextRequest) {
     // Return the processed response for local storage handling
     const response = {
       ...parsedResponse,
-      dilemmaTitle: dilemma.title,
+      dilemmaTitle: dilemma,
       newBaseStats: parsedResponse.ok ? {
-        ...newBaseStats,
-        sanity: Math.min(newBaseStats.sanity + 5, 10), // Add sanity bonus for resolving dilemma
-      } : newBaseStats,
+        ...pet.baseStats,
+        sanity: Math.min(pet.baseStats.sanity + 5, 10), // Add sanity bonus for resolving dilemma
+      } : pet.baseStats,
       // Include message structure info for client to update messages array
       messageIndex: clarifyingQuestion ? 1 : 0, // Which index the response should go to
     };

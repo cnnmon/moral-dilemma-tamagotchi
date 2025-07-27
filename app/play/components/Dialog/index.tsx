@@ -6,7 +6,7 @@ import { dilemmas } from "@/constants/dilemmas";
 
 export default function Dialog() {
   const { pet } = usePet();
-  const { dilemma, setDilemma } = useDilemma();
+  const { dilemma } = useDilemma();
 
   if (!pet || !dilemma) {
     return null;
