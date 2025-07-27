@@ -284,6 +284,9 @@ export function PetProvider({ children }: { children: React.ReactNode }) {
       try {
         const pets = getPets();
         if (pets.length === 0) {
+          if (window.location.pathname !== "/create") {
+            window.location.href = "/create";
+          }
           return;
         }
         const lastPet = pets[pets.length - 1];
