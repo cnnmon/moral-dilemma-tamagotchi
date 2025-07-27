@@ -8,7 +8,6 @@ import {
 import { EvolutionId } from "@/constants/evolutions";
 import { ObjectKey } from "@/constants/objects";
 import { dilemmas } from "@/constants/dilemmas";
-import { getLocalPets } from "@/app/utils/localStorage";
 import Image from "next/image";
 import { memo, useCallback } from "react";
 import { BaseStatsType, BaseStatKeys } from "@/constants/base";
@@ -118,16 +117,13 @@ export default function ActionButtons({
 }) {
   const { baseStats, incrementStat } = useBaseStats();
   const { pet } = usePet();
-  const { setDilemma } = useDilemma();
+  const { dilemma, setDilemma } = useDilemma();
 
   // Function to get a random unseen dilemma
   const getRandomUnseenDilemma = useCallback(() => {
     if (!pet) return null;
 
-    const localPets = getLocalPets();
-    const currentPet = localPets.find((p) => p._id === pet.id);
-    const seenDilemmas = currentPet?.dilemmas.map((d) => d.title) || [];
-
+    const seenDilemmas = pet.dilemmas.map((d) => d.id) || [];
     const unseenDilemmas = Object.keys(dilemmas).filter(
       (title) => !seenDilemmas.includes(title)
     );
@@ -150,16 +146,22 @@ export default function ActionButtons({
     };
   }, [pet]);
 
-  // Handle talk action - create new dilemma
+  // Handle talk action - create new dilemma only if none exists
   const handleTalkAction = useCallback(() => {
+    // If there's already an active dilemma, do nothing (sanity reward comes when answered)
+    if (dilemma) {
+      return;
+    }
+
+    // No active dilemma, try to create a new one
     const newDilemma = getRandomUnseenDilemma();
     if (newDilemma) {
       setDilemma(newDilemma);
     } else {
-      // All dilemmas have been seen, maybe increment sanity anyway
+      // All dilemmas have been seen, increment sanity anyway
       incrementStat(BaseStatKeys.sanity);
     }
-  }, [getRandomUnseenDilemma, setDilemma, incrementStat]);
+  }, [dilemma, getRandomUnseenDilemma, setDilemma, incrementStat]);
 
   if (!pet) {
     return null;

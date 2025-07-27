@@ -1,17 +1,14 @@
 import PetCard from "./PetCard";
-import { useMemo } from "react";
-import { Doc } from "@/convex/_generated/dataModel";
+import { Pet } from "@/app/storage/pet";
 
 export default function Scrapbook({
-  petsQuery,
+  pets,
   setSelectedPet,
 }: {
-  petsQuery?: Array<Doc<"pets">>;
-  setSelectedPet: (pet: Doc<"pets"> | null) => void;
+  pets?: Pet[];
+  setSelectedPet: (pet: Pet | null) => void;
 }) {
-  const pets = useMemo(() => petsQuery || [], [petsQuery]);
-
-  if (petsQuery === undefined) {
+  if (pets === undefined) {
     return (
       <div className="grid grid-cols-2 sm:grid-cols-4 bg-zinc-200">
         {[...Array(4)].map((_, index) => (
@@ -47,7 +44,7 @@ export default function Scrapbook({
     <>
       <div className="grid grid-cols-2 sm:grid-cols-4 bg-zinc-200">
         {graduatedPets.map((pet) => (
-          <div key={pet._id} className="relative">
+          <div key={pet.id} className="relative">
             <PetCard pet={pet} setSelectedPet={setSelectedPet} />
           </div>
         ))}

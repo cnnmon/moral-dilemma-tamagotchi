@@ -55,12 +55,12 @@ export const createPet = async (name: string): Promise<Pet> => {
   return newPet;
 };
 
-export const getPets = async () => {
+export const getPets = (): Pet[] => {
   const pets = JSON.parse(localStorage.getItem("pets") || "{}") as Record<string, Pet>;
   return Object.values(pets);
 };
 
-export const getPet = async (id: string) => {
+export const getPet = (id: string): Pet | undefined => {
   const pets = JSON.parse(localStorage.getItem("pets") || "{}") as Record<string, Pet>;
   return pets[id];
 };

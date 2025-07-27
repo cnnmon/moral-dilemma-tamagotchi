@@ -6,29 +6,46 @@ import { dilemmas } from "@/constants/dilemmas";
 
 export default function Dialog() {
   const { pet } = usePet();
-  const { dilemma } = useDilemma();
+  const { dilemma, setDilemma } = useDilemma();
 
   if (!pet || !dilemma) {
     return null;
   }
 
-  const handleSubmit = async (response: string) => {
+  const handleSubmit = async (responseText: string) => {
     if (!dilemma) {
       console.error("❌ No dilemma to submit response to");
       return;
     }
 
-    if (!response.trim()) {
+    if (!responseText.trim()) {
       console.error("❌ Silence is not an option");
       return;
     }
 
+    const fullDilemma = dilemmas[dilemma.id];
+    if (!fullDilemma) {
+      console.error("❌ Dilemma not found");
+      return;
+    }
+
+    const dilemmaText = fullDilemma.text.replace("{pet}", pet.name);
     try {
       const response = await fetch("/api/dilemma", {
         method: "POST",
         body: JSON.stringify({
           dilemma: dilemma.id,
-          messages: dilemma.messages,
+          pet,
+          messages: [
+            {
+              role: "assistant",
+              content: dilemmaText,
+            },
+            {
+              role: "user",
+              content: responseText,
+            },
+          ],
         }),
       });
 

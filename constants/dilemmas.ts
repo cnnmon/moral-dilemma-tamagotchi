@@ -246,3 +246,7 @@ export const dilemmas: Record<string, Dilemma> = {
     text: "There's like some people on a train track or something, and then on the other side is like-wait no wait let me try again. Your mom and like 5 random dudes are on a track and on the other side-oh fuck I'm really high-on the other side there's like a bus of children… with malaria. Do you do it?",
   },
 };
+
+// Export types and aliases for convex compatibility
+export type DilemmaTemplate = Dilemma;
+export const dilemmaTemplates = dilemmas;

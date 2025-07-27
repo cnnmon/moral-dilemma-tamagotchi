@@ -8,7 +8,6 @@ import processDilemmaResponse from "./lib/processDilemmaResponse";
 import { Id } from "./_generated/dataModel";
 import { evolvePetIfNeeded } from "./lib/evolvePetIfNeeded";
 import { getAverageMoralStats } from "./lib/getAverageMoralStats";
-import { AchievementId } from "../constants/achievements";
 
 type ProcessedResponse = {
   ok: true;
@@ -303,18 +302,6 @@ export const updateDilemmaAndPet = mutation({
           sanity: Math.min(args.newBaseStats.sanity + 5, 10),
         }),
       };
-
-      // unlock evolution achievement!
-      if (evolutionAdditions && "evolutionId" in evolutionAdditions && evolutionAdditions.evolutionId !== pet.evolutionId) {
-        const evolutionIdWithoutPath = evolutionAdditions.evolutionId.split('_')[0];
-        const achievementId = `evolve_to_${evolutionIdWithoutPath}` as AchievementId;
-        const userId = pet.userId;
-        await ctx.db.insert("achievements", {
-          userId,
-          achievementId,
-          timestamp: Date.now(),
-        });
-      }
 
       // update pet with new moral stats and personality and evolution
       await ctx.db.patch(args.petId, {

@@ -1,6 +1,5 @@
 import {
   EvolutionId,
-  EvolutionIdEnum,
   getEvolution,
   getEvolutionTimeFrame,
   stage0Evolutions,
@@ -27,7 +26,7 @@ function evolveFromBabyToStage1(
       return nextEvolution;
     }
   }
-  return EvolutionIdEnum.NPC;
+  return EvolutionId.NPC;
 }
 
 function evolveFromStage1ToStage2(
@@ -44,7 +43,7 @@ function evolveFromStage1ToStage2(
       return nextEvolution as EvolutionId;
     }
   }
-  return EvolutionIdEnum.NPC;
+  return EvolutionId.NPC;
 }
 
 export function evolvePetIfNeeded(

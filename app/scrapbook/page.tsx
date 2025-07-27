@@ -2,18 +2,16 @@
 
 import { useEffect, useState } from "react";
 import Scrapbook from "./components/Scrapbook";
-import { Doc } from "@/convex/_generated/dataModel";
-import { getLocalPets } from "@/app/utils/localStorage";
+import { getPets, Pet } from "../storage/pet";
 
 export default function ScrapbookPage() {
-  const [pets, setPets] = useState<Doc<"pets">[]>([]);
+  const [pets, setPets] = useState<Pet[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Load pets from local storage
     try {
-      const localPets = getLocalPets();
-      setPets(localPets);
+      const pets = getPets();
+      setPets(pets);
     } catch (error) {
       console.error("Error loading pets:", error);
       setPets([]);
@@ -30,5 +28,5 @@ export default function ScrapbookPage() {
     );
   }
 
-  return <Scrapbook petsQuery={pets} setSelectedPet={() => {}} />;
+  return <Scrapbook pets={pets} setSelectedPet={() => {}} />;
 }
