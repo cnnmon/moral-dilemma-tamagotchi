@@ -172,10 +172,21 @@ export default function PlayMinigame({
             {!gameStarted ? (
               <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-20">
                 <button
-                  className="border-2 bg-white hover:bg-zinc-100"
+                  className="border-2 bg-white hover:bg-zinc-100 rounded-lg"
                   onClick={startGame}
                 >
-                  Start Game
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    className="lucide lucide-play"
+                  >
+                    <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                  </svg>
                 </button>
               </div>
             ) : (

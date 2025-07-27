@@ -94,6 +94,7 @@ export function useDilemmaSubmit() {
         setDilemma(newDilemma);
         updatePet({
           ...pet,
+          personality: data.personality,
           moralStats: newMoralStats,
           dilemmas: [...pet.dilemmas, newDilemma],
           ...(data.evolutionIds && { evolutionIds: data.evolutionIds }),

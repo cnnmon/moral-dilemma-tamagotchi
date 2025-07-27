@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, lazy, useState } from "react";
+import { useState } from "react";
 import Loading from "./components/Loading";
 import { usePet, useHoverText } from "../providers/PetProvider";
 import Viewport from "./components/Viewport";
@@ -11,11 +11,11 @@ import { AnimatePresence, motion } from "framer-motion";
 import HoverText from "@/components/HoverText";
 import Window from "@/components/Window";
 import Menu from "@/components/Menu";
-
-const Outcome = lazy(() => import("./components/Outcome"));
-const Graduation = lazy(() => import("./components/Graduation"));
-const HealMinigame = lazy(() => import("./components/Header/HealMinigame"));
-const PlayMinigame = lazy(() => import("./components/Header/PlayMinigame"));
+import HealMinigame from "./components/Header/HealMinigame";
+import PlayMinigame from "./components/Header/PlayMinigame";
+import Outcome from "./components/Outcome";
+import Graduation from "./components/Graduation";
+import { EvolutionId } from "@/constants/evolutions";
 
 function Content({
   hasGraduated,
@@ -35,6 +35,21 @@ function Content({
   const { pet } = usePet();
   if (!pet) {
     return null;
+  }
+
+  if (pet.evolutionIds.includes(EvolutionId.RIP)) {
+    return (
+      <div className="flex w-full h-full">
+        <Window title={`${pet.name} has died :(`}>
+          <div className="flex flex-col p-3">
+            <p>maybe you should take better care of them next time...</p>
+            <div className="flex flex-col">
+              <a href="/create">adopt a new pet</a>
+            </div>
+          </div>
+        </Window>
+      </div>
+    );
   }
 
   if (hasGraduated) {
@@ -70,23 +85,13 @@ function Content({
 
   if (healMinigameOpen) {
     return (
-      <Suspense fallback={<Loading />}>
-        <HealMinigame
-          isOpen={healMinigameOpen}
-          setIsOpen={setHealMinigameOpen}
-        />
-      </Suspense>
+      <HealMinigame isOpen={healMinigameOpen} setIsOpen={setHealMinigameOpen} />
     );
   }
 
   if (playMinigameOpen) {
     return (
-      <Suspense fallback={<Loading />}>
-        <PlayMinigame
-          isOpen={playMinigameOpen}
-          setIsOpen={setPlayMinigameOpen}
-        />
-      </Suspense>
+      <PlayMinigame isOpen={playMinigameOpen} setIsOpen={setPlayMinigameOpen} />
     );
   }
 
@@ -117,19 +122,15 @@ export default function Play() {
       <HoverText hoverText={hoverText} />
 
       {/* Lazy load outcome modal */}
-      <Suspense fallback={null}>
-        <Outcome />
-      </Suspense>
+      <Outcome />
 
       {/* graduation modal */}
       {graduationOpen && (
-        <Suspense fallback={<Loading />}>
-          <Graduation
-            pet={pet}
-            graduationOpen={graduationOpen}
-            setGraduationOpen={setGraduationOpen}
-          />
-        </Suspense>
+        <Graduation
+          pet={pet}
+          graduationOpen={graduationOpen}
+          setGraduationOpen={setGraduationOpen}
+        />
       )}
 
       <AnimatePresence mode="wait">

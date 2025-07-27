@@ -21,8 +21,6 @@ type ProcessedResponse = {
   outcome: string;
 };
 
-
-
 async function processDilemmaResponse(pet: Pet, dilemma: ActiveDilemma): Promise<string> {
   const formattedPrompt = getPrompt(pet, dilemma);
   console.log('🤖 formatted prompt:', formattedPrompt);
