@@ -63,7 +63,7 @@ export function Textarea({
         </p>
       </div>
 
-      <p className="text-right text-zinc-400">
+      <p className="text-right text-zinc-400 mt-[-35px] px-2 mb-2">
         {!isSubmitting ? (
           <span>
             press enter to{" "}

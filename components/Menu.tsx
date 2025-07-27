@@ -116,7 +116,7 @@ export default function Menu({
   page: "play" | "create" | "scrapbook" | "about";
 }) {
   return (
-    <div className="w-full flex justify-between text-zinc-500">
+    <div className="w-full flex justify-between text-zinc-500 text-lg!">
       <MenuContent page={page} />
     </div>
   );

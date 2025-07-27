@@ -9,7 +9,10 @@ export function MoralStats({
   const moralStatsWritten = getMoralStatsWritten(moralStats);
 
   return (
-    <div className="flex flex-col text-right" style={{ zIndex: -2 }}>
+    <div
+      className="flex flex-col text-right w-30 min-h-30"
+      style={{ zIndex: -2 }}
+    >
       <AnimatePresence mode="popLayout">
         {moralStatsWritten.length ? (
           moralStatsWritten.map(({ key, description, percentage }) => (
@@ -39,7 +42,7 @@ export function MoralStats({
             layout
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="text-zinc-400 animate-pulse no-select"
+            className="text-zinc-700 animate-pulse no-select"
           >
             moral uncertainty
           </motion.span>

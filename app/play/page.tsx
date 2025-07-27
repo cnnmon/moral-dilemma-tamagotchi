@@ -14,9 +14,13 @@ import { useState } from "react";
 import Window from "@/components/Window";
 import Graduation from "./components/Graduation";
 import Menu from "@/components/Menu";
+import HealMinigame from "./components/Header/HealMinigame";
+import PlayMinigame from "./components/Header/PlayMinigame";
 
 export default function Play() {
   const [graduationOpen, setGraduationOpen] = useState(false);
+  const [healMinigameOpen, setHealMinigameOpen] = useState(false);
+  const [playMinigameOpen, setPlayMinigameOpen] = useState(false);
   const { outcomes, removeOutcome } = useOutcomes();
   const { pet, evolution } = usePet();
   const { hoverText } = useHoverText();
@@ -72,7 +76,10 @@ export default function Play() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
           >
-            <Header />
+            <Header
+              onHealClick={() => setHealMinigameOpen(true)}
+              onPlayClick={() => setPlayMinigameOpen(true)}
+            />
           </motion.div>
 
           {/* main viewport */}
@@ -137,7 +144,19 @@ export default function Play() {
                   transition={{ duration: 0.2 }}
                   className="flex w-full"
                 >
-                  <Dialog />
+                  {healMinigameOpen ? (
+                    <HealMinigame
+                      isOpen={healMinigameOpen}
+                      setIsOpen={setHealMinigameOpen}
+                    />
+                  ) : playMinigameOpen ? (
+                    <PlayMinigame
+                      isOpen={playMinigameOpen}
+                      setIsOpen={setPlayMinigameOpen}
+                    />
+                  ) : (
+                    <Dialog />
+                  )}
                 </motion.div>
               </AnimatePresence>
             </div>

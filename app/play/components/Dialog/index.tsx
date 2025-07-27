@@ -1,19 +1,12 @@
 import WindowTextarea from "@/components/WindowTextarea";
 import Window from "@/components/Window";
 import { EvolutionId } from "@/constants/evolutions";
-import { usePet } from "@/app/providers/PetProvider";
+import { useDilemma, usePet } from "@/app/providers/PetProvider";
+import { dilemmas } from "@/constants/dilemmas";
 
 export default function Dialog() {
   const { pet } = usePet();
-  const dilemma = {
-    id: "train",
-    messages: [
-      {
-        role: "user",
-        content: "hello",
-      },
-    ],
-  };
+  const { dilemma } = useDilemma();
 
   if (!pet || !dilemma) {
     return null;
@@ -81,10 +74,13 @@ export default function Dialog() {
     <div className="flex w-full h-50">
       <WindowTextarea
         title={`help ${pet.name} ! ! ! (；￣Д￣)`}
-        placeholder={`as ${pet.name}'s caretaker, explain your choice...`}
+        placeholder={`as ${pet.name}'s caretaker, explain your advice...`}
         handleSubmit={handleSubmit}
       >
-        <p>{dilemma.messages[0].content}</p>
+        <p>
+          {dilemmas[dilemma.id]?.text.replace("{pet}", pet.name) ||
+            "Loading dilemma..."}
+        </p>
       </WindowTextarea>
     </div>
   );

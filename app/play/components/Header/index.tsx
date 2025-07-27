@@ -3,7 +3,13 @@ import { usePet, useHoverText } from "@/app/providers/PetProvider";
 import { EvolutionId, getEvolutionTimeFrame } from "@/constants/evolutions";
 import ActionButtons from "./ActionButtons";
 
-export default function Header() {
+export default function Header({
+  onHealClick,
+  onPlayClick,
+}: {
+  onHealClick?: () => void;
+  onPlayClick?: () => void;
+}) {
   const { pet, evolution } = usePet();
   const { setHoverText } = useHoverText();
 
@@ -17,9 +23,9 @@ export default function Header() {
 
   return (
     <div className="flex flex-col bg-white border-2">
-      <div className="flex gap-4 w-full">
+      <div className="flex w-full">
         <div className="w-1/3">
-          <ActionButtons />
+          <ActionButtons onHealClick={onHealClick} onPlayClick={onPlayClick} />
         </div>
         <div className="border-l-2 p-4 w-full text-lg flex flex-col gap-2">
           <p className="flex items-center gap-1 pointer-events-auto">
@@ -55,9 +61,11 @@ export default function Header() {
           <p className="text-zinc-500">{pet.name} has died.</p>
         ) : (
           <Stat
-            label={pet.age < 2 ? "until next evolution" : "until graduation"}
+            label={`${pet.dilemmas.length}/${timeFrame} dilemmas`}
             value={(pet.dilemmas.length / timeFrame) * 100}
-            displayValue={`${pet.dilemmas.length}/${timeFrame} dilemmas`}
+            barStyle={{
+              height: "30px",
+            }}
             dangerous={false}
             hideSkull={true}
             useLerpColors={true}

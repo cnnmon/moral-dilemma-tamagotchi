@@ -1,15 +1,17 @@
-import Stat from "./Stat";
 import { motion } from "framer-motion";
 import {
   useBaseStats,
   usePet,
   useHoverText,
+  useDilemma,
 } from "@/app/providers/PetProvider";
-import { EvolutionId, getEvolutionTimeFrame } from "@/constants/evolutions";
+import { EvolutionId } from "@/constants/evolutions";
 import { ObjectKey } from "@/constants/objects";
+import { dilemmas } from "@/constants/dilemmas";
+import { getLocalPets } from "@/app/utils/localStorage";
 import Image from "next/image";
 import { memo, useCallback } from "react";
-import { BaseStatsType } from "@/constants/base";
+import { BaseStatsType, BaseStatKeys } from "@/constants/base";
 import { twMerge } from "tailwind-merge";
 
 const WIDTH = 35;
@@ -38,7 +40,7 @@ const ActionButton = memo(function ActionButton({
   return (
     <motion.div
       className={twMerge(
-        "flex justify-center items-center w-14 h-11 group transition-opacity duration-300",
+        "flex justify-center items-center w-14 h-full group transition-opacity duration-300",
         !disabled && "hover:bg-zinc-200"
       )}
       animate={{
@@ -107,66 +109,121 @@ const STAT_ACTIONS = [
   },
 ];
 
-export default function ActionButtons() {
-  const { baseStats, recentDecrements, recentIncrements, incrementStat } =
-    useBaseStats();
+export default function ActionButtons({
+  onHealClick,
+  onPlayClick,
+}: {
+  onHealClick?: () => void;
+  onPlayClick?: () => void;
+}) {
+  const { baseStats, incrementStat } = useBaseStats();
   const { pet } = usePet();
+  const { setDilemma } = useDilemma();
+
+  // Function to get a random unseen dilemma
+  const getRandomUnseenDilemma = useCallback(() => {
+    if (!pet) return null;
+
+    const localPets = getLocalPets();
+    const currentPet = localPets.find((p) => p._id === pet.id);
+    const seenDilemmas = currentPet?.dilemmas.map((d) => d.title) || [];
+
+    const unseenDilemmas = Object.keys(dilemmas).filter(
+      (title) => !seenDilemmas.includes(title)
+    );
+
+    if (unseenDilemmas.length === 0) return null;
+
+    const randomTitle =
+      unseenDilemmas[Math.floor(Math.random() * unseenDilemmas.length)];
+    return {
+      id: randomTitle,
+      messages: [],
+      stats: {
+        compassion: 0,
+        retribution: 0,
+        devotion: 0,
+        dominance: 0,
+        purity: 0,
+        ego: 0,
+      },
+    };
+  }, [pet]);
+
+  // Handle talk action - create new dilemma
+  const handleTalkAction = useCallback(() => {
+    const newDilemma = getRandomUnseenDilemma();
+    if (newDilemma) {
+      setDilemma(newDilemma);
+    } else {
+      // All dilemmas have been seen, maybe increment sanity anyway
+      incrementStat(BaseStatKeys.sanity);
+    }
+  }, [getRandomUnseenDilemma, setDilemma, incrementStat]);
 
   if (!pet) {
     return null;
   }
 
-  const hasGraduated = pet.age >= getEvolutionTimeFrame(pet.age);
   const hasRip = pet.evolutionIds.includes(EvolutionId.RIP);
 
   return (
-    <>
-      {/* BaseStats with Action Buttons row */}
-      <div className="flex flex-col items-start">
-        {STAT_ACTIONS.map((action, index) => {
-          const statKey = action.stat;
-          const decrement = recentDecrements[statKey] ?? 0;
-          const increment = recentIncrements[statKey] ?? 0;
-          const value = baseStats[statKey];
+    <div className="flex flex-col items-start w-full">
+      {STAT_ACTIONS.map((action, index) => {
+        const statKey = action.stat;
+        const value = baseStats[statKey];
 
-          return (
+        return (
+          <div
+            key={statKey}
+            className="flex items-center pointer-events-auto w-full h-full"
+          >
+            {/* Action button */}
             <div
-              key={statKey}
-              className="flex items-center gap-2 pointer-events-auto"
-            >
-              {/* Action button */}
-              {!hasGraduated && !hasRip && (
-                <div
-                  className={twMerge(
-                    "bg-zinc-100 border-r-2",
-                    index < STAT_ACTIONS.length - 1
-                      ? "border-b-2"
-                      : "border-b-0"
-                  )}
-                >
-                  <ActionButton
-                    src={action.src}
-                    alt={action.alt}
-                    onClick={() => incrementStat(action.stat)}
-                    disabled={hasRip}
-                    hasWarning={value < 2}
-                  />
-                </div>
+              className={twMerge(
+                "bg-zinc-100 border-r-2 h-[46px]",
+                index < STAT_ACTIONS.length - 1 ? "border-b-2" : "border-b-0"
               )}
-
-              {/* Stat display */}
-              <Stat
-                value={value * 10}
-                displayValue={`${Math.round(value * 10)}%`}
-                decrement={decrement}
-                increment={increment}
-                barStyle={{ width: "80px", height: "100x" }}
-                disabled={hasGraduated}
+            >
+              <ActionButton
+                src={action.src}
+                alt={action.alt}
+                onClick={() => {
+                  if (action.stat === "health") {
+                    onHealClick?.();
+                  } else if (action.stat === "happiness") {
+                    onPlayClick?.();
+                  } else if (action.stat === "sanity") {
+                    handleTalkAction();
+                  } else {
+                    incrementStat(action.stat);
+                  }
+                }}
+                disabled={hasRip}
+                hasWarning={value < 2}
               />
             </div>
-          );
-        })}
-      </div>
-    </>
+
+            {/* Stat display */}
+            <div className="flex w-full h-[46px] relative">
+              <div
+                className={twMerge(
+                  "w-full h-full",
+                  index < STAT_ACTIONS.length - 1 ? "border-b-2" : "border-b-0"
+                )}
+              >
+                <div
+                  className="bg-zinc-500 h-full"
+                  style={{ width: `${value * 10}%` }}
+                ></div>
+              </div>
+              <div className="flex items-center justify-center w-10 h-full absolute right-0">
+                <p className="text-zinc-700">{Math.round(value * 10)}%</p>
+              </div>
+            </div>
+          </div>
+        );
+      })}
+    </div>
   );
 }
