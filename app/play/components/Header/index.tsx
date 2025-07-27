@@ -54,21 +54,21 @@ export default function Header({
   }
 
   const timeFrame = getEvolutionTimeFrame(pet.age);
-  const hasGraduated = pet.age >= timeFrame;
+  const hasGraduated = pet.age >= 2; // Age 2 is the max before graduation
   const hasRip = pet.evolutionIds.includes(EvolutionId.RIP);
 
   const MessageLogPopup = () => {
     if (!showMessageLog) return null;
 
     return (
-      <div className="fixed inset-0 flex items-center justify-center z-[100]">
-        <div className="w-full max-w-2xl max-h-[80vh]">
+      <div className="fixed inset-0 flex items-center justify-center z-[100] bg-zinc-500/50">
+        <div className="w-full max-w-2xl">
           <Window
             title={`dilemma tracker`}
             isOpen={showMessageLog}
             setIsOpen={setShowMessageLog}
           >
-            <div className="max-h-96 overflow-y-auto space-y-4 p-4">
+            <div className="max-h-[80vh] overflow-y-auto space-y-4 p-4">
               {pet.dilemmas.length === 0 && (
                 <p className="text-zinc-500 italic">
                   no dilemmas yet. start talking to {pet.name}!
@@ -135,10 +135,12 @@ export default function Header({
               <a
                 className="text-zinc-500 hover:text-zinc-700 underline cursor-pointer"
                 onClick={() => setShowMessageLog(true)}
-                onMouseEnter={() => setHoverText("view dilemma tracker")}
+                onMouseEnter={() => setHoverText("view dilemmas")}
                 onMouseLeave={() => setHoverText(null)}
               >
-                ({pet.dilemmas.length}/{timeFrame} dilemmas until evolution)
+                {hasGraduated
+                  ? `(${pet.dilemmas.length} dilemmas completed)`
+                  : `(${pet.dilemmas.length}/${timeFrame} dilemmas until ${pet.age === 2 ? "graduation" : "evolution"})`}
               </a>
             </p>
 

@@ -23,14 +23,9 @@ export default function MoralAttributes({ pet }: { pet: Pet }) {
           const attrLabels = attributes[key as MoralDimensions];
           return (
             <div key={key} className="border-x border-zinc-800 px-3 py-1">
-              <div className="flex justify-between items-center mb-1">
-                <span>
-                  {key} {moralAttributeEmojis[key as MoralDimensions]}
-                </span>
-                <span className="text-zinc-500">{value.toFixed(1)}</span>
-              </div>
               <div className="flex items-center gap-2 text-zinc-500">
-                <span className="w-1/4 truncate">{attrLabels.low}</span>
+                <span>{moralAttributeEmojis[key as MoralDimensions]}</span>
+                <span className="w-1/4 truncate">{attrLabels.low} </span>
                 <div className="flex-1 h-2 bg-zinc-200 relative">
                   <div
                     className="absolute top-0 h-3 w-0.5 bg-zinc-800 -mt-0.75"

@@ -1,8 +1,8 @@
 import { NextRequest } from "next/server";
 import OpenAI from 'openai';
 import { dilemmaTemplates, DilemmaTemplate } from "@/constants/dilemmas";
-import { getEvolution, EvolutionId } from "@/constants/evolutions";
-import { MoralDimensionsType } from "@/constants/morals";
+import { getEvolution, EvolutionId, getEvolutionTimeFrame } from "@/constants/evolutions";
+import { MoralDimensionsType, DEFAULT_AVERAGE_STATS, getMoralStatsWritten } from "@/constants/morals";
 
 const openai = new OpenAI({
   apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY,
@@ -10,10 +10,10 @@ const openai = new OpenAI({
 
 // Types for the API
 interface Pet {
-  _id: string;
+  id: string;
   name: string;
   age: number;
-  evolutionId: string;
+  evolutionIds: EvolutionId[];
   personality: string;
   baseStats: {
     health: number;
@@ -29,7 +29,7 @@ interface Pet {
     purity: number;
     ego: number;
   };
-  dilemmas?: Array<{
+  dilemmas: Array<{
     id: string;
     messages: Array<{ role: "system" | "user" | "assistant"; content: string; }>;
     stats?: MoralDimensionsType;
@@ -133,7 +133,8 @@ function getPrompt(pet: Pet, dilemma: DilemmaTemplate, responseText: string, cla
     throw new Error('invalid stage');
   }
 
-  const evolution = getEvolution(pet.evolutionId as EvolutionId);
+  const currentEvolutionId = pet.evolutionIds[pet.evolutionIds.length - 1] || EvolutionId.BABY;
+  const evolution = getEvolution(currentEvolutionId);
   
   const replacements = {
     '{pet}': pet.name,
@@ -147,7 +148,7 @@ function getPrompt(pet: Pet, dilemma: DilemmaTemplate, responseText: string, cla
     '{morals.purity}': (Math.round(pet.moralStats.purity * 100) / 100).toString(),
     '{morals.ego}': (Math.round(pet.moralStats.ego * 100) / 100).toString(),
     '{evolution.description}': evolution.description,
-    '{evolution.stage}': pet.evolutionId || ''
+    '{evolution.stage}': currentEvolutionId || ''
   };
   
   let formattedPrompt = prompt;
@@ -207,6 +208,134 @@ async function processDilemmaResponse(pet: Pet, dilemma: DilemmaTemplate, respon
   }
 }
 
+// Add evolution functions adapted for local storage
+function getAverageMoralStats(
+  resolvedDilemmas: Array<{ stats?: MoralDimensionsType }>, 
+  newMoralStats: MoralDimensionsType
+): MoralDimensionsType {
+  const moralStats = { ...newMoralStats };
+  const statCounts = {
+    compassion: 1,
+    retribution: 1, 
+    devotion: 1,
+    dominance: 1,
+    purity: 1,
+    ego: 1
+  };
+
+  for (const dilemma of resolvedDilemmas) {
+    const stats = dilemma.stats;
+    if (!stats) continue;
+
+    // Sum all non-default values
+    for (const key of Object.keys(stats)) {
+      const value = stats[key as keyof MoralDimensionsType];
+      if (value === 5) continue; // Skip default values
+
+      moralStats[key as keyof MoralDimensionsType] += value;
+      statCounts[key as keyof MoralDimensionsType]++;
+    }
+  }
+
+  // Calculate averages
+  for (const key of Object.keys(moralStats)) {
+    moralStats[key as keyof MoralDimensionsType] /= statCounts[key as keyof MoralDimensionsType];
+  }
+
+  return moralStats;
+}
+
+function evolveFromBabyToStage1(
+  moralStatsWritten: { key: string; description: string; percentage: number }[]
+): EvolutionId {
+  // Simple evolution logic based on dominant moral trait
+  for (const attribute of moralStatsWritten) {
+    switch (attribute.description) {
+      case "highly emotional":
+      case "moderately emotional":
+        return EvolutionId.EMPATH;
+      case "highly virtuous":
+      case "moderately virtuous":
+        return EvolutionId.DEVOUT;
+      case "highly punishing":
+      case "moderately punishing":
+        return EvolutionId.WATCHER;
+      case "highly authoritarian":
+      case "moderately authoritarian":
+        return EvolutionId.SOLDIER;
+      case "highly loyal":
+      case "moderately loyal":
+        return EvolutionId.TEACHERSPET;
+      case "highly self-serving":
+      case "moderately self-serving":
+        return EvolutionId.HEDONIST;
+    }
+  }
+  return EvolutionId.NPC;
+}
+
+function evolveFromStage1ToStage2(
+  currentEvolutionId: EvolutionId,
+  moralStatsWritten: { key: string; description: string; percentage: number }[]
+): EvolutionId {
+  // Stage 2 evolution based on current evolution + dominant traits
+  const dominantTrait = moralStatsWritten[0]?.description;
+  
+  switch (currentEvolutionId) {
+    case EvolutionId.WATCHER:
+      return dominantTrait?.includes("authoritarian") ? EvolutionId.GAVEL : EvolutionId.VIGILANTE;
+    case EvolutionId.SOLDIER:
+      return dominantTrait?.includes("self-serving") ? EvolutionId.GODFATHER : EvolutionId.GUARDIAN;
+    case EvolutionId.TEACHERSPET:
+      return dominantTrait?.includes("indulgent") ? EvolutionId.ARISTOCRAT : EvolutionId.SAINT;
+    case EvolutionId.HEDONIST:
+      return dominantTrait?.includes("logical") ? EvolutionId.SIGMA : EvolutionId.CULTLEADER;
+    case EvolutionId.EMPATH:
+      return EvolutionId.SAINT;
+    case EvolutionId.DEVOUT:
+      return EvolutionId.CULTLEADER;
+    default:
+      return EvolutionId.GRADUATED;
+  }
+}
+
+function evolvePetIfNeeded(
+  resolvedDilemmasCount: number,
+  pet: Pet,
+  averageMoralStats: MoralDimensionsType
+): { evolutionId: EvolutionId; age: number } | undefined {
+  const timeFrame = getEvolutionTimeFrame(pet.age);
+  if (resolvedDilemmasCount < timeFrame) {
+    return;
+  }
+
+  const currentEvolutionId = pet.evolutionIds?.[pet.evolutionIds.length - 1] || EvolutionId.BABY;
+  const moralStatsWritten = getMoralStatsWritten(averageMoralStats);
+  console.log("🐦 moralStatsWritten", JSON.stringify(moralStatsWritten));
+
+  let newEvolutionId: EvolutionId | undefined;
+  if (pet.age === 0) {
+    newEvolutionId = evolveFromBabyToStage1(moralStatsWritten);
+    console.log("🐦 stage 0 newEvolutionId", newEvolutionId);
+  } else if (pet.age === 1) {
+    newEvolutionId = evolveFromStage1ToStage2(currentEvolutionId as EvolutionId, moralStatsWritten);
+    console.log("🐦 stage 1 newEvolutionId", newEvolutionId);
+  } else {
+    return;
+  }
+
+  if (!newEvolutionId) {
+    throw new Error(
+      `No evolution determined for ${currentEvolutionId} at age ${pet.age}`
+    );
+  }
+
+  return {
+    evolutionId: newEvolutionId,
+    age: pet.age + 1,
+  };
+}
+
 export async function POST(request: NextRequest) {
   try {
     const { dilemma, messages, pet } = await request.json();
@@ -263,6 +392,35 @@ export async function POST(request: NextRequest) {
       };
     }
 
+    // Handle evolution if dilemma is resolved
+    let evolutionUpdate = {};
+    if (parsedResponse.ok) {
+      // Get resolved dilemmas (including current one)
+      const resolvedDilemmas = pet.dilemmas.filter((d: { stats?: MoralDimensionsType }) => d.stats);
+      
+      if (parsedResponse.stats) {
+        // Add current dilemma stats to resolved list for evolution calculation
+        const newMoralStats = { ...DEFAULT_AVERAGE_STATS, ...parsedResponse.stats };
+        const averageMoralStats = getAverageMoralStats(resolvedDilemmas, newMoralStats);
+        
+        // Check if pet should evolve (add 1 to count for current dilemma)
+        const evolutionResult = evolvePetIfNeeded(resolvedDilemmas.length + 1, pet, averageMoralStats);
+        
+        if (evolutionResult) {
+          console.log("🐦 Pet evolving:", evolutionResult);
+          evolutionUpdate = {
+            evolutionIds: [...pet.evolutionIds, evolutionResult.evolutionId],
+            age: evolutionResult.age,
+            moralStats: averageMoralStats, // Use averaged moral stats
+          };
+        } else {
+          evolutionUpdate = {
+            moralStats: { ...pet.moralStats, ...parsedResponse.stats }, // Just update with new stats
+          };
+        }
+      }
+    }
+
     // Return the processed response for local storage handling
     const response = {
       ...parsedResponse,
@@ -271,6 +429,8 @@ export async function POST(request: NextRequest) {
         ...pet.baseStats,
         sanity: Math.min(pet.baseStats.sanity + 5, 10), // Add sanity bonus for resolving dilemma
       } : pet.baseStats,
+      // Include evolution updates
+      ...evolutionUpdate,
       // Include message structure info for client to update messages array
       messageIndex: clarifyingQuestion ? 1 : 0, // Which index the response should go to
     };

@@ -6,16 +6,17 @@ import MoralAttributes from "./MoralAttributes";
 import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
 import { EvolutionId } from "@/constants/evolutions";
-import { usePet } from "@/app/providers/PetProvider";
+import { Pet } from "@/app/storage/pet";
 
 export default function Graduation({
+  pet,
   graduationOpen,
   setGraduationOpen,
 }: {
+  pet: Pet;
   graduationOpen: boolean;
   setGraduationOpen: (open: boolean) => void;
 }) {
-  const { pet } = usePet();
   const [hoveredEvolutionId, setHoveredEvolutionId] = useState<
     EvolutionId | undefined
   >(undefined);

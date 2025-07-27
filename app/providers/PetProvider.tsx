@@ -177,8 +177,10 @@ export function PetProvider({ children }: { children: React.ReactNode }) {
 
   const evolution = useMemo(
     () =>
-      pet?.evolutionIds[0]
-        ? getEvolution(pet.evolutionIds[0] as EvolutionIdType)
+      pet?.evolutionIds && pet.evolutionIds.length > 0
+        ? getEvolution(
+            pet.evolutionIds[pet.evolutionIds.length - 1] as EvolutionIdType
+          )
         : null,
     [pet?.evolutionIds]
   );

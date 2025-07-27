@@ -22,6 +22,10 @@ interface DilemmaResponse {
     sanity: number;
   };
   override?: boolean;
+  // Evolution fields
+  moralStats?: MoralDimensionsType;
+  evolutionIds?: EvolutionId[];
+  age?: number;
 }
 
 export default function Dialog() {
@@ -120,11 +124,27 @@ export default function Dialog() {
           stats: { ...pet.moralStats, ...data.stats },
         };
 
+        // Check if evolution occurred
+        if (
+          data.evolutionIds &&
+          data.evolutionIds.length > pet.evolutionIds.length
+        ) {
+          const newEvolution = data.evolutionIds[data.evolutionIds.length - 1];
+          console.log(
+            `🎉 ${pet.name} evolved to ${newEvolution} at age ${data.age}!`
+          );
+          outcomeMessage += `\n\nand ${pet.name} evolved to ${newEvolution}!`;
+        }
+
         const updatedPet = {
-          moralStats: { ...pet.moralStats, ...data.stats },
+          // Use evolution stats if provided (averaged), otherwise just add new stats
+          moralStats: data.moralStats || { ...pet.moralStats, ...data.stats },
           personality: data.personality || pet.personality,
           baseStats: data.newBaseStats || pet.baseStats,
           dilemmas: [...pet.dilemmas, completedDilemma],
+          // Handle evolution updates
+          ...(data.evolutionIds && { evolutionIds: data.evolutionIds }),
+          ...(data.age !== undefined && { age: data.age }),
         };
 
         updatePet(updatedPet);

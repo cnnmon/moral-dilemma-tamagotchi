@@ -21,7 +21,7 @@ function PetImageSection({
         <Image
           src={getSprite(
             Animation.HAPPY,
-            hoveredEvolutionId || pet.evolutionIds[0]
+            hoveredEvolutionId || pet.evolutionIds[pet.evolutionIds.length - 1]
           )}
           alt={pet.name}
           width={120}
@@ -40,6 +40,43 @@ function PetImageSection({
   );
 }
 
+// Message component (matching Header's dilemma tracker)
+function Message({
+  message,
+  petName,
+}: {
+  message: { role: string; content: string };
+  petName: string;
+}) {
+  if (message.role === "system") {
+    return (
+      <div className="flex flex-wrap gap-1 text-lg italic text-zinc-500 mb-2">
+        {message.content}
+      </div>
+    );
+  }
+
+  if (message.role === "assistant") {
+    return (
+      <div className="flex justify-end mb-2">
+        <p className="w-2/3 border-2 p-2 bg-white flex flex-col">
+          <span className="font-bold">{petName}</span>
+          {message.content}
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="mb-2">
+      <p className="w-full border-2 p-2 flex flex-col bg-white">
+        <span className="font-bold">you</span>
+        {message.content}
+      </p>
+    </div>
+  );
+}
+
 // memory card component
 function MemoryCard({
   dilemma,
@@ -49,24 +86,21 @@ function MemoryCard({
   petName: string;
 }) {
   return (
-    <>
-      <p className="italic text-zinc-500 mb-2">
-        {dilemma.id && (
-          <span>
-            {dilemma.id in dilemmas
+    <div className="space-y-2">
+      <Message
+        message={{
+          role: "system",
+          content:
+            dilemma.id in dilemmas
               ? dilemmas[dilemma.id].text.replace(/{pet}/g, petName)
-              : "dilemma not found"}
-          </span>
-        )}
-      </p>
-      <div className="bg-white p-3 border border-zinc-800 h-full">
-        <p className="mb-1">
-          you said: &quot;{dilemma.messages[0].content}&quot;
-        </p>
-        <hr className="my-2 border-zinc-200" />
-        <p>{dilemma.messages[1].content || "no history"}</p>
-      </div>
-    </>
+              : "dilemma not found",
+        }}
+        petName={petName}
+      />
+      {dilemma.messages.map((message, msgIndex) => (
+        <Message key={msgIndex} message={message} petName={petName} />
+      ))}
+    </div>
   );
 }
 

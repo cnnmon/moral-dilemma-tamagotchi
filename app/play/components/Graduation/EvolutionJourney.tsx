@@ -18,7 +18,7 @@ export default function EvolutionJourney({
   return (
     <div>
       <h3 className="font-medium border-b border-zinc-200 pb-1 mb-3">
-        evolution journey
+        evolutions
       </h3>
       <div className="space-y-3">
         {pet.evolutionIds.map((evolutionId, index) => (
@@ -31,7 +31,7 @@ export default function EvolutionJourney({
             onMouseLeave={() => onHover(undefined)}
           >
             <div>
-              <span className="font-medium">level {3 - index}:</span>{" "}
+              <span className="font-medium">level {index + 1}:</span>{" "}
               <span className="font-bold">{evolutionId}</span>
               {index < pet.evolutionIds.length - 1 && (
                 <span className="text-zinc-500 ml-1">

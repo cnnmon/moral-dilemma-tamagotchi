@@ -35,9 +35,8 @@ export const formatMoralStatsChange = (oldStats: MoralDimensionsType, newStats: 
     const diff = newValue - oldValue;
     
     if (Math.abs(diff) > 0.1) { // Only show significant changes
-      const sign = diff > 0 ? "+" : "";
-      const formattedDiff = `${sign}${diff.toFixed(0)}`;
-      changes.push(`${key} ${formattedDiff}`);
+      const sign = diff > 0 ? "+" : "-";
+      changes.push(`${sign} ${key}`);
     }
   });
   

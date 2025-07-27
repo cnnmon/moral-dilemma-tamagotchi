@@ -59,7 +59,7 @@ export function evolvePetIfNeeded(
   }
 
   const currentEvolution = getEvolution(pet.evolutionId as EvolutionId);
-  const moralStatsWritten = getMoralStatsWritten(averageMoralStats, true);
+  const moralStatsWritten = getMoralStatsWritten(averageMoralStats);
   console.log("🐦 moralStatsWritten", JSON.stringify(moralStatsWritten));
 
   let newEvolutionId: EvolutionId | undefined;

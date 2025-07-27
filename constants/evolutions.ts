@@ -175,14 +175,6 @@ export const stage1Evolutions: Record<Stage1EvolutionId, Stage1Evolution> = {
 }
 
 export const stage2Evolutions: Record<string, Stage2Evolution> = {
-  [`${EvolutionId.CULTLEADER}_${EvolutionId.EMPATH}`]: { // empathetic + personally integrous
-    id: EvolutionId.CULTLEADER,
-    description: "compassionate visionary creating community through emotional connection",
-  },
-  [`${EvolutionId.SAINT}_${EvolutionId.EMPATH}`]: { // virtuous + forgiving
-    id: EvolutionId.SAINT,
-    description: "selfless hero bearing others' burdens",
-  },
   [EvolutionId.GAVEL]: { // punishing + authoritarian
     id: EvolutionId.GAVEL,
     description: "stern judge with unwavering principles",
@@ -203,11 +195,11 @@ export const stage2Evolutions: Record<string, Stage2Evolution> = {
     id: EvolutionId.ARISTOCRAT,
     description: "privileged elite enjoying power and pleasure",
   },
-  [`${EvolutionId.SAINT}_${EvolutionId.SOLDIER}`]: { // authoritarian + virtuous
+  [EvolutionId.SAINT]: { // authoritarian + virtuous
     id: EvolutionId.SAINT,
     description: "noble ruler guided by higher principles",
   },
-  [`${EvolutionId.CULTLEADER}_${EvolutionId.HEDONIST}`]: { // self-serving + empathetic
+  [EvolutionId.CULTLEADER]: { // self-serving + empathetic
     id: EvolutionId.CULTLEADER,
     description: "charismatic leader building following for personal gain",
   },
@@ -229,6 +221,7 @@ const evolutions: Record<string, Evolution> = {
 }
 
 export function getEvolution(id: EvolutionId): Evolution {
+  console.log(id, evolutions[id]);
   if (!(id in evolutions)) {
     // gracefully handle
     return evolutions.npc;
