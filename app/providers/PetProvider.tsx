@@ -245,12 +245,17 @@ export function PetProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const fetchPets = async () => {
-      const pets = getPets();
-      if (pets.length == 0) {
-        router.push("/create");
-        return;
+      try {
+        const pets = getPets();
+        if (pets.length == 0) {
+          window.location.href = "/create";
+          return;
+        }
+        setPet(pets[0]);
+      } catch (error) {
+        console.error("Error loading pets:", error);
+        window.location.href = "/create";
       }
-      setPet(pets[0]);
     };
     fetchPets();
   }, [router]);

@@ -30,7 +30,6 @@ function MenuContent({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.3, delay: 0.1 }}
-            className="ml-2"
           >
             {`${pathToText[page]}`}
           </motion.span>
@@ -57,7 +56,6 @@ function MenuContent({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.3, delay: 0.1 }}
-          className="ml-2"
         >
           {`${pathToText[page]}${page === "play" ? ` > ${pet.name}` : ""}`}
         </motion.span>
@@ -67,6 +65,7 @@ function MenuContent({
           <motion.a
             onClick={() => {
               if (
+                pet.age < 2 &&
                 confirm(
                   `are you sure you want to abandon ${pet.name}? look at ${pet.name}'s big ol eyes ( •̯́ ^ •̯̀)`
                 )
@@ -148,6 +147,7 @@ const MobileMenu = forwardRef<
           key="new-pet"
           onClick={() => {
             if (
+              pet.age < 2 &&
               confirm(
                 `are you sure you want to abandon ${pet.name}? look at ${pet.name}'s big ol eyes ( •̯́ ^ •̯̀)`
               )

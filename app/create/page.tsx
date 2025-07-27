@@ -14,7 +14,6 @@ function Content() {
   const handleSubmit = async (userInput: string) => {
     const name = userInput.trim().toLowerCase();
     if (!name) {
-      console.error("❌ No name provided");
       return;
     }
 
@@ -25,7 +24,6 @@ function Content() {
     }
 
     // start game
-    localStorage.clear(); // TODO: REMOVE
     await createPet(name);
     window.location.href = "/play";
   };
@@ -51,13 +49,15 @@ function Content() {
         </Background>
         <br />
         <Window title="you didn't want the egg">
-          <p>well... i hope you&apos;re happy with yourself.</p>
-          <a
-            className="cursor-pointer no-drag"
-            onClick={() => setSelectedChoice(null)}
-          >
-            im sorry i didn&apos;t mean it
-          </a>
+          <div className="flex flex-col gap-2 p-3">
+            <p>well... i hope you&apos;re happy with yourself.</p>
+            <a
+              className="cursor-pointer no-drag"
+              onClick={() => setSelectedChoice(null)}
+            >
+              im sorry i didn&apos;t mean it
+            </a>
+          </div>
         </Window>
       </motion.div>
     );
@@ -90,7 +90,7 @@ function Content() {
           handleSubmit={handleSubmit}
         >
           <p>
-            you&apos;ve found an egg. it seems sentient. (or{" "}
+            you&apos;ve found an egg. it seems sentient. name it? (or{" "}
             <a className="cursor-pointer" onClick={() => setSelectedChoice(1)}>
               abandon it?
             </a>

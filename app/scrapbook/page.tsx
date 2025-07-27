@@ -4,8 +4,8 @@ import { useEffect, useState } from "react";
 import Scrapbook from "./components/Scrapbook";
 import { getPets, Pet } from "../storage/pet";
 import Menu from "@/components/Menu";
-import PetInfo from "../play/components/Graduation/PetInfo";
 import Graduation from "../play/components/Graduation";
+import Loading from "../play/components/Loading";
 
 export default function ScrapbookPage() {
   const [pets, setPets] = useState<Pet[]>([]);
@@ -27,7 +27,7 @@ export default function ScrapbookPage() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <p>Loading...</p>
+        <Loading />
       </div>
     );
   }

@@ -217,7 +217,7 @@ export const dilemmas: Record<string, Dilemma> = {
   },
   keycarving: {
     id: "keycarving",
-    text: "{pet} needs spare keys for a friend. at the locksmith, he gives {pet} a copy from a drawer of keys without carving. should {pet} tell their friend or accept it since he seems nice?",
+    text: "{pet} needs spare keys for a friend. the locksmith gives {pet} a perfect copy from a drawer of keys without needing to carve it. should {pet} tell their friend or accept it since the locksmith seems... nice?",
   },
   digitalpet: {
     id: "digitalpet",
@@ -241,10 +241,12 @@ export const dilemmas: Record<string, Dilemma> = {
     id: "saltfries",
     text: "{pet} pretends to have a salt allergy so a fast food place has to make a fresh batch of fries. should {pet} salt them in front of the workers or wait until they're out of sight?",
   },
+  /*
   traintracks: {
     id: "traintracks",
     text: "There's like some people on a train track or something, and then on the other side is like-wait no wait let me try again. Your mom and like 5 random dudes are on a track and on the other side-oh fuck I'm really high-on the other side there's like a bus of children… with malaria. Do you do it?",
   },
+  */
 };
 
 // Export types and aliases for convex compatibility

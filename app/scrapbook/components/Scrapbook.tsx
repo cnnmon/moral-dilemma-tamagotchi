@@ -21,34 +21,21 @@ export default function Scrapbook({
   }
 
   const graduatedPets = pets.filter((pet) => pet.age >= 2);
-  if (graduatedPets.length === 0) {
-    return (
-      <div className="p-4 bg-red-100 border-b-2 border-red-500">
-        <div className="flex items-center">
-          <span className="text-red-600 text-xl sm:text-2xl mr-2">⚠️</span>
-          <p className="text-lg sm:text-xl font-bold mb-1">
-            no graduated pets yet!
-          </p>
-        </div>
-        <p className="text-gray-700 mt-2">
-          <a href="/create" className="underline">
-            graduate a pet
-          </a>{" "}
-          to see them in the scrapbook
-        </p>
-      </div>
-    );
-  }
-
   return (
-    <>
-      <div className="grid grid-cols-2 sm:grid-cols-4 bg-zinc-200">
+    <div className="flex flex-col gap-2 bg-zinc-200 w-full p-3 text-lg">
+      {graduatedPets.length === 0 && (
+        <p className="text-zinc-500 italic">
+          no graduated pets yet! come back when you&apos;ve been a more
+          committed parent...
+        </p>
+      )}
+      <div className="grid grid-cols-2 sm:grid-cols-4">
         {graduatedPets.map((pet) => (
           <div key={pet.id} className="relative">
             <PetCard pet={pet} setSelectedPet={setSelectedPet} />
           </div>
         ))}
       </div>
-    </>
+    </div>
   );
 }

@@ -167,7 +167,7 @@ const Viewport = React.memo(function Viewport() {
             <AnimatePresence mode="wait">
               {showEggCrack && (
                 <motion.div
-                  className="absolute top-13 left-[-9px] w-35 h-30 z-10 flex items-center justify-center"
+                  className="absolute top-[63px] left-[-20px] w-[180px] h-[150px] z-10 flex items-center justify-center"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}

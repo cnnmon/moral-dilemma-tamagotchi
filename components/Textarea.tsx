@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { twMerge } from "tailwind-merge";
 
 const thinkingFlavorText = ["thinking...", "chewing on it...", "pondering..."];
-const MAX_LENGTH = 280;
+const MAX_LENGTH = 120;
 
 export function Textarea({
   placeholder,
@@ -45,7 +45,7 @@ export function Textarea({
     <div className="flex flex-col gap-2">
       <textarea
         className={twMerge(
-          `w-full h-20 resize-none border-2 border-black bg-zinc-200 outline-none p-2 pointer-events-auto`,
+          `w-full h-24 resize-none border-2 border-black bg-zinc-200 outline-none p-2 pointer-events-auto`,
           isDisabled && "opacity-50 cursor-not-allowed"
         )}
         value={value}
@@ -69,7 +69,14 @@ export function Textarea({
         {!isSubmitting ? (
           <span>
             press enter to{" "}
-            <a className="underline" onClick={handleEnter}>
+            <a
+              className="underline"
+              style={{
+                opacity: value.length === 0 ? 0.5 : 1,
+                pointerEvents: value.length === 0 ? "none" : "auto",
+              }}
+              onClick={handleEnter}
+            >
               submit
             </a>
           </span>

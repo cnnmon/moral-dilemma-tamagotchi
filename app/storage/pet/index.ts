@@ -37,7 +37,43 @@ export type Pet = {
 };
 
 export const createPet = async (name: string): Promise<Pet> => {
-  const pets = JSON.parse(localStorage.getItem("pets") || "{}") as Record<string, Pet>;
+  //const pets = JSON.parse(localStorage.getItem("pets") || "{}") as Record<string, Pet>;
+
+  // TEMPORARY: initialize pets with a bunch of graduated ones with random stage 1-3 evolutions
+  const petTemplates = [{
+    name: "cheed",
+    age: 0,
+    evolutionIds: [EvolutionId.BABY, EvolutionId.DEVOUT, EvolutionId.GAVEL],
+    personality: "",
+    baseStats: { health: 5, hunger: 5, happiness: 5, sanity: 5 },
+    moralStats: { compassion: 5, retribution: 5, devotion: 5, dominance: 5, purity: 5, ego: 5 },
+    dilemmas: [],
+  }, {
+    id: crypto.randomUUID(),
+    name: "chadette",
+    age: 0,
+    evolutionIds: [EvolutionId.BABY, EvolutionId.DEVOUT, EvolutionId.GODFATHER],
+    personality: "",
+    baseStats: { health: 5, hunger: 5, happiness: 5, sanity: 5 },
+    moralStats: { compassion: 5, retribution: 5, devotion: 5, dominance: 5, purity: 5, ego: 5 },
+    dilemmas: [],
+  }, {
+    id: crypto.randomUUID(),
+    name: "chidi",
+    age: 0,
+    evolutionIds: [EvolutionId.BABY, EvolutionId.DEVOUT, EvolutionId.ARISTOCRAT],
+    personality: "",
+    baseStats: { health: 5, hunger: 5, happiness: 5, sanity: 5 },
+    moralStats: { compassion: 5, retribution: 5, devotion: 5, dominance: 5, purity: 5, ego: 5 },
+    dilemmas: [],
+  }]
+
+  const pets: Record<string, Pet> = {};
+  for (const petTemplate of petTemplates) {
+    const pet = { ...petTemplate, id: crypto.randomUUID() };
+    pets[pet.id] = pet;
+  }
+
   const id = crypto.randomUUID();
   const newPet = {
     id,
