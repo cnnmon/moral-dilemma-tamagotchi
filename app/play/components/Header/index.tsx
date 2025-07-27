@@ -6,9 +6,11 @@ import { DilemmaTracker } from "./DilemmaTracker";
 
 export default function Header({
   onHealClick,
+  onFeedClick,
   onPlayClick,
 }: {
   onHealClick?: () => void;
+  onFeedClick?: () => void;
   onPlayClick?: () => void;
 }) {
   const { pet, evolution } = usePet();
@@ -30,6 +32,7 @@ export default function Header({
           <div className="w-1/3">
             <ActionButtons
               onHealClick={onHealClick}
+              onFeedClick={onFeedClick}
               onPlayClick={onPlayClick}
             />
           </div>

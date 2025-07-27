@@ -6,36 +6,45 @@ import { ActiveDilemma, Pet } from "@/app/storage/pet";
 export function getAverageMoralStats(
   dilemmas: ActiveDilemma[]
 ): MoralDimensionsType {
-  const moralStats = { ...DEFAULT_AVERAGE_STATS };
+  const moralStats = {
+    compassion: 0,
+    retribution: 0,
+    devotion: 0,
+    dominance: 0,
+    purity: 0,
+    ego: 0
+  };
   const statCounts = {
-    compassion: 1,
-    retribution: 1, 
-    devotion: 1,
-    dominance: 1,
-    purity: 1,
-    ego: 1
+    compassion: 0,
+    retribution: 0, 
+    devotion: 0,
+    dominance: 0,
+    purity: 0,
+    ego: 0
   };
 
   for (const dilemma of dilemmas) {
     const stats = dilemma.stats;
     if (!stats) continue;
 
-    // Sum all non-default values
+    // Sum all values (including defaults)
     for (const key of Object.keys(stats)) {
       const value = stats[key as keyof MoralDimensionsType];
-      if (value === 5) continue; // Skip default values
-
       moralStats[key as keyof MoralDimensionsType] += value;
       statCounts[key as keyof MoralDimensionsType]++;
     }
   }
 
-  // Calculate averages
+  // Calculate averages, defaulting to 5 if no dilemmas have affected that stat
+  const result = { ...DEFAULT_AVERAGE_STATS };
   for (const key of Object.keys(moralStats)) {
-    moralStats[key as keyof MoralDimensionsType] /= statCounts[key as keyof MoralDimensionsType];
+    const statKey = key as keyof MoralDimensionsType;
+    if (statCounts[statKey] > 0) {
+      result[statKey] = moralStats[statKey] / statCounts[statKey];
+    }
   }
 
-  return moralStats;
+  return result;
 }
 
 function evolveFromBabyToStage1(

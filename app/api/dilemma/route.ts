@@ -93,11 +93,8 @@ export async function POST(request: NextRequest) {
     // Handle evolution if dilemma is resolved
     let evolutionUpdate = {};
     if (parsedResponse.ok) {
-      // Get resolved dilemmas (including current one)
       const resolvedDilemmas = pet.dilemmas.filter((d: { stats?: MoralDimensionsType }) => d.stats);
-      
       if (parsedResponse.stats) {
-        // Add current dilemma stats to resolved list for evolution calculation
         const averageMoralStats = getAverageMoralStats([...resolvedDilemmas, { stats: parsedResponse.stats }]);
         const evolutionResult = evolvePetIfNeeded(resolvedDilemmas.length + 1, pet, averageMoralStats);
         
@@ -106,10 +103,6 @@ export async function POST(request: NextRequest) {
           evolutionUpdate = {
             evolutionIds: [...pet.evolutionIds, evolutionResult.evolutionId],
             age: evolutionResult.age,
-          };
-        } else {
-          evolutionUpdate = {
-            moralStats: { ...pet.moralStats, ...parsedResponse.stats }, // Just update with new stats
           };
         }
       }

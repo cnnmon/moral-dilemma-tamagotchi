@@ -170,7 +170,7 @@ export default function PlayMinigame({
             onClick={!gameStarted ? startGame : undefined}
           >
             {!gameStarted ? (
-              <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-20">
+              <div className="absolute inset-0 flex items-center justify-center bg-zinc-400 bg-opacity-20">
                 <button
                   className="border-2 bg-white hover:bg-zinc-100 rounded-lg"
                   onClick={startGame}
@@ -182,7 +182,7 @@ export default function PlayMinigame({
                     viewBox="0 0 24 24"
                     fill="none"
                     stroke="currentColor"
-                    stroke-width="2"
+                    strokeWidth="2"
                     className="lucide lucide-play"
                   >
                     <polygon points="5 3 19 12 5 21 5 3"></polygon>

@@ -214,7 +214,7 @@ export const stage2Evolutions: Record<string, Stage2Evolution> = {
 };
 
 // combine all evolutions into a single record
-const evolutions: Record<string, Evolution> = {
+export const evolutions: Record<string, Evolution> = {
   ...stage0Evolutions,
   ...stage1Evolutions,
   ...stage2Evolutions,

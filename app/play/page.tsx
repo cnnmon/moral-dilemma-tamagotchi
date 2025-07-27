@@ -12,24 +12,25 @@ import HoverText from "@/components/HoverText";
 import Window from "@/components/Window";
 import Menu from "@/components/Menu";
 import HealMinigame from "./components/Header/HealMinigame";
+import FeedMinigame from "./components/Header/FeedMinigame";
 import PlayMinigame from "./components/Header/PlayMinigame";
 import Outcome from "./components/Outcome";
 import Graduation from "./components/Graduation";
 import { EvolutionId } from "@/constants/evolutions";
 
 function Content({
-  hasGraduated,
   healMinigameOpen,
+  feedMinigameOpen,
   playMinigameOpen,
-  setGraduationOpen,
   setHealMinigameOpen,
+  setFeedMinigameOpen,
   setPlayMinigameOpen,
 }: {
-  hasGraduated: boolean;
   healMinigameOpen: boolean;
+  feedMinigameOpen: boolean;
   playMinigameOpen: boolean;
-  setGraduationOpen: (open: boolean) => void;
   setHealMinigameOpen: (open: boolean) => void;
+  setFeedMinigameOpen: (open: boolean) => void;
   setPlayMinigameOpen: (open: boolean) => void;
 }) {
   const { pet } = usePet();
@@ -52,40 +53,15 @@ function Content({
     );
   }
 
-  if (hasGraduated) {
-    return (
-      <motion.div
-        key="graduated"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="w-full"
-      >
-        <Window title="°˖✧◝(⁰▿⁰)◜✧˖°">
-          <div className="flex flex-col gap-1 p-3">
-            <p>
-              happy graduation! after {pet.dilemmas.length} dilemmas,
-              {pet.name} has learned a lot from you and is ready to start a new
-              journey.
-            </p>
-            <a onClick={() => setGraduationOpen(true)} className="underline">
-              🎓 collect graduation certificate
-            </a>
-            <a href="/scrapbook" className="underline">
-              📷 check out scrapbook
-            </a>
-            <a href="/create" className="underline">
-              adopt a new pet
-            </a>
-          </div>
-        </Window>
-      </motion.div>
-    );
-  }
-
   if (healMinigameOpen) {
     return (
       <HealMinigame isOpen={healMinigameOpen} setIsOpen={setHealMinigameOpen} />
+    );
+  }
+
+  if (feedMinigameOpen) {
+    return (
+      <FeedMinigame isOpen={feedMinigameOpen} setIsOpen={setFeedMinigameOpen} />
     );
   }
 
@@ -101,6 +77,7 @@ function Content({
 export default function Play() {
   const [graduationOpen, setGraduationOpen] = useState(false);
   const [healMinigameOpen, setHealMinigameOpen] = useState(false);
+  const [feedMinigameOpen, setFeedMinigameOpen] = useState(false);
   const [playMinigameOpen, setPlayMinigameOpen] = useState(false);
   const { pet, evolution } = usePet();
   const { hoverText } = useHoverText();
@@ -147,6 +124,7 @@ export default function Play() {
           >
             <Header
               onHealClick={() => setHealMinigameOpen(true)}
+              onFeedClick={() => setFeedMinigameOpen(true)}
               onPlayClick={() => setPlayMinigameOpen(true)}
             />
           </motion.div>
@@ -174,12 +152,44 @@ export default function Play() {
                 transition={{ duration: 0.2, delay: 0.2 }}
                 className="flex w-full"
               >
+                {hasGraduated && (
+                  <motion.div
+                    key="graduated"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5 }}
+                    className="w-full"
+                  >
+                    <Window title="°˖✧◝(⁰▿⁰)◜✧˖°">
+                      <div className="flex flex-col gap-1 p-3">
+                        <p>
+                          happy graduation! after {pet.dilemmas.length}{" "}
+                          dilemmas,
+                          {pet.name} has learned a lot from you and is ready to
+                          start a new journey.
+                        </p>
+                        <a
+                          onClick={() => setGraduationOpen(true)}
+                          className="underline"
+                        >
+                          🎓 collect graduation certificate
+                        </a>
+                        <a href="/scrapbook" className="underline">
+                          📷 check out scrapbook
+                        </a>
+                        <a href="/create" className="underline">
+                          adopt a new pet
+                        </a>
+                      </div>
+                    </Window>
+                  </motion.div>
+                )}
                 <Content
-                  hasGraduated={hasGraduated}
                   healMinigameOpen={healMinigameOpen}
+                  feedMinigameOpen={feedMinigameOpen}
                   playMinigameOpen={playMinigameOpen}
-                  setGraduationOpen={setGraduationOpen}
                   setHealMinigameOpen={setHealMinigameOpen}
+                  setFeedMinigameOpen={setFeedMinigameOpen}
                   setPlayMinigameOpen={setPlayMinigameOpen}
                 />
               </motion.div>

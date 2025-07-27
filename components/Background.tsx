@@ -47,7 +47,7 @@ export function Background({
     <AnimatePresence key="bg">
       <div className="w-full flex items-center justify-center relative">
         {isAlmostDead && (
-          <div className="absolute w-full h-full bg-red-500 opacity-75" />
+          <div className="absolute w-full h-full bg-red-500/50 opacity-75" />
         )}
         <motion.div
           key="background-container"

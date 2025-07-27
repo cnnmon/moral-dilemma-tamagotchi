@@ -1,3 +1,4 @@
+import { evolutions } from "@/constants/evolutions";
 import PetCard from "./PetCard";
 import { Pet } from "@/app/storage/pet";
 
@@ -21,8 +22,24 @@ export default function Scrapbook({
   }
 
   const graduatedPets = pets.filter((pet) => pet.age >= 2);
+
+  // count number of unique evolutions collected
+  const evolutionSet = new Set(
+    graduatedPets.flatMap((pet) => pet.evolutionIds)
+  );
+  const evolutionCount = evolutionSet.size;
+  const evolutionText =
+    evolutionCount === 0
+      ? "no evolutions yet"
+      : evolutionCount === 1
+        ? "1 evolution"
+        : `${evolutionCount} evolutions`;
+
   return (
     <div className="flex flex-col gap-2 bg-zinc-200 w-full p-3 text-lg">
+      <p className="text-zinc-500 italic">
+        {evolutionText} collected out of {Object.keys(evolutions).length}
+      </p>
       {graduatedPets.length === 0 && (
         <p className="text-zinc-500 italic">
           no graduated pets yet! come back when you&apos;ve been a more

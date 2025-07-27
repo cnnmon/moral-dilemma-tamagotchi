@@ -79,13 +79,13 @@ export function useDilemmaSubmit() {
           ...dilemma,
           messages: [...newMessages],
           stats: data.stats,
-          consumed: true,
+          completed: true,
         };
 
         // add outcome with moral stats changes
         const newMoralStats = getAverageMoralStats([...pet.dilemmas, newDilemma]);
         const moralStatsChanges = formatMoralStatsChange(pet.moralStats, newMoralStats);
-        const outcomeText = `${data.outcome} (${moralStatsChanges.join(", ")})`
+        const outcomeText = `${data.outcome} ${moralStatsChanges ? `(${moralStatsChanges.join(", ")})` : ""}`
         newDilemma.messages.push({
           role: "system" as const,
           content: outcomeText,

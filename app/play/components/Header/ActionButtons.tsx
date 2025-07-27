@@ -109,9 +109,11 @@ const STAT_ACTIONS = [
 
 export default function ActionButtons({
   onHealClick,
+  onFeedClick,
   onPlayClick,
 }: {
   onHealClick?: () => void;
+  onFeedClick?: () => void;
   onPlayClick?: () => void;
 }) {
   const { baseStats, incrementStat } = useBaseStats();
@@ -169,6 +171,8 @@ export default function ActionButtons({
                 onClick={() => {
                   if (action.stat === "health") {
                     onHealClick?.();
+                  } else if (action.stat === "hunger") {
+                    onFeedClick?.();
                   } else if (action.stat === "happiness") {
                     onPlayClick?.();
                   } else if (action.stat === "sanity") {

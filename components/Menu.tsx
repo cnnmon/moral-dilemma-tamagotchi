@@ -12,10 +12,64 @@ const pathToText = {
   scrapbook: "pet scrapbook",
 };
 
+// Custom popup component
+function ConfirmPopup({
+  isOpen,
+  onConfirm,
+  onCancel,
+  petName,
+}: {
+  isOpen: boolean;
+  onConfirm: () => void;
+  onCancel: () => void;
+  petName: string;
+}) {
+  if (!isOpen) return null;
+
+  return (
+    <AnimatePresence>
+      <motion.div
+        className="fixed inset-0 bg-zinc-500/20 bg-opacity-50 flex items-center justify-center z-50 text-lg"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+      >
+        <motion.div
+          className="bg-white border-2 border-black p-6 max-w-sm mx-4 text-center"
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          exit={{ scale: 0.8, opacity: 0 }}
+        >
+          <p className="text-zinc-700 mb-6">
+            are you sure you want to abandon {petName}? look at {petName}&apos;s
+            big ol eyes ( •̯́ ^ •̯̀)
+          </p>
+          <div className="flex gap-4 justify-center">
+            <button
+              onClick={onCancel}
+              className="px-4 py-2 border-2 border-black hover:bg-zinc-100"
+            >
+              cancel
+            </button>
+            <button
+              onClick={onConfirm}
+              className="px-4 py-2 bg-black text-white hover:bg-zinc-800"
+            >
+              abandon
+            </button>
+          </div>
+        </motion.div>
+      </motion.div>
+    </AnimatePresence>
+  );
+}
+
 function MenuContent({
   page,
+  showConfirmPopup,
 }: {
   page: "play" | "create" | "scrapbook" | "about";
+  showConfirmPopup: () => void;
 }) {
   const { pet } = usePet();
 
@@ -69,13 +123,8 @@ function MenuContent({
                 window.location.href = "/create";
                 return;
               }
-              if (
-                pet.age < 2 &&
-                confirm(
-                  `are you sure you want to abandon ${pet.name}? look at ${pet.name}'s big ol eyes ( •̯́ ^ •̯̀)`
-                )
-              ) {
-                window.location.href = "/create";
+              if (pet.age < 2) {
+                showConfirmPopup();
               }
             }}
             className="hover:text-zinc-800 no-drag"
@@ -121,8 +170,9 @@ const MobileMenu = forwardRef<
     page: "play" | "create" | "scrapbook" | "about";
     isOpen: boolean;
     onClose: () => void;
+    showConfirmPopup: () => void;
   }
->(({ page, isOpen, onClose }, ref) => {
+>(({ page, isOpen, onClose, showConfirmPopup }, ref) => {
   const { pet } = usePet();
 
   if (!pet) {
@@ -155,13 +205,9 @@ const MobileMenu = forwardRef<
               window.location.href = "/create";
               return;
             }
-            if (
-              pet.age < 2 &&
-              confirm(
-                `are you sure you want to abandon ${pet.name}? look at ${pet.name}'s big ol eyes ( •̯́ ^ •̯̀)`
-              )
-            ) {
-              window.location.href = "/create";
+            if (pet.age < 2) {
+              onClose();
+              showConfirmPopup();
             }
           }}
           className="hover:text-zinc-800 no-drag block py-2"
@@ -229,8 +275,10 @@ export default function Menu({
   page: "play" | "create" | "scrapbook" | "about";
 }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [confirmPopupOpen, setConfirmPopupOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const mobileMenuRef = useRef<HTMLDivElement>(null);
+  const { pet } = usePet();
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -253,12 +301,25 @@ export default function Menu({
     };
   }, [mobileMenuOpen]);
 
+  const showConfirmPopup = () => {
+    setConfirmPopupOpen(true);
+  };
+
+  const handleConfirm = () => {
+    setConfirmPopupOpen(false);
+    window.location.href = "/create";
+  };
+
+  const handleCancel = () => {
+    setConfirmPopupOpen(false);
+  };
+
   return (
     <>
       <div className="w-full flex justify-between text-zinc-500 text-lg">
         {/* Desktop Menu */}
         <div className="hidden md:flex w-full justify-between">
-          <MenuContent page={page} />
+          <MenuContent page={page} showConfirmPopup={showConfirmPopup} />
         </div>
 
         {/* Mobile Menu Button */}
@@ -291,7 +352,16 @@ export default function Menu({
         page={page}
         isOpen={mobileMenuOpen}
         onClose={() => setMobileMenuOpen(false)}
+        showConfirmPopup={showConfirmPopup}
         ref={mobileMenuRef}
+      />
+
+      {/* Confirm Popup */}
+      <ConfirmPopup
+        isOpen={confirmPopupOpen}
+        onConfirm={handleConfirm}
+        onCancel={handleCancel}
+        petName={pet?.name || ""}
       />
     </>
   );

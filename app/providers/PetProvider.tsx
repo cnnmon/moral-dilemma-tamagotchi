@@ -29,8 +29,8 @@ type Outcome = {
 };
 
 const POO_STORAGE_KEY = "poos";
-const DECREMENT_INTERVAL_MS = 11000;
-const BASE_STATS_DECREMENT_VALUE = 1;
+const DECREMENT_INTERVAL_MS = 10000;
+const BASE_STATS_DECREMENT_VALUE = 4;
 const MAX_POOS = 10;
 const POO_CHANCE = 0.05;
 

@@ -57,7 +57,7 @@ export default function HealMinigame({
       >
         <div className="p-3">
           <div
-            className="relative w-full h-40 bg-zinc-50 border-2 bg-zinc-200"
+            className="relative w-full h-40 bg-zinc-50 border-2 bg-zinc-200 overflow-hidden"
             style={{ cursor: "none" }}
             onMouseMove={handleMouseMove}
             onMouseEnter={handleMouseEnter}
@@ -81,7 +81,7 @@ export default function HealMinigame({
               </div>
             )}
             <button
-              className="absolute font-bold hover:opacity-50 transition-colors duration-200 flex items-center justify-center"
+              className="absolute font-bold hover:opacity-50 transition-colors duration-200 flex items-center justify-center rounded-full bg-zinc-300 w-15 h-15"
               style={{
                 left: `${targetPosition.x}%`,
                 top: `${targetPosition.y}%`,
@@ -89,19 +89,13 @@ export default function HealMinigame({
               }}
               onClick={handleTargetClick}
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="36"
-                height="36"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1"
-                className="lucide lucide-x"
-              >
-                <path d="M18 6 6 18"></path>
-                <path d="m6 6 12 12"></path>
-              </svg>
+              <Image
+                src="/x.svg"
+                alt="X"
+                className="scale-170 opacity-60"
+                width={120}
+                height={120}
+              />
             </button>
           </div>
         </div>
