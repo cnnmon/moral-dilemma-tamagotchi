@@ -2,6 +2,7 @@
 
 import { usePet } from "@/app/providers/PetProvider";
 import { motion, AnimatePresence } from "framer-motion";
+import { useState, useEffect, useRef, forwardRef } from "react";
 
 const pathToText = {
   play: "home > living room",
@@ -110,14 +111,179 @@ function MenuContent({
   );
 }
 
+const MobileMenu = forwardRef<
+  HTMLDivElement,
+  {
+    page: "play" | "create" | "scrapbook" | "about";
+    isOpen: boolean;
+    onClose: () => void;
+  }
+>(({ page, isOpen, onClose }, ref) => {
+  const { pet } = usePet();
+
+  if (!pet) {
+    return null;
+  }
+
+  const menuItems = [];
+
+  if (page === "about" || page === "scrapbook") {
+    menuItems.push(
+      <motion.a
+        key="back"
+        href="/play"
+        className="hover:text-zinc-800 no-drag block py-2"
+        onClick={onClose}
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.2 }}
+      >
+        back
+      </motion.a>
+    );
+  } else {
+    if (pet.name) {
+      menuItems.push(
+        <motion.a
+          key="new-pet"
+          onClick={() => {
+            if (
+              confirm(
+                `are you sure you want to abandon ${pet.name}? look at ${pet.name}'s big ol eyes ( •̯́ ^ •̯̀)`
+              )
+            ) {
+              window.location.href = "/create";
+            }
+          }}
+          className="hover:text-zinc-800 no-drag block py-2"
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.2 }}
+        >
+          new pet
+        </motion.a>
+      );
+    }
+
+    menuItems.push(
+      <motion.a
+        key="scrapbook"
+        href="/scrapbook"
+        className="hover:text-zinc-800 no-drag block py-2"
+        onClick={onClose}
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.2, delay: 0.1 }}
+      >
+        scrapbook
+      </motion.a>
+    );
+
+    menuItems.push(
+      <motion.a
+        key="about"
+        href="/about"
+        className="hover:text-zinc-800 no-drag block py-2"
+        onClick={onClose}
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.2, delay: 0.2 }}
+      >
+        about
+      </motion.a>
+    );
+  }
+
+  return (
+    <AnimatePresence>
+      {isOpen && (
+        <motion.div
+          ref={ref}
+          className="fixed bottom-0 left-0 right-0 bg-white border-t-2 border-black z-50 p-4"
+          initial={{ opacity: 0, y: 100 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 100 }}
+          transition={{ duration: 0.3 }}
+        >
+          <div className="text-zinc-500 text-lg">{menuItems}</div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+});
+
+MobileMenu.displayName = "MobileMenu";
+
 export default function Menu({
   page,
 }: {
   page: "play" | "create" | "scrapbook" | "about";
 }) {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const mobileMenuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        menuRef.current &&
+        !menuRef.current.contains(event.target as Node) &&
+        mobileMenuRef.current &&
+        !mobileMenuRef.current.contains(event.target as Node)
+      ) {
+        setMobileMenuOpen(false);
+      }
+    }
+
+    if (mobileMenuOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [mobileMenuOpen]);
+
   return (
-    <div className="w-full flex justify-between text-zinc-500 text-lg!">
-      <MenuContent page={page} />
-    </div>
+    <>
+      <div className="w-full flex justify-between text-zinc-500 text-lg">
+        {/* Desktop Menu */}
+        <div className="hidden md:flex w-full justify-between">
+          <MenuContent page={page} />
+        </div>
+
+        {/* Mobile Menu Button */}
+        <div
+          className="flex md:hidden w-full justify-between items-center relative"
+          ref={menuRef}
+        >
+          <span className="ml-2 text-zinc-500">{`${pathToText[page]}`}</span>
+          <button
+            onClick={() => setMobileMenuOpen(true)}
+            className="border-2 w-8 h-8 flex flex-col items-center justify-center hover:bg-zinc-100"
+          >
+            <svg
+              width="16"
+              height="12"
+              viewBox="0 0 16 12"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <rect width="16" height="2" fill="currentColor" />
+              <rect y="5" width="16" height="2" fill="currentColor" />
+              <rect y="10" width="16" height="2" fill="currentColor" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      {/* Mobile Menu */}
+      <MobileMenu
+        page={page}
+        isOpen={mobileMenuOpen}
+        onClose={() => setMobileMenuOpen(false)}
+        ref={mobileMenuRef}
+      />
+    </>
   );
 }

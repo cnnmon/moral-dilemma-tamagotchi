@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { ClerkProvider } from "@clerk/nextjs";
 import { ConvexClientProvider } from "../ConvexClientProvider";
-import { PetProvider } from "../providers/PetProvider";
 
 export const metadata: Metadata = {
   title: "principal",
@@ -15,9 +14,7 @@ export default function RootLayout({
 }>) {
   return (
     <ClerkProvider dynamic>
-      <ConvexClientProvider>
-        <PetProvider>{children}</PetProvider>
-      </ConvexClientProvider>
+      <ConvexClientProvider>{children}</ConvexClientProvider>
     </ClerkProvider>
   );
 }

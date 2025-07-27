@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { twMerge } from "tailwind-merge";
 
 const thinkingFlavorText = ["thinking...", "chewing on it...", "pondering..."];
 const MAX_LENGTH = 280;
@@ -43,9 +44,10 @@ export function Textarea({
   return (
     <div className="flex flex-col gap-2">
       <textarea
-        className={`w-full resize-none border-2 border-black bg-zinc-200 outline-none p-2 pointer-events-auto ${
-          isDisabled ? "opacity-50 cursor-not-allowed" : ""
-        }`}
+        className={twMerge(
+          `w-full h-20 resize-none border-2 border-black bg-zinc-200 outline-none p-2 pointer-events-auto`,
+          isDisabled && "opacity-50 cursor-not-allowed"
+        )}
         value={value}
         onChange={(e) => {
           if (e.target.value.length <= MAX_LENGTH) {
@@ -58,12 +60,12 @@ export function Textarea({
         maxLength={MAX_LENGTH}
       />
       <div className="flex justify-between w-full text-zinc-400 mt-[-35px] px-2">
-        <p>
+        <p className="text-[16px]">
           {value.length}/{MAX_LENGTH}
         </p>
       </div>
 
-      <p className="text-right text-zinc-400 mt-[-35px] px-2 mb-2">
+      <p className="text-right text-zinc-400 mt-[-35px] px-3 mb-2 text-[16px]">
         {!isSubmitting ? (
           <span>
             press enter to{" "}

@@ -1,9 +1,8 @@
 "use client";
 
-import { OutcomePopup } from "./components/Outcome";
+import Outcome from "./components/Outcome";
 import Loading from "./components/Loading";
-import { useOutcomes } from "./utils";
-import { usePet, useHoverText } from "../providers/PetProvider";
+import { usePet, useHoverText, PetProvider } from "../providers/PetProvider";
 import Viewport from "./components/Viewport";
 import Dialog from "./components/Dialog";
 import Header from "./components/Header";
@@ -21,7 +20,6 @@ export default function Play() {
   const [graduationOpen, setGraduationOpen] = useState(false);
   const [healMinigameOpen, setHealMinigameOpen] = useState(false);
   const [playMinigameOpen, setPlayMinigameOpen] = useState(false);
-  const { outcomes, removeOutcome } = useOutcomes();
   const { pet, evolution } = usePet();
   const { hoverText } = useHoverText();
 
@@ -35,26 +33,8 @@ export default function Play() {
     <>
       {!hasGraduated && <HoverText hoverText={hoverText} />}
 
-      {/* outcome notifications */}
-      <div className="fixed top-0 p-4 w-full max-w-lg z-30">
-        <AnimatePresence>
-          {outcomes.map((outcome, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.2 }}
-            >
-              <OutcomePopup
-                message={outcome.text}
-                exitable={outcome.exitable}
-                onClose={() => removeOutcome(outcome.id)}
-              />
-            </motion.div>
-          ))}
-        </AnimatePresence>
-      </div>
+      {/* Outcome modal */}
+      <Outcome />
 
       {/* graduation modal */}
       {graduationOpen && (
@@ -65,7 +45,7 @@ export default function Play() {
       )}
 
       <AnimatePresence mode="wait">
-        <div className="flex flex-col gap-2 sm:w-2xl p-4 justify-center items-center sm:mt-[-30px] w-full">
+        <div className="flex flex-col gap-2 sm:w-3xl p-4 w-full mb-30">
           <Menu page="play" />
 
           {/* pet stats */}
@@ -83,15 +63,7 @@ export default function Play() {
           </motion.div>
 
           {/* main viewport */}
-          <motion.div
-            key="viewport"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5 }}
-            className="w-full h-full"
-          >
-            <Viewport />
-          </motion.div>
+          <Viewport />
 
           {/* graduated or active pet ui */}
           {hasGraduated ? (

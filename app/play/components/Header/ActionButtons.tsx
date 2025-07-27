@@ -7,7 +7,7 @@ import {
 } from "@/app/providers/PetProvider";
 import { EvolutionId } from "@/constants/evolutions";
 import { ObjectKey } from "@/constants/objects";
-import { dilemmas } from "@/constants/dilemmas";
+import { getRandomUnseenDilemma } from "@/app/utils/dilemma";
 import Image from "next/image";
 import { memo, useCallback } from "react";
 import { BaseStatsType, BaseStatKeys } from "@/constants/base";
@@ -39,7 +39,7 @@ const ActionButton = memo(function ActionButton({
   return (
     <motion.div
       className={twMerge(
-        "flex justify-center items-center w-14 h-full group transition-opacity duration-300",
+        "flex justify-center items-center relative w-14 h-full group transition-opacity duration-300",
         !disabled && "hover:bg-zinc-200"
       )}
       animate={{
@@ -59,20 +59,18 @@ const ActionButton = memo(function ActionButton({
       onMouseLeave={() => !disabled && setHoverText?.(null)}
       onClick={handleClick}
     >
-      <div className="relative">
-        <Image
-          className={`no-drag ${
-            !disabled && "group-hover:scale-120 transition-all duration-300"
-          }`}
-          style={{
-            opacity: disabled ? 0.5 : 1,
-          }}
-          src={src}
-          alt={alt}
-          width={WIDTH}
-          height={HEIGHT}
-        />
-      </div>
+      <Image
+        className={`no-drag ${
+          !disabled && "group-hover:scale-120 transition-all duration-300"
+        }`}
+        style={{
+          opacity: disabled ? 0.5 : 1,
+        }}
+        src={src}
+        alt={alt}
+        width={WIDTH}
+        height={HEIGHT}
+      />
     </motion.div>
   );
 });
@@ -119,33 +117,6 @@ export default function ActionButtons({
   const { pet } = usePet();
   const { dilemma, setDilemma } = useDilemma();
 
-  // Function to get a random unseen dilemma
-  const getRandomUnseenDilemma = useCallback(() => {
-    if (!pet) return null;
-
-    const seenDilemmas = pet.dilemmas.map((d) => d.id) || [];
-    const unseenDilemmas = Object.keys(dilemmas).filter(
-      (title) => !seenDilemmas.includes(title)
-    );
-
-    if (unseenDilemmas.length === 0) return null;
-
-    const randomTitle =
-      unseenDilemmas[Math.floor(Math.random() * unseenDilemmas.length)];
-    return {
-      id: randomTitle,
-      messages: [],
-      stats: {
-        compassion: 0,
-        retribution: 0,
-        devotion: 0,
-        dominance: 0,
-        purity: 0,
-        ego: 0,
-      },
-    };
-  }, [pet]);
-
   // Handle talk action - create new dilemma only if none exists
   const handleTalkAction = useCallback(() => {
     // If there's already an active dilemma, do nothing (sanity reward comes when answered)
@@ -154,14 +125,14 @@ export default function ActionButtons({
     }
 
     // No active dilemma, try to create a new one
-    const newDilemma = getRandomUnseenDilemma();
+    const newDilemma = pet ? getRandomUnseenDilemma(pet) : null;
     if (newDilemma) {
       setDilemma(newDilemma);
     } else {
       // All dilemmas have been seen, increment sanity anyway
       incrementStat(BaseStatKeys.sanity);
     }
-  }, [dilemma, getRandomUnseenDilemma, setDilemma, incrementStat]);
+  }, [dilemma, pet, setDilemma, incrementStat]);
 
   if (!pet) {
     return null;
@@ -170,7 +141,7 @@ export default function ActionButtons({
   const hasRip = pet.evolutionIds.includes(EvolutionId.RIP);
 
   return (
-    <div className="flex flex-col items-start w-full">
+    <div className="flex flex-col items-start w-full h-full">
       {STAT_ACTIONS.map((action, index) => {
         const statKey = action.stat;
         const value = baseStats[statKey];
@@ -183,7 +154,7 @@ export default function ActionButtons({
             {/* Action button */}
             <div
               className={twMerge(
-                "bg-zinc-100 border-r-2 h-[46px]",
+                "bg-zinc-100 border-r-2 h-full",
                 index < STAT_ACTIONS.length - 1 ? "border-b-2" : "border-b-0"
               )}
             >
@@ -207,7 +178,7 @@ export default function ActionButtons({
             </div>
 
             {/* Stat display */}
-            <div className="flex w-full h-[46px] relative">
+            <div className="flex w-full h-full relative">
               <div
                 className={twMerge(
                   "w-full h-full",

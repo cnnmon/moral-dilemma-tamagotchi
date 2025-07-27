@@ -4,7 +4,7 @@ import { Background, VIEWPORT_WIDTH } from "@/components/Background";
 import { VIEWPORT_HEIGHT } from "@/components/Background";
 import { AnimatePresence, motion } from "framer-motion";
 import { RIP_SPRITE, getSprite } from "@/constants/sprites";
-import { useBaseStats, usePet } from "@/app/providers/PetProvider";
+import { useBaseStats, usePet, useDilemma } from "@/app/providers/PetProvider";
 
 // local storage key for tracking if egg animation has been shown
 const EGG_CRACK_SHOWN_KEY = "egg_crack_animation_shown";
@@ -23,6 +23,7 @@ function isSpriteTransformation(prevSprite: string, currentSprite: string) {
 
 const Viewport = React.memo(function Viewport() {
   const { pet, animation, rip } = usePet();
+  const { dilemma } = useDilemma();
   const { baseStats, poos, cleanupPoo } = useBaseStats();
   const [prevSprite, setPrevSprite] = useState<string | null>(null);
   const [isTransforming, setIsTransforming] = useState(false);
@@ -103,7 +104,7 @@ const Viewport = React.memo(function Viewport() {
         maxWidth: VIEWPORT_WIDTH,
         height: VIEWPORT_HEIGHT,
       }}
-      className="flex items-center justify-center no-drag"
+      className="flex items-center justify-center no-drag w-full"
     >
       {poos.map(({ id, x, y }) => {
         const left = x;
@@ -128,19 +129,31 @@ const Viewport = React.memo(function Viewport() {
         );
       })}
       {!rip &&
-        pet?.dilemmas.map((dilemma) => (
-          <motion.div
-            key="clarifying-question"
-            className="absolute w-xs bg-zinc-100 z-10 border border-2 p-2 mt-[-80px] text-center"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.3, delay: 0.1 }}
-          >
-            {dilemma.messages.map((message) => (
-              <p key={message.content}>{message.content}</p>
-            ))}
-          </motion.div>
-        ))}
+        dilemma &&
+        (() => {
+          // Get the last assistant message as the clarifying question
+          const assistantMessages = dilemma.messages.filter(
+            (msg) => msg.role === "assistant"
+          );
+          const clarifyingQuestion =
+            assistantMessages[assistantMessages.length - 1];
+
+          if (!clarifyingQuestion) {
+            return null;
+          }
+
+          return (
+            <motion.div
+              key={`clarifying-question-${clarifyingQuestion.content}`}
+              className="absolute w-xs bg-zinc-100 z-10 border border-2 p-2 mt-[-80px] text-center"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.3, delay: 0.1 }}
+            >
+              <p>{clarifyingQuestion.content}</p>
+            </motion.div>
+          );
+        })()}
       <Background
         hasOverlay
         isAlmostDead={isAlmostDead}

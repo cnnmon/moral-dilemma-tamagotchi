@@ -10,7 +10,7 @@ import React, {
   useCallback,
 } from "react";
 import { useRouter } from "next/navigation";
-import { getPets, Pet } from "@/app/storage/pet";
+import { getPets, Pet, savePet } from "@/app/storage/pet";
 import { Animation } from "@/constants/sprites";
 import {
   EvolutionIdType,
@@ -21,9 +21,15 @@ import { ActiveDilemma } from "@/app/storage/pet";
 import { BaseStatsType, PooType } from "@/constants/base";
 import { VIEWPORT_HEIGHT, VIEWPORT_WIDTH } from "@/components/Background";
 
+type Outcome = {
+  type: "success" | "error";
+  message: string;
+  visible: boolean;
+};
+
 const POO_STORAGE_KEY = "poos";
 const DECREMENT_INTERVAL_MS = 10000;
-const BASE_STATS_DECREMENT_VALUE = 0.5;
+const BASE_STATS_DECREMENT_VALUE = 1;
 const MAX_POOS = 10;
 const POO_CHANCE = 0.05;
 
@@ -70,7 +76,10 @@ function baseStatsReducer(
         [statToDecrement]: Math.max(
           0,
           state[statToDecrement as keyof BaseStatsType] -
-            BASE_STATS_DECREMENT_VALUE * Math.random(),
+            BASE_STATS_DECREMENT_VALUE * Math.random()
+        ),
+        sanity: Math.max(
+          0,
           state.sanity - BASE_STATS_DECREMENT_VALUE * Math.random()
         ),
       };
@@ -104,10 +113,20 @@ interface PetContextType {
   animation: Animation;
   setAnimation: (animation: Animation) => void;
   setRip: (rip: boolean) => void;
+  updatePet: (updates: Partial<Pet>) => void;
 
   // Dilemma state
   dilemma: ActiveDilemma | null;
   setDilemma: (dilemma: ActiveDilemma | null) => void;
+
+  // Outcome state
+  outcome: Outcome | null;
+  showOutcome: (
+    type: "success" | "error",
+    message: string,
+    duration?: number
+  ) => void;
+  hideOutcome: () => void;
 
   // Base stats state
   baseStats: BaseStatsType;
@@ -133,6 +152,9 @@ export function PetProvider({ children }: { children: React.ReactNode }) {
 
   // Dilemma state from useDilemma
   const [dilemma, setDilemma] = useState<ActiveDilemma | null>(null);
+
+  // Outcome state
+  const [outcome, setOutcome] = useState<Outcome | null>(null);
 
   // Hover text state
   const [hoverText, setHoverText] = useState<string | null>(null);
@@ -194,9 +216,34 @@ export function PetProvider({ children }: { children: React.ReactNode }) {
     });
   }, []);
 
+  const updatePet = useCallback(
+    (updates: Partial<Pet>) => {
+      if (!pet) return;
+
+      const updatedPet = { ...pet, ...updates };
+      setPet(updatedPet);
+      savePet(updatedPet);
+    },
+    [pet]
+  );
+
+  const showOutcome = useCallback(
+    (type: "success" | "error", message: string) => {
+      setOutcome({ type, message, visible: true });
+    },
+    []
+  );
+
+  const hideOutcome = useCallback(() => {
+    setOutcome((prev) => (prev ? { ...prev, visible: false } : null));
+    setTimeout(() => {
+      setOutcome(null);
+    }, 300);
+  }, []);
+
   useEffect(() => {
     const fetchPets = async () => {
-      const pets = await getPets();
+      const pets = getPets();
       if (pets.length == 0) {
         router.push("/create");
         return;
@@ -290,8 +337,12 @@ export function PetProvider({ children }: { children: React.ReactNode }) {
     animation,
     setAnimation,
     setRip,
+    updatePet,
     dilemma,
     setDilemma,
+    outcome,
+    showOutcome,
+    hideOutcome,
     baseStats,
     incrementStat,
     poos,
@@ -320,6 +371,7 @@ export function usePet() {
     animation: context.animation,
     setAnimation: context.setAnimation,
     setRip: context.setRip,
+    updatePet: context.updatePet,
   };
 }
 
@@ -332,6 +384,19 @@ export function useDilemma() {
   return {
     dilemma: context.dilemma,
     setDilemma: context.setDilemma,
+  };
+}
+
+export function useOutcome() {
+  const context = useContext(PetContext);
+  if (context === undefined) {
+    throw new Error("useOutcome must be used within a PetProvider");
+  }
+
+  return {
+    outcome: context.outcome,
+    showOutcome: context.showOutcome,
+    hideOutcome: context.hideOutcome,
   };
 }
 

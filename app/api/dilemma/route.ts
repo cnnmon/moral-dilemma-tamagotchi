@@ -29,6 +29,11 @@ interface Pet {
     purity: number;
     ego: number;
   };
+  dilemmas?: Array<{
+    id: string;
+    messages: Array<{ role: "system" | "user" | "assistant"; content: string; }>;
+    stats?: MoralDimensionsType;
+  }>;
 }
 
 type ProcessedResponse = {
@@ -58,6 +63,8 @@ moral stats (0-10 scale):
 - purity: {morals.purity} (indulgent vs virtuous)
 - ego: {morals.ego} (self-serving vs self-sacrificing)
 
+if the caretaker's current advice contradicts your previous experiences or learnings, point that out and question it firmly. consider patterns from your history.
+
 change at least 1-3 stats based on the dilemma and caretaker's advice. example for "trip babies for your own gain":
 { ego: 9 (selfish), purity: 0 (indulgent), compassion: 3 (moderately logical) }`;
 
@@ -82,7 +89,7 @@ ${appendix}
 
 you are naive and impressionable. generally follow caretaker's guidance unless it conflicts strongly with basic empathy.
 
-if your caretaker's advice is unclear, ask a single specific clarifying question. Format your clarifying questions like: { "ok": false, "outcome": "but caretaker, what if..." }
+if your caretaker's advice is unclear and without reasoning (i.e. "no"), ask a single specific clarifying question. Format your clarifying questions like: { "ok": false, "outcome": "but caretaker, what if..." }
 
 ${personalityRules}
 
@@ -94,7 +101,7 @@ ${appendix}
 
 you are developing independence. question caretaker's advice when it conflicts with your emerging personality.
 
-if your caretaker's advice is unclear, ask a single specific clarifying question. Format your clarifying questions like: { "ok": false, "outcome": "but caretaker, what if..." }
+if your caretaker's advice is unclear and without reasoning (i.e. "no"), ask a single specific clarifying question. Format your clarifying questions like: { "ok": false, "outcome": "but caretaker, what if..." }
 
 ${personalityRules}
 
@@ -106,7 +113,7 @@ ${appendix}
 
 you are mature and may override your caretaker's advice based on your established personality. if you override their advice, set override: true in your response.
 
-if your caretaker's advice is unclear, ask a single specific clarifying question. Format your clarifying questions like: { "ok": false, "outcome": "but caretaker, what if..." }
+if your caretaker's advice is unclear and without reasoning (i.e. "no"), ask a single specific clarifying question. Format your clarifying questions like: { "ok": false, "outcome": "but caretaker, what if..." }
 
 ${personalityRules}
 
@@ -161,15 +168,29 @@ async function processDilemmaResponse(pet: Pet, dilemma: DilemmaTemplate, respon
   const formattedPrompt = getPrompt(pet, dilemma, responseText, clarifyingQuestion);
   console.log('🤖 formatted prompt:', formattedPrompt);
 
+  // Build messages array with previous dilemma history
+  const messages: Array<{ role: 'system' | 'user' | 'assistant'; content: string }> = [
+    {
+      role: 'system',
+      content: formattedPrompt,
+    }
+  ];
+
+  // Add previous dilemma conversations as history
+  if (pet.dilemmas && pet.dilemmas.length > 0) {
+    for (const prevDilemma of pet.dilemmas) {
+      // Add each message from the previous dilemma conversation
+      messages.push(...prevDilemma.messages.map(msg => ({
+        role: msg.role as 'user' | 'assistant',
+        content: msg.content
+      })));
+    }
+  }
+
   try {
     const completion = await openai.chat.completions.create({
       model: 'gpt-4o-mini-2024-07-18',
-      messages: [
-        {
-          role: 'system',
-          content: formattedPrompt,
-        },
-      ],
+      messages,
       temperature: 0.7,
       response_format: { type: 'json_object' },
     });

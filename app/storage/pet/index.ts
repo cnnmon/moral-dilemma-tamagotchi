@@ -65,3 +65,20 @@ export const getPet = (id: string): Pet | undefined => {
   return pets[id];
 };
 
+export const savePet = (pet: Pet): void => {
+  const pets = JSON.parse(localStorage.getItem("pets") || "{}") as Record<string, Pet>;
+  pets[pet.id] = pet;
+  localStorage.setItem("pets", JSON.stringify(pets));
+};
+
+export const updatePet = (id: string, updates: Partial<Pet>): Pet | null => {
+  const pets = JSON.parse(localStorage.getItem("pets") || "{}") as Record<string, Pet>;
+  const pet = pets[id];
+  if (!pet) return null;
+  
+  const updatedPet = { ...pet, ...updates };
+  pets[id] = updatedPet;
+  localStorage.setItem("pets", JSON.stringify(pets));
+  return updatedPet;
+};
+
