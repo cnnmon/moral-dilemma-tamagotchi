@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { ClerkProvider } from "@clerk/nextjs";
 import { ConvexClientProvider } from "./ConvexClientProvider";
 import { Toaster } from "sonner";
 import localFont from "next/font/local";
+import { PetProvider } from "./providers/PetProvider";
 
 const pixel = localFont({
   src: "./bitmap.otf",
@@ -28,9 +28,9 @@ export default function RootLayout({
         className={`${pixel.className} w-full min-h-screen flex items-center justify-center`}
       >
         <div className="w-full max-w-md flex flex-col items-center justify-center">
-          <ClerkProvider dynamic>
-            <ConvexClientProvider>{children}</ConvexClientProvider>
-          </ClerkProvider>
+          <ConvexClientProvider>
+            <PetProvider>{children}</PetProvider>
+          </ConvexClientProvider>
         </div>
         <Toaster />
       </body>

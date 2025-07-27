@@ -1,84 +1,87 @@
-import { Doc } from "@/convex/_generated/dataModel";
-import { BaseStats } from "./BaseStats";
-import { BaseStatsType } from "@/constants/base";
-import { Evolution } from "@/constants/evolutions";
-import Stat from "./Stat";
-import { motion } from "framer-motion";
+import { usePet, useHoverText } from "@/app/providers/PetProvider";
+import { EvolutionId, getEvolutionTimeFrame } from "@/constants/evolutions";
+import ActionButtons from "./ActionButtons";
+import { useState } from "react";
+import { DilemmaTracker } from "./DilemmaTracker";
 
 export default function Header({
-  pet,
-  baseStats,
-  recentDecrements,
-  recentIncrements,
-  evolution,
-  seenDilemmasCount,
-  timeFrame,
-  hasGraduated,
-  hasRip,
+  onHealClick,
+  onFeedClick,
+  onPlayClick,
 }: {
-  pet: Doc<"pets">;
-  baseStats: BaseStatsType;
-  recentDecrements?: Partial<Record<keyof BaseStatsType, number>>;
-  recentIncrements?: Partial<Record<keyof BaseStatsType, number>>;
-  evolution: Evolution;
-  seenDilemmasCount: number;
-  timeFrame: number;
-  hasGraduated: boolean;
-  hasRip: boolean;
+  onHealClick?: () => void;
+  onFeedClick?: () => void;
+  onPlayClick?: () => void;
 }) {
+  const { pet, evolution } = usePet();
+  const { setHoverText } = useHoverText();
+  const [showDilemmaTracker, setShowDilemmaTracker] = useState(false);
+
+  if (!pet || !evolution) {
+    return null;
+  }
+
+  const timeFrame = getEvolutionTimeFrame(pet.age);
+  const hasGraduated = pet.age >= 2; // Age 2 is the max before graduation
+  const hasRip = pet.evolutionIds.includes(EvolutionId.RIP);
+
   return (
-    <div className="flex flex-col bg-white border-2">
-      <div className="flex flex-col sm:flex-row gap-4 sm:gap-0 w-full justify-between p-4">
-        <BaseStats
-          baseStats={baseStats}
-          recentDecrements={recentDecrements}
-          recentIncrements={recentIncrements}
-          hasGraduated={hasGraduated}
-        />
-        <div className="flex flex-col sm:items-end sm:text-right">
-          <p className="flex items-center text-zinc-500 text-sm">
-            <b>level {pet.age + 1}/3</b>—{evolution.id}
-          </p>
-          <motion.div
-            key={pet.personality}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.3 }}
-            className="relative"
-          >
-            <motion.div
-              initial={{ opacity: 1 }}
-              animate={{ opacity: [1, 0, 1] }}
-              transition={{ duration: 0.2, times: [0, 0.5, 1] }}
-              key={`flicker-${pet.personality}`}
-            >
-              <p className="text-xs text-zinc-500 w-64 italic">
-                {evolution.description}.{" "}
-                {pet.personality || "no personality yet."}
-              </p>
-            </motion.div>
-          </motion.div>
+    <>
+      <div className="flex flex-col bg-white border-2">
+        <div className="flex w-full">
+          <div className="w-1/3">
+            <ActionButtons
+              onHealClick={onHealClick}
+              onFeedClick={onFeedClick}
+              onPlayClick={onPlayClick}
+            />
+          </div>
+          <div className="border-l-2 p-4 w-full text-lg flex flex-col gap-2">
+            <p className="flex items-center gap-1 pointer-events-auto flex-wrap">
+              &quot;{pet.name}&quot;{" "}
+              {hasGraduated
+                ? "has graduated as a"
+                : hasRip
+                  ? "has died as a"
+                  : "is a"}
+              <span
+                className="underline hover:bg-zinc-500 hover:text-white cursor-default"
+                onMouseEnter={() => setHoverText(`level ${pet.age + 1} of 3`)}
+                onMouseLeave={() => setHoverText(null)}
+              >
+                level {pet.age + 1}
+              </span>
+              <span
+                className="underline hover:bg-zinc-500 hover:text-white cursor-default"
+                onMouseEnter={() => setHoverText(evolution.description)}
+                onMouseLeave={() => setHoverText(null)}
+              >
+                {evolution.id}
+              </span>
+              .{" "}
+              <a
+                className="text-zinc-500 hover:text-zinc-700 underline cursor-pointer"
+                onClick={() => setShowDilemmaTracker(true)}
+                onMouseEnter={() => setHoverText("view dilemmas")}
+                onMouseLeave={() => setHoverText(null)}
+              >
+                {hasGraduated
+                  ? `(${pet.dilemmas.length} dilemmas completed)`
+                  : `(${pet.dilemmas.length}/${timeFrame} dilemmas until ${pet.age === 2 ? "graduation" : "evolution"})`}
+              </a>
+            </p>
+
+            <p className="italic border-2 p-2 h-29 overflow-y-scroll pointer-events-auto">
+              {pet.personality || "no personality yet."}
+            </p>
+          </div>
         </div>
       </div>
 
-      <hr className="border-1" />
-
-      <div className="p-4">
-        {hasGraduated ? (
-          <p className="text-zinc-500">{pet.name} has graduated.</p>
-        ) : hasRip ? (
-          <p className="text-zinc-500">{pet.name} has died.</p>
-        ) : (
-          <Stat
-            label={pet.age < 2 ? "until next evolution" : "until graduation"}
-            value={(seenDilemmasCount / timeFrame) * 100}
-            displayValue={`${seenDilemmasCount}/${timeFrame} dilemmas`}
-            dangerous={false}
-            hideSkull={true}
-            useLerpColors={true}
-          />
-        )}
-      </div>
-    </div>
+      <DilemmaTracker
+        isOpen={showDilemmaTracker}
+        setIsOpen={setShowDilemmaTracker}
+      />
+    </>
   );
 }

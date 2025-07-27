@@ -1,48 +1,30 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useOutcome } from "@/app/providers/PetProvider";
+import { twMerge } from "tailwind-merge";
 
-interface OutcomePopupProps {
-  message: string;
-  onClose: () => void;
-  exitable: boolean;
-}
+export default function Outcome() {
+  const { outcome, hideOutcome } = useOutcome();
+  if (!outcome) return null;
 
-export function OutcomePopup({
-  message,
-  onClose,
-  exitable,
-}: OutcomePopupProps) {
-  const [visible, setVisible] = useState(false);
-
-  useEffect(() => {
-    setVisible(true);
-    setTimeout(onClose, 5000);
-    return () => {
-      setVisible(false);
-    };
-  }, [onClose]);
-
-  const animationClasses = visible
+  const animationClasses = outcome.visible
     ? "opacity-100 scale-100"
     : "opacity-0 scale-90";
 
   return (
     <div
-      className={`w-full border-2 border-black p-4 relative mb-4 bg-zinc-100 transition-all duration-200 transform ${animationClasses}`}
-    >
-      {exitable && (
-        <button
-          onClick={() => {
-            setVisible(false);
-            setTimeout(onClose, 500); // delay onClose to allow fade-out
-          }}
-          className="absolute top-1 right-1 hover:opacity-70"
-        >
-          ✕
-        </button>
+      className={twMerge(
+        "fixed top-0 left-0 w-full border-2 border-black p-4 inset-x-0 max-w-2xl mx-auto mt-10 z-[1] bg-zinc-100 transform text-lg",
+        animationClasses
       )}
-      <p className={`font-pixel ${exitable ? "pr-6" : ""}`}>{message}</p>
+    >
+      <button
+        onClick={hideOutcome}
+        className="absolute top-1 right-1 hover:opacity-70"
+      >
+        ✕
+      </button>
+      <p className="font-pixel pr-6">{outcome.message}</p>
     </div>
   );
 }

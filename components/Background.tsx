@@ -1,17 +1,20 @@
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { useMemo, useState } from "react";
+import { twMerge } from "tailwind-merge";
 
-export const VIEWPORT_WIDTH = 570 * 1.12;
-export const VIEWPORT_HEIGHT = 230 * 1.12;
+export const VIEWPORT_WIDTH = 570 * 1.3;
+export const VIEWPORT_HEIGHT = 230 * 1.3;
 
 export function Background({
   backgroundSrcs,
   hasOverlay = false,
+  isAlmostDead = false,
   children,
 }: {
   backgroundSrcs: string[];
   hasOverlay?: boolean;
+  isAlmostDead?: boolean;
   children: React.ReactNode;
 }) {
   // state to track loaded images
@@ -28,14 +31,10 @@ export function Background({
           width={VIEWPORT_WIDTH}
           height={VIEWPORT_HEIGHT}
           priority={true}
-          style={{
-            height: VIEWPORT_HEIGHT,
-            width: `min(calc(100% - 30px), ${VIEWPORT_WIDTH}px)`,
-            objectFit: "cover",
-          }}
-          className={`absolute w-full transition-opacity duration-500 pointer-events-none ${
+          className={twMerge(
+            "absolute w-full h-full transition-opacity duration-500 pointer-events-none object-cover",
             loadedImages.includes(src) ? "opacity-100" : "opacity-0"
-          }`}
+          )}
           onLoad={() => {
             setLoadedImages((prev) => [...prev, src]);
           }}
@@ -46,7 +45,10 @@ export function Background({
 
   return (
     <AnimatePresence key="bg">
-      <div className="w-full flex items-center justify-center">
+      <div className="w-full flex items-center justify-center relative">
+        {isAlmostDead && (
+          <div className="absolute w-full h-full bg-red-500/50 opacity-75" />
+        )}
         <motion.div
           key="background-container"
           initial={{ opacity: 0 }}

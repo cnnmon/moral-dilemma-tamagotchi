@@ -81,29 +81,24 @@ export function parseMoralStats(moralStats: MoralDimensionsType): MoralStatsWrit
 
 export function getMoralStatsWritten(
   moralStats: MoralDimensionsType,
-  forEvolution: boolean = false // if true, only returns the attribute & returns all attributes; used to determine best next evolution
 ): MoralStatsWritten[] {
   const moralStatsParsed = parseMoralStats(moralStats);
   
   // filter and format the stats
   const stats = moralStatsParsed.reduce(
     (acc, stat) => {
-      if (stat.value === 5 && !forEvolution) {
-        return acc;
-      }
-
-      let prefix: string;
+      let prefix = "";
       if (stat.value > 7 || stat.value < 3) {
         prefix = "highly ";
       } else if (stat.value > 6 || stat.value < 4) {
         prefix = "moderately ";
-      } else {
-        prefix = "mildly ";
+      } else if (stat.value === 5) {
+        prefix = "";
       }
 
       acc.push({
         key: stat.key,
-        description: `${!forEvolution ? prefix : ""}${stat.description}`,
+        description: `${prefix}${stat.description}`,
         percentage: stat.percentage,
         value: stat.value,
       });

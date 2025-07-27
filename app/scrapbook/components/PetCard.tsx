@@ -1,23 +1,19 @@
-import { Doc } from "@/convex/_generated/dataModel";
 import { getSprite, Animation } from "@/constants/sprites";
 import { EvolutionId } from "@/constants/evolutions";
 import Image from "next/image";
+import { Pet } from "@/app/storage/pet";
 
 export default function PetCard({
   pet,
   setSelectedPet,
 }: {
-  pet: Doc<"pets">;
-  setSelectedPet: (pet: Doc<"pets">) => void;
+  pet: Pet;
+  setSelectedPet: (pet: Pet) => void;
 }) {
-  const sprite = getSprite(Animation.HAPPY, pet.evolutionId as EvolutionId);
-  const creationDate = new Date(pet._creationTime);
-  const formattedDate = `${creationDate.toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  })}`;
-
+  const sprite = getSprite(
+    Animation.HAPPY,
+    pet.evolutionIds[pet.evolutionIds.length - 1] as EvolutionId
+  );
   return (
     <>
       {/* polaroid-style card */}
@@ -36,11 +32,6 @@ export default function PetCard({
         </div>
         <div className="text-center">
           <h3 className="font-bold text-lg">{pet.name}</h3>
-          <p className="text-xs text-zinc-500 italic">{formattedDate}</p>
-          <p className="text-sm mt-1 line-clamp-2 overflow-hidden text-zinc-700">
-            {pet.personality.substring(0, 60)}
-            {pet.personality.length > 60 ? "..." : ""}
-          </p>
         </div>
         <div className="absolute top-1 right-1 w-4 h-4 bg-zinc-200 rounded-full border border-zinc-300"></div>
       </div>

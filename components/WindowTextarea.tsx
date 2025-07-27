@@ -3,52 +3,39 @@ import { Textarea } from "./Textarea";
 
 export default function WindowTextarea({
   title,
-  isOpen,
-  setIsOpen,
-  isTextareaOpen,
   placeholder,
   handleSubmit,
   children,
-  isDisabled,
   exitable = true,
+  disabled = false,
 }: {
   title: string;
-  isOpen: boolean;
-  setIsOpen: (isOpen: boolean) => void;
-  isTextareaOpen: boolean;
   placeholder: string;
   handleSubmit: (response: string) => void;
-  isDisabled: boolean;
   children: React.ReactNode;
   exitable?: boolean;
+  disabled?: boolean;
 }) {
   return (
     <div className="flex flex-col gap-2 w-full">
-      <Window
-        exitable={exitable}
-        title={title}
-        isOpen={isOpen}
-        setIsOpen={setIsOpen}
-      >
-        {children}
-      </Window>
-
-      <div className="sm:fixed z-30 bottom-0 left-0 w-full flex justify-center items-center pointer-events-none">
-        <div
-          className="w-full sm:max-w-2xl sm:p-8 transition-all duration-300"
-          style={{
-            opacity: isOpen && isTextareaOpen ? 1 : 0,
-            transform:
-              isOpen && isTextareaOpen ? "translateY(0)" : "translateY(-5px)",
-          }}
-        >
-          <Textarea
-            placeholder={placeholder}
-            handleSubmit={(response) => handleSubmit(response)}
-            isDisabled={isDisabled}
-          />
+      <Window exitable={exitable} title={title}>
+        <div className="flex flex-col gap-2 p-3">
+          {children}
+          <div
+            className="w-full sm:max-w-2xl transition-all duration-300"
+            style={{
+              opacity: 1,
+              transform: "translateY(0)",
+            }}
+          >
+            <Textarea
+              placeholder={placeholder}
+              handleSubmit={(response) => handleSubmit(response)}
+              isDisabled={disabled}
+            />
+          </div>
         </div>
-      </div>
+      </Window>
     </div>
   );
 }

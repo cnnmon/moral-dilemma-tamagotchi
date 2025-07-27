@@ -6,7 +6,7 @@ interface CertificateProps {
 
 export default function Certificate({ children }: CertificateProps) {
   return (
-    <div className="w-full h-full">
+    <div className="w-full h-full p-3">
       {/* corner decorations */}
       <div className="absolute inset-x-4 inset-y-12 pointer-events-none">
         <div className="flex justify-between absolute top-0 left-0 right-0">

@@ -1,28 +1,49 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Scrapbook from "./components/Scrapbook";
-import { api } from "@/convex/_generated/api";
-import { useQuery } from "convex/react";
-import Window from "@/components/Window";
-import Menu from "@/components/Menu";
-import { useState } from "react";
-import { Doc } from "@/convex/_generated/dataModel";
+import { getPets, Pet } from "../storage/pet";
 import Graduation from "../play/components/Graduation";
+import Loading from "../play/components/Loading";
+import { useRouter } from "next/navigation";
 
 export default function ScrapbookPage() {
-  const petsQuery = useQuery(api.pets.getAllPetsForUser);
-  const [selectedPet, setSelectedPet] = useState<Doc<"pets"> | null>(null);
+  const [pets, setPets] = useState<Pet[]>([]);
+  const [selectedPet, setSelectedPet] = useState<Pet | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const router = useRouter();
+
+  useEffect(() => {
+    try {
+      const pets = getPets();
+      setPets(pets);
+    } catch (error) {
+      console.error("Error loading pets:", error);
+      setPets([]);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Loading />
+      </div>
+    );
+  }
 
   return (
-    <>
-      <div className="flex flex-col items-center justify-center sm:w-2xl w-full min-h-screen">
-        <Menu page="scrapbook" />
-        <div className="px-4">
-          <Window title="family scrapbook" isOpen={true}>
-            <Scrapbook petsQuery={petsQuery} setSelectedPet={setSelectedPet} />
-          </Window>
-        </div>
+    <div className="flex flex-col items-center justify-center p-4 sm:p-0 sm:w-xl w-full">
+      <div className="flex flex-col items-center justify-center pb-2">
+        <a
+          className="text-zinc-500 underline hover:text-white hover:bg-zinc-500"
+          onClick={() => router.push("/play")}
+        >
+          back
+        </a>
       </div>
+      <Scrapbook pets={pets} setSelectedPet={setSelectedPet} />
       {selectedPet && (
         <Graduation
           pet={selectedPet}
@@ -30,6 +51,6 @@ export default function ScrapbookPage() {
           setGraduationOpen={() => setSelectedPet(null)}
         />
       )}
-    </>
+    </div>
   );
 }

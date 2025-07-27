@@ -13,7 +13,7 @@ export default function Window({
 }) {
   return (
     <div
-      className="w-full border-2 border-black bg-zinc-100 transition-all duration-300 h-fit"
+      className="w-full border-2 border-black bg-zinc-100 transition-all duration-300 h-fit text-lg"
       style={{
         opacity: isOpen ? 1 : 0,
         pointerEvents: isOpen ? "auto" : "none",
@@ -33,7 +33,7 @@ export default function Window({
           </button>
         )}
       </div>
-      <div className="px-3 py-2 pb-4">{children}</div>
+      <div>{children}</div>
     </div>
   );
 }

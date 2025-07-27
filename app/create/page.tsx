@@ -1,62 +1,31 @@
 "use client";
 
-import { useMutation } from "convex/react";
-import { api } from "@/convex/_generated/api";
+import { useState } from "react";
+import { motion } from "framer-motion";
+import { Background } from "@/components/Background";
 import Image from "next/image";
 import Window from "@/components/Window";
-import { Background } from "@/components/Background";
-import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import Choices from "@/components/Choices";
 import WindowTextarea from "@/components/WindowTextarea";
-import { useAchievements } from "../play/utils/useAchievements";
-import { useOutcomes } from "../play/utils/useOutcomes";
-import { OutcomePopup } from "../play/components/Outcome";
+import { createPet } from "../storage/pet";
 
 function Content() {
-  const createPet = useMutation(api.pets.createPet);
   const [selectedChoice, setSelectedChoice] = useState<number | null>(null);
-  const [userId, setUserId] = useState<string>("");
 
-  useEffect(() => {
-    // generate a unique user ID if not already set
-    const storedUserId = localStorage.getItem("userId");
-    if (!storedUserId) {
-      const newUserId = `user_${Date.now()}`;
-      localStorage.setItem("userId", newUserId);
-      setUserId(newUserId);
-    } else {
-      setUserId(storedUserId);
+  const handleSubmit = async (userInput: string) => {
+    const name = userInput.trim().toLowerCase();
+    if (!name) {
+      return;
     }
-  }, []);
 
-  const { outcomes, addOutcome, removeOutcome } = useOutcomes();
-  const { earnAchievement } = useAchievements(addOutcome);
-
-  // handle omelette achievement
-  useEffect(() => {
-    if (userId && selectedChoice === 1) {
-      earnAchievement("choose_omelette");
-    }
-  }, [userId, selectedChoice, earnAchievement]);
-
-  const handleSubmit = async (name: string) => {
-    // clear all local storage except user ID
-    const userId = localStorage.getItem("userId");
-    localStorage.clear();
-
-    // restore user ID
-    if (userId) {
-      localStorage.setItem("userId", userId);
+    // if "no" or similar is in the name, set selected choice to 1
+    if (name.includes("no") || name.includes("nah") || name.includes("nope")) {
+      setSelectedChoice(1);
+      return;
     }
 
     // start game
-    await createPet({ name });
+    await createPet(name);
     window.location.href = "/play";
-  };
-
-  const handleChoiceSelect = (choice: number) => {
-    setSelectedChoice(choice);
   };
 
   if (selectedChoice === 1) {
@@ -75,66 +44,27 @@ function Content() {
             alt="pan"
             width={180}
             height={180}
-            className="transform translate-x-27 no-select"
+            className="transform translate-x-27 no-select object-cover"
           />
         </Background>
         <br />
         <Window title="you didn't want the egg">
-          <p>well... i hope you&apos;re happy with yourself.</p>
-          <a
-            className="cursor-pointer no-drag"
-            onClick={() => setSelectedChoice(null)}
-          >
-            im sorry i didn&apos;t mean it
-          </a>
+          <div className="flex flex-col gap-2 p-3">
+            <p>well... i hope you&apos;re happy with yourself.</p>
+            <a
+              className="cursor-pointer no-drag"
+              onClick={() => setSelectedChoice(null)}
+            >
+              im sorry i didn&apos;t mean it
+            </a>
+          </div>
         </Window>
-
-        {/* Outcomes for achievements */}
-        <div className="fixed top-0 p-4 w-full max-w-lg z-30">
-          <AnimatePresence>
-            {outcomes.map((outcome, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: -20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.2 }}
-              >
-                <OutcomePopup
-                  message={outcome.text}
-                  exitable={outcome.exitable}
-                  onClose={() => removeOutcome(outcome.id)}
-                />
-              </motion.div>
-            ))}
-          </AnimatePresence>
-        </div>
       </motion.div>
     );
   }
 
   return (
     <>
-      {/* Outcomes for achievements */}
-      <div className="fixed top-0 p-4 w-full max-w-lg z-30">
-        <AnimatePresence>
-          {outcomes.map((outcome, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.2 }}
-            >
-              <OutcomePopup
-                message={outcome.text}
-                exitable={outcome.exitable}
-                onClose={() => removeOutcome(outcome.id)}
-              />
-            </motion.div>
-          ))}
-        </AnimatePresence>
-      </div>
       <motion.div
         key="create-page"
         className="flex flex-col items-center gap-4 w-full sm:w-xl p-4 sm:p-0"
@@ -156,30 +86,16 @@ function Content() {
         <WindowTextarea
           title="event! ( ˶°ㅁ°) ! ! !"
           exitable={false}
-          isOpen={true}
-          setIsOpen={(isOpen) => {
-            if (!isOpen) {
-              setSelectedChoice(null);
-            }
-          }}
-          isTextareaOpen={selectedChoice !== null}
           placeholder="give it a cool name like uh... chadd."
           handleSubmit={handleSubmit}
-          isDisabled={false}
         >
-          <Choices
-            setSelectedChoice={handleChoiceSelect}
-            dilemmaText="you've found an egg. it seems sentient."
-            selectedChoice={selectedChoice}
-            choices={[
-              {
-                text: "cool!! i'll name it...",
-              },
-              {
-                text: "i'll make it into an omelette",
-              },
-            ]}
-          />
+          <p>
+            you&apos;ve found an egg. it seems sentient. name it? (or{" "}
+            <a className="cursor-pointer" onClick={() => setSelectedChoice(1)}>
+              abandon it?
+            </a>
+            )
+          </p>
         </WindowTextarea>
       </motion.div>
     </>
@@ -187,9 +103,5 @@ function Content() {
 }
 
 export default function CreatePage() {
-  return (
-    <AnimatePresence mode="wait">
-      <Content />
-    </AnimatePresence>
-  );
+  return <Content />;
 }

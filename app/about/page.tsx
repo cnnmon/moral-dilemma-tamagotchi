@@ -1,12 +1,13 @@
 import Image from "next/image";
 import Menu from "@/components/Menu";
 import Window from "@/components/Window";
+
 export default function About() {
   return (
     <div className="flex flex-col items-center justify-center p-4 sm:p-0 sm:w-xl w-full">
       <Menu page="about" />
       <Window title="about" isOpen={true}>
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-2 p-4">
           <Image
             src="/poo.gif"
             alt="princi(pal)"

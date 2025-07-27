@@ -1,47 +1,47 @@
-import { Doc } from "@/convex/_generated/dataModel";
 import {
   EvolutionId,
-  getEvolutions,
+  evolutionToStat,
+  getEvolution,
   Stage2EvolutionId,
 } from "@/constants/evolutions";
+import { Pet } from "@/app/storage/pet";
 
 export default function EvolutionJourney({
   pet,
   hoveredEvolutionId,
   onHover,
 }: {
-  pet: Doc<"pets">;
+  pet: Pet;
   hoveredEvolutionId: EvolutionId | undefined;
   onHover: (evolutionId: EvolutionId | undefined) => void;
 }) {
-  const pastEvolutions = getEvolutions(pet.evolutionId as Stage2EvolutionId);
   return (
     <div>
-      <h3 className="text-sm font-medium border-b border-zinc-200 pb-1 mb-3">
-        evolution journey
+      <h3 className="font-medium border-b border-zinc-200 pb-1 mb-3">
+        evolutions
       </h3>
       <div className="space-y-3">
-        {pastEvolutions.map((evolution, index) => (
+        {pet.evolutionIds.map((evolutionId, index) => (
           <div
-            key={`${evolution.id}-${index}`}
+            key={`${evolutionId}-${index}`}
             className={`group cursor-pointer ${
-              evolution.id === hoveredEvolutionId ? "bg-black text-white" : ""
+              evolutionId === hoveredEvolutionId ? "bg-black text-white" : ""
             }`}
-            onMouseEnter={() => onHover(evolution.id as EvolutionId)}
+            onMouseEnter={() => onHover(evolutionId as EvolutionId)}
             onMouseLeave={() => onHover(undefined)}
           >
-            <div className="text-sm">
-              <span className="font-medium">level {3 - index}:</span>{" "}
-              <span className="font-bold">{evolution.id}</span>
-              {index < pastEvolutions.length - 1 && (
+            <div>
+              <span className="font-medium">level {index + 1}:</span>{" "}
+              <span className="font-bold">{evolutionId}</span>
+              {index < pet.evolutionIds.length - 1 && (
                 <span className="text-zinc-500 ml-1">
                   — because you made choices that were{" "}
-                  {evolution.statUsed?.name}
+                  {evolutionToStat[evolutionId as EvolutionId]}
                 </span>
               )}
             </div>
-            <p className="text-xs text-zinc-500 italic mt-1">
-              {evolution.description}
+            <p className="text-zinc-500 italic mt-1">
+              {getEvolution(evolutionId as Stage2EvolutionId).description}
             </p>
           </div>
         ))}
