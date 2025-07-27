@@ -1,69 +1,54 @@
-import { Doc } from "@/convex/_generated/dataModel";
-import { BaseStats } from "./BaseStats";
-import { BaseStatsType } from "@/constants/base";
-import { Evolution } from "@/constants/evolutions";
 import Stat from "./Stat";
-import { motion } from "framer-motion";
+import { usePet, useHoverText } from "@/app/providers/PetProvider";
+import { EvolutionId, getEvolutionTimeFrame } from "@/constants/evolutions";
+import ActionButtons from "./ActionButtons";
 
-export default function Header({
-  pet,
-  baseStats,
-  recentDecrements,
-  recentIncrements,
-  evolution,
-  seenDilemmasCount,
-  timeFrame,
-  hasGraduated,
-  hasRip,
-}: {
-  pet: Doc<"pets">;
-  baseStats: BaseStatsType;
-  recentDecrements?: Partial<Record<keyof BaseStatsType, number>>;
-  recentIncrements?: Partial<Record<keyof BaseStatsType, number>>;
-  evolution: Evolution;
-  seenDilemmasCount: number;
-  timeFrame: number;
-  hasGraduated: boolean;
-  hasRip: boolean;
-}) {
+export default function Header() {
+  const { pet, evolution } = usePet();
+  const { setHoverText } = useHoverText();
+
+  if (!pet || !evolution) {
+    return null;
+  }
+
+  const timeFrame = getEvolutionTimeFrame(pet.age);
+  const hasGraduated = pet.age >= timeFrame;
+  const hasRip = pet.evolutionIds.includes(EvolutionId.RIP);
+
   return (
     <div className="flex flex-col bg-white border-2">
-      <div className="flex flex-col sm:flex-row gap-4 sm:gap-0 w-full justify-between p-4">
-        <BaseStats
-          baseStats={baseStats}
-          recentDecrements={recentDecrements}
-          recentIncrements={recentIncrements}
-          hasGraduated={hasGraduated}
-        />
-        <div className="flex flex-col sm:items-end sm:text-right">
-          <p className="flex items-center text-zinc-500 text-sm">
-            <b>level {pet.age + 1}/3</b>—{evolution.id}
-          </p>
-          <motion.div
-            key={pet.personality}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.3 }}
-            className="relative"
-          >
-            <motion.div
-              initial={{ opacity: 1 }}
-              animate={{ opacity: [1, 0, 1] }}
-              transition={{ duration: 0.2, times: [0, 0.5, 1] }}
-              key={`flicker-${pet.personality}`}
+      <div className="flex gap-4 w-full">
+        <div className="w-1/3">
+          <ActionButtons />
+        </div>
+        <div className="border-l-2 p-4 w-full text-lg flex flex-col gap-2">
+          <p className="flex items-center gap-1 pointer-events-auto">
+            &quot;{pet.name}&quot; is a
+            <span
+              className="underline hover:bg-zinc-500 hover:text-white cursor-default"
+              onMouseEnter={() => setHoverText(`level ${pet.age + 1} of 3`)}
+              onMouseLeave={() => setHoverText(null)}
             >
-              <p className="text-xs text-zinc-500 w-64 italic">
-                {evolution.description}.{" "}
-                {pet.personality || "no personality yet."}
-              </p>
-            </motion.div>
-          </motion.div>
+              level {pet.age + 1}
+            </span>
+            <span
+              className="underline hover:bg-zinc-500 hover:text-white cursor-default"
+              onMouseEnter={() => setHoverText(evolution.description)}
+              onMouseLeave={() => setHoverText(null)}
+            >
+              {evolution.id}
+            </span>
+            .
+          </p>
+          <p className="italic border-2 p-2">
+            {pet.personality || "no personality yet."}
+          </p>
         </div>
       </div>
 
       <hr className="border-1" />
 
-      <div className="p-4">
+      <div className="p-4 text-lg">
         {hasGraduated ? (
           <p className="text-zinc-500">{pet.name} has graduated.</p>
         ) : hasRip ? (
@@ -71,8 +56,8 @@ export default function Header({
         ) : (
           <Stat
             label={pet.age < 2 ? "until next evolution" : "until graduation"}
-            value={(seenDilemmasCount / timeFrame) * 100}
-            displayValue={`${seenDilemmasCount}/${timeFrame} dilemmas`}
+            value={(pet.dilemmas.length / timeFrame) * 100}
+            displayValue={`${pet.dilemmas.length}/${timeFrame} dilemmas`}
             dangerous={false}
             hideSkull={true}
             useLerpColors={true}

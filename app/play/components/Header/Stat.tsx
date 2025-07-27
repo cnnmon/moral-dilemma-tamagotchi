@@ -1,11 +1,12 @@
 import { AnimatePresence, motion } from "framer-motion";
+import { twMerge } from "tailwind-merge";
 
 export default function Stat({
   label,
   value, // out of 100
   displayValue,
   dangerous,
-  barStyle = { width: "100%" },
+  barStyle = {},
   containerStyle = { justifyContent: "start" },
   customBarColor,
   decrement,
@@ -30,6 +31,17 @@ export default function Stat({
   const dangerousValue = dangerous ?? value < 25;
   const scaledIncrement = increment ? Math.round(increment * 10) : 0;
   const scaledDecrement = decrement ? Math.round(decrement * 10) : 0;
+
+  // Determine what to display - increment/decrement takes priority over displayValue
+  const getDisplayText = () => {
+    if (scaledIncrement > 0) {
+      return `+${scaledIncrement}`;
+    }
+    if (scaledDecrement > 0) {
+      return `-${scaledDecrement}`;
+    }
+    return displayValue;
+  };
 
   // color lerp for progress bar
   const getProgressColor = () => {
@@ -63,17 +75,22 @@ export default function Stat({
     return { backgroundColor: `rgb(${r},${g},${b})` };
   };
 
+  const currentDisplayText = getDisplayText();
+
   return (
     <div
-      className={`flex w-full justify-start items-center gap-2 mb-[-4px] ${
+      className={`flex w-full justify-between items-center gap-2 mb-[-4px] ${
         disabled ? "opacity-50" : ""
       }`}
       style={containerStyle}
     >
-      {label && <p className="min-w-30 text-sm">{label}</p>}
-      <div className="border-2 h-3 border-black relative" style={barStyle}>
+      {label && <p className="min-w-30">{label}</p>}
+      <div
+        className="border-2 h-3 border-black relative flex-1"
+        style={barStyle}
+      >
         {value === 0 && !hideSkull ? (
-          <div className="absolute inset-0 mt-1 flex items-center justify-center text-sm">
+          <div className="absolute inset-0 mt-1 flex items-center justify-center">
             ☠️
           </div>
         ) : (
@@ -86,36 +103,23 @@ export default function Stat({
           ></div>
         )}
       </div>
-      {displayValue && (
-        <p
-          className={`text-xs ${
-            displayValue.length > 10 ? "w-36" : ""
-          } text-right`}
-        >
-          <i>{displayValue}</i>
-        </p>
+      {currentDisplayText && (
+        <AnimatePresence mode="wait">
+          <motion.p
+            key={currentDisplayText}
+            className={twMerge(
+              currentDisplayText.length > 10 && "w-auto",
+              "min-w-8 text-right"
+            )}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.2 }}
+          >
+            <i>{currentDisplayText}</i>
+          </motion.p>
+        </AnimatePresence>
       )}
-      <AnimatePresence>
-        {scaledIncrement > 0 ? (
-          <motion.div
-            className="text-xs ml-1"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-          >
-            {scaledIncrement > 0 ? `+${scaledIncrement}` : scaledIncrement}
-          </motion.div>
-        ) : scaledDecrement > 0 ? (
-          <motion.div
-            className="text-xs ml-1"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-          >
-            {scaledDecrement > 0 ? `-${scaledDecrement}` : scaledDecrement}
-          </motion.div>
-        ) : null}
-      </AnimatePresence>
     </div>
   );
 }

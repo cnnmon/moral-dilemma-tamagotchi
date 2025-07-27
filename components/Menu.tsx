@@ -1,5 +1,6 @@
 "use client";
 
+import { usePet } from "@/app/providers/PetProvider";
 import { motion, AnimatePresence } from "framer-motion";
 
 const pathToText = {
@@ -11,11 +12,15 @@ const pathToText = {
 
 function MenuContent({
   page,
-  currentPetName,
 }: {
   page: "play" | "create" | "scrapbook" | "about";
-  currentPetName?: string;
 }) {
+  const { pet } = usePet();
+
+  if (!pet) {
+    return null;
+  }
+
   if (page === "about" || page === "scrapbook") {
     return (
       <>
@@ -53,18 +58,16 @@ function MenuContent({
           transition={{ duration: 0.3, delay: 0.1 }}
           className="ml-2"
         >
-          {`${pathToText[page]}${
-            currentPetName && page === "play" ? ` > ${currentPetName}` : ""
-          }`}
+          {`${pathToText[page]}${page === "play" ? ` > ${pet.name}` : ""}`}
         </motion.span>
       </AnimatePresence>
       <AnimatePresence>
-        {currentPetName && (
+        {pet.name && (
           <motion.a
             onClick={() => {
               if (
                 confirm(
-                  `are you sure you want to abandon ${currentPetName}? look at ${currentPetName}'s big ol eyes ( •̯́ ^ •̯̀)`
+                  `are you sure you want to abandon ${pet.name}? look at ${pet.name}'s big ol eyes ( •̯́ ^ •̯̀)`
                 )
               ) {
                 window.location.href = "/create";
@@ -109,14 +112,12 @@ function MenuContent({
 
 export default function Menu({
   page,
-  currentPetName,
 }: {
   page: "play" | "create" | "scrapbook" | "about";
-  currentPetName?: string;
 }) {
   return (
     <div className="w-full flex justify-between text-zinc-500">
-      <MenuContent page={page} currentPetName={currentPetName} />
+      <MenuContent page={page} />
     </div>
   );
 }

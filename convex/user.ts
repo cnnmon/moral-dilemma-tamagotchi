@@ -6,6 +6,11 @@ interface UserInfo {
   petId: Id<'pets'> | null;
 }
 
+// Generate a unique user ID for local storage
+function generateLocalUserId(): string {
+  return 'local_' + Math.random().toString(36).substring(2) + Date.now().toString(36);
+}
+
 // simple in-memory cache for the last queried user ID
 let lastUserId: string | null = null;
 let lastUserIdTimestamp = 0;
@@ -18,35 +23,33 @@ export async function getUserId(ctx: QueryCtx | MutationCtx): Promise<string | n
       return lastUserId;
     }
     
-    // get identity from auth with a timeout mechanism for better resilience
-    let identity;
+    // Try to get identity from auth, but fallback to local user generation
+    let userId: string | null = null;
     try {
-      identity = await ctx.auth.getUserIdentity();
-    } catch (authError) {
-      console.error("[getUserId] Auth service error:", authError);
-      
-      // if we have a recent cached value, use it as fallback during auth outages
-      if (lastUserId !== null && Date.now() - lastUserIdTimestamp < CACHE_TTL_MS * 2) {
-        console.log("[getUserId] Using cached userId as fallback during auth error");
-        return lastUserId;
-      }
-      
-      throw new Error("Authentication service unavailable");
+      const identity = await ctx.auth.getUserIdentity();
+      userId = identity?.email || null;
+    } catch {
+      console.log("[getUserId] No auth available, using local user ID");
     }
     
-    const userId = identity?.email || null;
-    
-    // only update cache if we got a valid userId
-    if (userId !== null) {
-      lastUserId = userId;
-      lastUserIdTimestamp = Date.now();
+    // If no auth user, generate a local user ID
+    if (!userId) {
+      userId = generateLocalUserId();
+      console.log("[getUserId] Generated local user ID:", userId);
     }
+    
+    // Update cache
+    lastUserId = userId;
+    lastUserIdTimestamp = Date.now();
     
     return userId;
   } catch (error) {
-    // log the error but don't throw - return null for unauthenticated state
-    console.error("[getUserId] Error retrieving user identity:", error);
-    return null;
+    // Generate local user ID as fallback
+    console.log("[getUserId] Error, generating local user ID:", error);
+    const userId = generateLocalUserId();
+    lastUserId = userId;
+    lastUserIdTimestamp = Date.now();
+    return userId;
   }
 }
 
@@ -72,7 +75,6 @@ export async function getUserAndPetId(
     const userId = await getUserId(ctx);
     if (!userId) {
       const result = { userId: null, petId: null };
-      // Don't cache null results to allow retry
       return result;
     }
 
@@ -81,7 +83,6 @@ export async function getUserAndPetId(
       const latestPet = await ctx.db
         .query('pets')
         .withIndex('by_userId', q => q.eq('userId', userId))
-        //.filter(q => q.eq(q.field('graduated'), false))
         .order('desc')
         .first();
 
@@ -110,13 +111,18 @@ export async function getUserAndPetId(
         return lastPetInfo;
       }
       
-      throw new Error("Database service unavailable");
+      // Return with userId but no pet
+      return {
+        userId,
+        petId: null,
+      };
     }
   } catch (error) {
     console.error("[getUserAndPetId] Error retrieving pet:", error);
-    // return safe fallback
+    // Generate a user ID even in error case
+    const userId = generateLocalUserId();
     return {
-      userId: null,
+      userId,
       petId: null,
     };
   }

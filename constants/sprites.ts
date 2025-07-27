@@ -67,6 +67,9 @@ const SPRITES: {
 };
 
 export function getSprite(animation: Animation, evolution: EvolutionId) {
+  console.log("🚀 Animation:", animation);
+  console.log("🚀 Evolution:", evolution);
+
   if (evolution === "baby") {
     return SPRITES[0][animation].baby;
   } 

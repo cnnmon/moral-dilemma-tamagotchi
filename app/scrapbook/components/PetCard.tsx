@@ -36,8 +36,8 @@ export default function PetCard({
         </div>
         <div className="text-center">
           <h3 className="font-bold text-lg">{pet.name}</h3>
-          <p className="text-xs text-zinc-500 italic">{formattedDate}</p>
-          <p className="text-sm mt-1 line-clamp-2 overflow-hidden text-zinc-700">
+          <p className="text-zinc-500 italic">{formattedDate}</p>
+          <p className="mt-1 line-clamp-2 overflow-hidden text-zinc-700">
             {pet.personality.substring(0, 60)}
             {pet.personality.length > 60 ? "..." : ""}
           </p>

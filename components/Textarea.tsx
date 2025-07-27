@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 const thinkingFlavorText = ["thinking...", "chewing on it...", "pondering..."];
 const MAX_LENGTH = 280;
@@ -17,10 +17,14 @@ export function Textarea({
   const [value, setValue] = useState("");
   const [flavorTextIndex, setFlavorTextIndex] = useState(0);
 
+  const handleEnter = useCallback(() => {
+    handleSubmit(value);
+  }, [value, handleSubmit]);
+
   const handleKeyPress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
-      handleSubmit(value);
+      handleEnter();
     }
   };
 
@@ -37,7 +41,7 @@ export function Textarea({
   }, [isSubmitting]);
 
   return (
-    <>
+    <div className="flex flex-col gap-2">
       <textarea
         className={`w-full resize-none border-2 border-black bg-zinc-200 outline-none p-2 pointer-events-auto ${
           isDisabled ? "opacity-50 cursor-not-allowed" : ""
@@ -53,20 +57,26 @@ export function Textarea({
         placeholder={placeholder}
         maxLength={MAX_LENGTH}
       />
-      <div className="flex justify-between w-full text-zinc-400 text-xs mt-[-28px] px-2">
+      <div className="flex justify-between w-full text-zinc-400 mt-[-35px] px-2">
         <p>
           {value.length}/{MAX_LENGTH}
         </p>
-        <p>
-          {!isSubmitting ? (
-            <span>enter to submit</span>
-          ) : (
-            <span className="opacity-50 cursor-not-allowed pointer-events-none">
-              {thinkingFlavorText[flavorTextIndex]}
-            </span>
-          )}
-        </p>
       </div>
-    </>
+
+      <p className="text-right text-zinc-400">
+        {!isSubmitting ? (
+          <span>
+            press enter to{" "}
+            <a className="underline" onClick={handleEnter}>
+              submit
+            </a>
+          </span>
+        ) : (
+          <span className="opacity-50 cursor-not-allowed pointer-events-none">
+            {thinkingFlavorText[flavorTextIndex]}
+          </span>
+        )}
+      </p>
+    </div>
   );
 }

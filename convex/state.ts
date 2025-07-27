@@ -1,7 +1,7 @@
 import { mutation, query } from "./_generated/server";
 import { Doc } from "./_generated/dataModel";
 import { getUserAndPetId } from "./user";
-import { DilemmaTemplate, dilemmaTemplates } from "../constants/dilemmas";
+import { dilemmaTemplates } from "../constants/dilemmas";
 import { getPartitionedDilemmas } from "./lib/getPartitionedDilemmas";
 
 export type GameState = 
@@ -9,20 +9,15 @@ export type GameState =
   | { status: 'needs_pet' }
   | {
       status: 'has_dilemmas',
-      seenDilemmas: Doc<"dilemmas">[],
-      unseenDilemmaTitles: string[],
       pet: Doc<"pets">,
     }
   | {
       status: 'has_unresolved_dilemma',
-      seenDilemmas: Doc<"dilemmas">[],
-      unresolvedDilemma: DilemmaTemplate,
       question: string,
       pet: Doc<"pets">,
     }
   | {
       status: 'graduated',
-      seenDilemmas: Doc<"dilemmas">[],
       pet: Doc<"pets">,
     }
 

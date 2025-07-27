@@ -3,10 +3,8 @@ import Image from "next/image";
 import { Background, VIEWPORT_WIDTH } from "@/components/Background";
 import { VIEWPORT_HEIGHT } from "@/components/Background";
 import { AnimatePresence, motion } from "framer-motion";
-import { Animation, RIP_SPRITE, getSprite } from "@/constants/sprites";
-import { Doc } from "@/convex/_generated/dataModel";
-import { BaseStatsType, PooType } from "@/constants/base";
-import { EvolutionId } from "@/constants/evolutions";
+import { RIP_SPRITE, getSprite } from "@/constants/sprites";
+import { useBaseStats, usePet } from "@/app/providers/PetProvider";
 
 // local storage key for tracking if egg animation has been shown
 const EGG_CRACK_SHOWN_KEY = "egg_crack_animation_shown";
@@ -23,61 +21,52 @@ function isSpriteTransformation(prevSprite: string, currentSprite: string) {
   return prevFirstLetter !== currentFirstLetter;
 }
 
-const Viewport = React.memo(function Viewport({
-  pet,
-  clarifyingQuestion,
-  animation,
-  rip,
-  poos,
-  cleanupPoo,
-  baseStats,
-  hasGraduated,
-}: {
-  pet: Doc<"pets">;
-  clarifyingQuestion: string | null;
-  animation: Animation;
-  rip: boolean;
-  poos: PooType[];
-  cleanupPoo: (id: number) => void;
-  baseStats: BaseStatsType;
-  hasGraduated: boolean;
-}) {
+const Viewport = React.memo(function Viewport() {
+  const { pet, animation, rip } = usePet();
+  const { baseStats, poos, cleanupPoo } = useBaseStats();
   const [prevSprite, setPrevSprite] = useState<string | null>(null);
   const [isTransforming, setIsTransforming] = useState(false);
   const [isAlmostDead, setIsAlmostDead] = useState(false);
-  const [showEggCrack, setShowEggCrack] = useState(false);
+
+  // Initialize showEggCrack based on localStorage to avoid timing issues
+  const [showEggCrack, setShowEggCrack] = useState(() => {
+    if (typeof window !== "undefined") {
+      return !localStorage.getItem(EGG_CRACK_SHOWN_KEY);
+    }
+    return false;
+  });
 
   // egg crack animation should be shown on first render
   useEffect(() => {
-    const eggCrackShown = localStorage.getItem(EGG_CRACK_SHOWN_KEY);
-
-    if (!eggCrackShown) {
-      setShowEggCrack(true);
+    if (showEggCrack) {
       const timer = setTimeout(() => {
         setShowEggCrack(false);
         localStorage.setItem(EGG_CRACK_SHOWN_KEY, "true");
       }, 2000);
       return () => clearTimeout(timer);
     }
-  }, []);
+  }, [showEggCrack]);
 
   const petSprite = useMemo(() => {
+    if (!pet) {
+      return null;
+    }
     if (rip) {
       return RIP_SPRITE;
     }
-    const sprite = getSprite(animation, pet.evolutionId as EvolutionId);
+    const sprite = getSprite(animation, pet.evolutionIds[0]);
     if (!sprite) {
       throw new Error(
-        `no sprite found for ${pet.age}, ${animation}, ${pet.evolutionId}`
+        `no sprite found for ${pet.age}, ${animation}, ${pet.evolutionIds[0]}`
       );
     }
     return sprite;
-  }, [rip, pet.age, animation, pet.evolutionId]);
+  }, [rip, animation, pet]);
 
   // trigger transformation only if first letter changed
   useEffect(() => {
     if (prevSprite && prevSprite !== petSprite) {
-      if (isSpriteTransformation(prevSprite, petSprite)) {
+      if (isSpriteTransformation(prevSprite, petSprite || "")) {
         setIsTransforming(true);
         const timer = setTimeout(() => {
           setIsTransforming(false);
@@ -103,10 +92,10 @@ const Viewport = React.memo(function Viewport({
 
   // undo effects when graduated
   useEffect(() => {
-    if (hasGraduated) {
+    if (pet?.age && pet.age >= 2) {
       setIsAlmostDead(false);
     }
-  }, [hasGraduated]);
+  }, [pet?.age]);
 
   return (
     <div
@@ -138,24 +127,31 @@ const Viewport = React.memo(function Viewport({
           </div>
         );
       })}
-      {!rip && clarifyingQuestion && (
-        <motion.div
-          key="clarifying-question"
-          className="absolute w-xs bg-zinc-100 z-10 border border-2 p-2 mt-[-80px] text-center"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.3, delay: 0.1 }}
-        >
-          <p className="text-sm">{clarifyingQuestion}</p>
-        </motion.div>
-      )}
-      <Background hasOverlay backgroundSrcs={["/background.png", "/trees.gif"]}>
+      {!rip &&
+        pet?.dilemmas.map((dilemma) => (
+          <motion.div
+            key="clarifying-question"
+            className="absolute w-xs bg-zinc-100 z-10 border border-2 p-2 mt-[-80px] text-center"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.3, delay: 0.1 }}
+          >
+            {dilemma.messages.map((message) => (
+              <p key={message.content}>{message.content}</p>
+            ))}
+          </motion.div>
+        ))}
+      <Background
+        hasOverlay
+        isAlmostDead={isAlmostDead}
+        backgroundSrcs={["/background.png", "/trees.gif"]}
+      >
         <div className="relative">
           <div className="relative">
-            <AnimatePresence>
+            <AnimatePresence mode="wait">
               {showEggCrack && (
                 <motion.div
-                  className="absolute top-13 left-[-3px] w-full h-full z-10 flex items-center justify-center"
+                  className="absolute top-13 left-[-9px] w-35 h-30 z-10 flex items-center justify-center"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
@@ -164,31 +160,33 @@ const Viewport = React.memo(function Viewport({
                   <Image
                     src="/egg_crack.gif"
                     alt="egg cracking"
-                    width={VIEWPORT_WIDTH / 3}
-                    height={VIEWPORT_HEIGHT / 3}
-                    className="absolute z-10"
+                    width={VIEWPORT_WIDTH / 5}
+                    height={VIEWPORT_HEIGHT / 5}
+                    className="absolute z-10 w-full h-full"
                     priority
                   />
                 </motion.div>
               )}
             </AnimatePresence>
-
             <motion.div
+              key={`bird-${showEggCrack}`}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.3, delay: 0.1 }}
+              transition={{ duration: 0.3, delay: showEggCrack ? 1.4 : 0.1 }}
             >
-              <Image
-                src={petSprite}
-                alt="birb"
-                width={VIEWPORT_WIDTH / 5}
-                height={VIEWPORT_HEIGHT / 5}
-                priority
-                className={`translate-y-[30%] cursor-grab no-select ${
-                  isAlmostDead ? "animate-pulse" : ""
-                }`}
-              />
+              {petSprite && (
+                <Image
+                  src={petSprite}
+                  alt="birb"
+                  width={VIEWPORT_WIDTH / 5}
+                  height={VIEWPORT_HEIGHT / 5}
+                  priority
+                  className={`translate-y-[30%] cursor-grab no-select ${
+                    isAlmostDead ? "animate-pulse" : ""
+                  }`}
+                />
+              )}
             </motion.div>
           </div>
 

@@ -1,15 +1,9 @@
-import { Doc } from "@/convex/_generated/dataModel";
 import Image from "next/image";
 import { useState } from "react";
 import { getSprite, Animation } from "@/constants/sprites";
-import { EvolutionId, Stage2EvolutionId } from "@/constants/evolutions";
-import { dilemmaTemplates } from "@/constants/dilemmas";
-
-interface Dilemma {
-  title: string;
-  responseText: string;
-  outcome?: string;
-}
+import { EvolutionId } from "@/constants/evolutions";
+import { dilemmas } from "@/constants/dilemmas";
+import { ActiveDilemma, Pet } from "@/app/storage/pet";
 
 // pet image and basic info component
 function PetImageSection({
@@ -17,7 +11,7 @@ function PetImageSection({
   dilemmaCount,
   hoveredEvolutionId,
 }: {
-  pet: Doc<"pets">;
+  pet: Pet;
   dilemmaCount: number;
   hoveredEvolutionId?: EvolutionId;
 }) {
@@ -27,7 +21,7 @@ function PetImageSection({
         <Image
           src={getSprite(
             Animation.HAPPY,
-            hoveredEvolutionId || (pet.evolutionId as Stage2EvolutionId)
+            hoveredEvolutionId || pet.evolutionIds[0]
           )}
           alt={pet.name}
           width={120}
@@ -36,10 +30,10 @@ function PetImageSection({
         />
       </div>
       <h2 className="text-xl font-bold mb-1">{pet.name}</h2>
-      <p className="text-sm text-zinc-600 mb-2">
+      <p className="text-zinc-600 mb-2">
         graduated after {dilemmaCount} moral dilemmas
       </p>
-      <p className="text-sm italic text-zinc-500 border-t border-b border-zinc-200 py-1 px-3">
+      <p className="italic text-zinc-500 border-t border-b border-zinc-200 py-1 px-3">
         {pet.personality}
       </p>
     </div>
@@ -51,24 +45,26 @@ function MemoryCard({
   dilemma,
   petName,
 }: {
-  dilemma: Dilemma;
+  dilemma: ActiveDilemma;
   petName: string;
 }) {
   return (
     <>
-      <p className="text-sm italic text-zinc-500 mb-2">
-        {dilemma.title && (
+      <p className="italic text-zinc-500 mb-2">
+        {dilemma.id && (
           <span>
-            {dilemma.title in dilemmaTemplates
-              ? dilemmaTemplates[dilemma.title].text.replace(/{pet}/g, petName)
+            {dilemma.id in dilemmas
+              ? dilemmas[dilemma.id].text.replace(/{pet}/g, petName)
               : "dilemma not found"}
           </span>
         )}
       </p>
-      <div className="bg-white p-3 border border-zinc-800 text-sm h-full">
-        <p className="mb-1">you said: &quot;{dilemma.responseText}&quot;</p>
+      <div className="bg-white p-3 border border-zinc-800 h-full">
+        <p className="mb-1">
+          you said: &quot;{dilemma.messages[0].content}&quot;
+        </p>
         <hr className="my-2 border-zinc-200" />
-        <p>{dilemma.outcome || "no history"}</p>
+        <p>{dilemma.messages[1].content || "no history"}</p>
       </div>
     </>
   );
@@ -76,24 +72,24 @@ function MemoryCard({
 
 // memories section component
 function MemoriesSection({
-  seenDilemmas,
+  dilemmas,
   currentPage,
   totalPages,
   onPrevious,
   onNext,
   petName,
 }: {
-  seenDilemmas: Dilemma[];
+  dilemmas: ActiveDilemma[];
   currentPage: number;
   totalPages: number;
   onPrevious: () => void;
   onNext: () => void;
   petName: string;
 }) {
-  const dilemma = seenDilemmas?.[currentPage - 1];
+  const dilemma = dilemmas?.[currentPage - 1];
   return (
     <div>
-      <div className="flex justify-between items-center text-xs mb-4 border-b border-zinc-200 pb-1">
+      <div className="flex justify-between items-center mb-4 border-b border-zinc-200 pb-1">
         <a
           onClick={onPrevious}
           className={`underline text-zinc-500 no-drag ${
@@ -104,7 +100,7 @@ function MemoriesSection({
         >
           ← prev
         </a>
-        <h3 className="text-sm font-medium">memories</h3>
+        <h3 className="font-medium">memories</h3>
         <a
           onClick={onNext}
           className={`underline text-zinc-500 no-drag ${
@@ -116,13 +112,13 @@ function MemoriesSection({
           next →
         </a>
       </div>
-      <p className="text-xs text-zinc-500">
+      <p className="text-zinc-500">
         day {currentPage} of {totalPages || 1}
       </p>
-      {seenDilemmas.length > 0 && dilemma ? (
+      {dilemmas.length > 0 && dilemma ? (
         <MemoryCard dilemma={dilemma} petName={petName} />
       ) : (
-        <p className="text-zinc-400 italic text-sm text-center py-8">
+        <p className="text-zinc-400 italic text-center py-8">
           no memories available
         </p>
       )}
@@ -132,15 +128,13 @@ function MemoriesSection({
 
 export default function PetInfo({
   pet,
-  seenDilemmas,
   hoveredEvolutionId,
 }: {
-  pet: Doc<"pets">;
-  seenDilemmas: Dilemma[];
+  pet: Pet;
   hoveredEvolutionId?: EvolutionId;
 }) {
   const [currentPage, setCurrentPage] = useState(1);
-  const totalPages = Math.ceil((seenDilemmas?.length || 0) / 1);
+  const totalPages = Math.ceil((pet.dilemmas?.length || 0) / 1);
 
   const goToPreviousPage = () => {
     if (currentPage > 1) setCurrentPage(currentPage - 1);
@@ -153,11 +147,11 @@ export default function PetInfo({
     <div className="md:w-1/2 space-y-6">
       <PetImageSection
         pet={pet}
-        dilemmaCount={seenDilemmas.length}
+        dilemmaCount={pet.dilemmas.length}
         hoveredEvolutionId={hoveredEvolutionId}
       />
       <MemoriesSection
-        seenDilemmas={seenDilemmas}
+        dilemmas={pet.dilemmas}
         currentPage={currentPage}
         totalPages={totalPages}
         onPrevious={goToPreviousPage}

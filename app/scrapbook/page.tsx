@@ -1,35 +1,34 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Scrapbook from "./components/Scrapbook";
-import { api } from "@/convex/_generated/api";
-import { useQuery } from "convex/react";
-import Window from "@/components/Window";
-import Menu from "@/components/Menu";
-import { useState } from "react";
 import { Doc } from "@/convex/_generated/dataModel";
-import Graduation from "../play/components/Graduation";
+import { getLocalPets } from "@/app/utils/localStorage";
 
 export default function ScrapbookPage() {
-  const petsQuery = useQuery(api.pets.getAllPetsForUser);
-  const [selectedPet, setSelectedPet] = useState<Doc<"pets"> | null>(null);
+  const [pets, setPets] = useState<Doc<"pets">[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  return (
-    <>
-      <div className="flex flex-col items-center justify-center sm:w-2xl w-full min-h-screen">
-        <Menu page="scrapbook" />
-        <div className="px-4">
-          <Window title="family scrapbook" isOpen={true}>
-            <Scrapbook petsQuery={petsQuery} setSelectedPet={setSelectedPet} />
-          </Window>
-        </div>
+  useEffect(() => {
+    // Load pets from local storage
+    try {
+      const localPets = getLocalPets();
+      setPets(localPets);
+    } catch (error) {
+      console.error("Error loading pets:", error);
+      setPets([]);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div>Loading your scrapbook...</div>
       </div>
-      {selectedPet && (
-        <Graduation
-          pet={selectedPet}
-          graduationOpen={selectedPet !== null}
-          setGraduationOpen={() => setSelectedPet(null)}
-        />
-      )}
-    </>
-  );
+    );
+  }
+
+  return <Scrapbook petsQuery={pets} setSelectedPet={() => {}} />;
 }

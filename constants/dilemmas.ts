@@ -1,11 +1,11 @@
 // represents a moral choice presented to the player
-export interface DilemmaTemplate {
+export interface Dilemma {
   id: string;
   text: string;
 }
 
 // all dilemmas organized by attribute
-export const dilemmaTemplates: Record<string, DilemmaTemplate> = {
+export const dilemmas: Record<string, Dilemma> = {
   // compassion dilemmas
   train: {
     id: "train",

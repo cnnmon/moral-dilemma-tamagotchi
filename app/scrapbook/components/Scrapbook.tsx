@@ -33,7 +33,7 @@ export default function Scrapbook({
             no graduated pets yet!
           </p>
         </div>
-        <p className="text-sm text-gray-700 mt-2">
+        <p className="text-gray-700 mt-2">
           <a href="/create" className="underline">
             graduate a pet
           </a>{" "}

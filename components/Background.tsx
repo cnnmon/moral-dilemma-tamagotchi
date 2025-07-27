@@ -8,10 +8,12 @@ export const VIEWPORT_HEIGHT = 230 * 1.12;
 export function Background({
   backgroundSrcs,
   hasOverlay = false,
+  isAlmostDead = false,
   children,
 }: {
   backgroundSrcs: string[];
   hasOverlay?: boolean;
+  isAlmostDead?: boolean;
   children: React.ReactNode;
 }) {
   // state to track loaded images
@@ -28,12 +30,7 @@ export function Background({
           width={VIEWPORT_WIDTH}
           height={VIEWPORT_HEIGHT}
           priority={true}
-          style={{
-            height: VIEWPORT_HEIGHT,
-            width: `min(calc(100% - 30px), ${VIEWPORT_WIDTH}px)`,
-            objectFit: "cover",
-          }}
-          className={`absolute w-full transition-opacity duration-500 pointer-events-none ${
+          className={`absolute w-full h-full transition-opacity duration-500 pointer-events-none ${
             loadedImages.includes(src) ? "opacity-100" : "opacity-0"
           }`}
           onLoad={() => {
@@ -46,7 +43,10 @@ export function Background({
 
   return (
     <AnimatePresence key="bg">
-      <div className="w-full flex items-center justify-center">
+      <div className="w-full flex items-center justify-center relative">
+        {isAlmostDead && (
+          <div className="absolute w-full h-full bg-red-500 opacity-75" />
+        )}
         <motion.div
           key="background-container"
           initial={{ opacity: 0 }}
