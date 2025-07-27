@@ -2,7 +2,6 @@ import Image from "next/image";
 import { useState } from "react";
 import { getSprite, Animation } from "@/constants/sprites";
 import { EvolutionId } from "@/constants/evolutions";
-import { dilemmas } from "@/constants/dilemmas";
 import { ActiveDilemma, Pet } from "@/app/storage/pet";
 
 // pet image and basic info component

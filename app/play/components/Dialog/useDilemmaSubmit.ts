@@ -3,6 +3,8 @@ import { useBaseStats, useDilemma, useOutcome, usePet } from "@/app/providers/Pe
 import { formatMoralStatsChange } from "@/app/utils/dilemma";
 import { BaseStatKeys } from "@/constants/base";
 import { useState } from "react";
+import { useMutation } from "convex/react";
+import { api } from "@/convex/_generated/api";
 
 export function useDilemmaSubmit() {
   const { pet, updatePet } = usePet();
@@ -10,6 +12,7 @@ export function useDilemmaSubmit() {
   const { incrementStat } = useBaseStats();
   const { showOutcome } = useOutcome();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const trackResponse = useMutation(api.dilemmas.trackDilemmaResponse);
 
   const handleSubmit = async (responseText: string) => {
     if (!pet || !dilemma) {
@@ -28,6 +31,16 @@ export function useDilemmaSubmit() {
     setDilemma(newDilemma);
     try {
       console.log("🚀 Submitting dilemma:", newDilemma);
+      
+      // Track the response in Convex
+      await trackResponse({
+        title: dilemma.id,
+        responseText,
+        outcome: undefined, // Will be filled by the local API processing
+        resolved: false,
+      });
+
+      // Continue with local API processing
       const response = await fetch("/api/dilemma", {
         method: "POST",
         body: JSON.stringify({

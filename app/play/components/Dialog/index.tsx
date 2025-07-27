@@ -3,7 +3,7 @@ import Window from "@/components/Window";
 import { EvolutionId } from "@/constants/evolutions";
 import { useDilemma, usePet } from "@/app/providers/PetProvider";
 import { dilemmas } from "@/constants/dilemmas";
-import { useDilemmaSubmit } from "./useDilemma";
+import { useDilemmaSubmit } from "./useDilemmaSubmit";
 
 export default function Dialog() {
   const { pet } = usePet();

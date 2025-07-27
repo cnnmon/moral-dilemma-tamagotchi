@@ -19,10 +19,10 @@ export const dilemmas: Record<string, Dilemma> = {
     id: "lostchild",
     text: "{pet} sees a lost child crying at the mall. should {pet} help or keep their spot 1 hour into the Black Friday sale line?",
   },
-  sickfriend: {
+  /*sickfriend: {
     id: "sickfriend",
     text: "{pet}'s roommate is bedridden and asks {pet} to bring them soup, but {pet}'s edible is about to hit. should {pet} deliver the soup or let fate take its course?",
-  },
+  },*/
   homelesscat: {
     id: "homelesscat",
     text: "{pet} finds a stray cat in the rain. it looks up at {pet}, hungry and cold. should {pet} take responsibility or ignore it?",
