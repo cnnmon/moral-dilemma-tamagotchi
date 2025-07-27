@@ -2,8 +2,14 @@ import { dilemmas } from "@/constants/dilemmas";
 import { Pet, ActiveDilemma } from "@/app/storage/pet";
 import { MoralDimensionsType } from "@/constants/morals";
 
-// Get a random unseen dilemma
+// get a random unseen dilemma
 export const getRandomUnseenDilemma = (pet: Pet): ActiveDilemma | null => {
+  // if there is a dilemma that is not completed, return it
+  const incompleteDilemma = pet.dilemmas.find((d) => !d.completed);
+  if (incompleteDilemma) {
+    return incompleteDilemma;
+  }
+
   const seenDilemmas = pet.dilemmas.map((d) => d.id) || [];
   const unseenDilemmas = Object.keys(dilemmas).filter(
     (title) => !seenDilemmas.includes(title)
@@ -15,6 +21,7 @@ export const getRandomUnseenDilemma = (pet: Pet): ActiveDilemma | null => {
   return {
     id: randomTitle,
     messages: [],
+    completed: false,
     stats: {
       compassion: 0,
       retribution: 0,
@@ -34,9 +41,9 @@ export const formatMoralStatsChange = (oldStats: MoralDimensionsType, newStats: 
     const oldValue = oldStats[key as keyof MoralDimensionsType];
     const diff = newValue - oldValue;
     
-    if (Math.abs(diff) > 0.1) { // Only show significant changes
+    if (Math.abs(diff) > 0.01) { // Only show significant changes
       const sign = diff > 0 ? "+" : "-";
-      changes.push(`${sign} ${key}`);
+      changes.push(`${sign}${key}`);
     }
   });
   

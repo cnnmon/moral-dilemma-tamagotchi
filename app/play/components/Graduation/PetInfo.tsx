@@ -87,16 +87,6 @@ function MemoryCard({
 }) {
   return (
     <div className="space-y-2">
-      <Message
-        message={{
-          role: "system",
-          content:
-            dilemma.id in dilemmas
-              ? dilemmas[dilemma.id].text.replace(/{pet}/g, petName)
-              : "dilemma not found",
-        }}
-        petName={petName}
-      />
       {dilemma.messages.map((message, msgIndex) => (
         <Message key={msgIndex} message={message} petName={petName} />
       ))}

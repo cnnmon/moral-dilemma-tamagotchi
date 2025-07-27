@@ -8,14 +8,15 @@ import React, {
   useState,
   useReducer,
   useCallback,
+  useRef,
 } from "react";
-import { useRouter } from "next/navigation";
 import { getPets, Pet, savePet } from "@/app/storage/pet";
 import { Animation } from "@/constants/sprites";
 import {
   EvolutionIdType,
   getEvolution,
   Evolution,
+  EvolutionId,
 } from "@/constants/evolutions";
 import { ActiveDilemma } from "@/app/storage/pet";
 import { BaseStatsType, PooType } from "@/constants/base";
@@ -33,6 +34,7 @@ const BASE_STATS_DECREMENT_VALUE = 1;
 const MAX_POOS = 10;
 const POO_CHANCE = 0.05;
 
+// Move pure functions outside component to prevent recreation
 function spawnPoo() {
   return {
     x: Math.random() * (VIEWPORT_WIDTH / 2) - VIEWPORT_WIDTH / 4,
@@ -51,7 +53,7 @@ type StatsAction =
     }
   | { type: "RESET_STATS" };
 
-// reducer for base stats
+// Move reducer outside component to prevent recreation
 function baseStatsReducer(
   state: BaseStatsType,
   action: StatsAction
@@ -109,10 +111,8 @@ interface PetContextType {
   // Pet state
   pet: Pet | null;
   evolution: Evolution | null;
-  rip: boolean;
   animation: Animation;
   setAnimation: (animation: Animation) => void;
-  setRip: (rip: boolean) => void;
   updatePet: (updates: Partial<Pet>) => void;
 
   // Dilemma state
@@ -144,19 +144,10 @@ interface PetContextType {
 const PetContext = createContext<PetContextType | undefined>(undefined);
 
 export function PetProvider({ children }: { children: React.ReactNode }) {
-  // Pet state from usePet
   const [pet, setPet] = useState<Pet | null>(null);
   const [animation, setAnimation] = useState<Animation>(Animation.IDLE);
-  const [rip, setRip] = useState(false);
-  const router = useRouter();
-
-  // Dilemma state from useDilemma
   const [dilemma, setDilemma] = useState<ActiveDilemma | null>(null);
-
-  // Outcome state
   const [outcome, setOutcome] = useState<Outcome | null>(null);
-
-  // Hover text state
   const [hoverText, setHoverText] = useState<string | null>(null);
 
   // Base stats state from useBaseStats
@@ -243,36 +234,94 @@ export function PetProvider({ children }: { children: React.ReactNode }) {
     }, 300);
   }, []);
 
+  // Memoize context value to prevent unnecessary re-renders
+  const contextValue = useMemo<PetContextType>(
+    () => ({
+      pet,
+      evolution,
+      animation,
+      setAnimation,
+      updatePet,
+      dilemma,
+      setDilemma,
+      outcome,
+      showOutcome,
+      hideOutcome,
+      baseStats,
+      incrementStat,
+      poos,
+      cleanupPoo,
+      recentDecrements,
+      recentIncrements,
+      hoverText,
+      setHoverText,
+    }),
+    [
+      pet,
+      evolution,
+      animation,
+      updatePet,
+      dilemma,
+      outcome,
+      showOutcome,
+      hideOutcome,
+      baseStats,
+      incrementStat,
+      poos,
+      cleanupPoo,
+      recentDecrements,
+      recentIncrements,
+      hoverText,
+    ]
+  );
+
+  // Optimize pet loading - use ref to prevent re-triggering
+  const hasLoadedPet = useRef(false);
   useEffect(() => {
+    if (hasLoadedPet.current) return;
+
     const fetchPets = async () => {
       try {
         const pets = getPets();
-        if (pets.length == 0) {
-          window.location.href = "/create";
+        if (pets.length === 0) {
           return;
         }
-        setPet(pets[0]);
+        const lastPet = pets[pets.length - 1];
+        setPet(lastPet);
+        hasLoadedPet.current = true;
       } catch (error) {
         console.error("Error loading pets:", error);
         window.location.href = "/create";
       }
     };
     fetchPets();
-  }, [router]);
-
-  // on mount, set the poos to saved poos
-  useEffect(() => {
-    const savedPoos = localStorage.getItem(POO_STORAGE_KEY);
-    if (savedPoos) {
-      setPoos(JSON.parse(savedPoos));
-    }
   }, []);
+
+  useEffect(() => {
+    if (!pet) return;
+
+    const loadPoos = () => {
+      try {
+        const savedPoos = localStorage.getItem(POO_STORAGE_KEY);
+        if (savedPoos) {
+          setPoos(JSON.parse(savedPoos));
+        }
+      } catch (error) {
+        console.warn("Failed to load poos:", error);
+      }
+    };
+
+    // Defer poo loading to not block critical render path
+    const timer = setTimeout(loadPoos, 100);
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pet?.id]);
 
   // on mount, set the base stats to saved base stats
   useEffect(() => {
     if (!pet || pet.age >= 2) return;
 
-    if (rip) {
+    if (pet.evolutionIds.includes(EvolutionId.RIP)) {
       dispatchBaseStats({ type: "RESET_STATS" });
       setBaseStatsLoaded(true);
       return;
@@ -280,7 +329,8 @@ export function PetProvider({ children }: { children: React.ReactNode }) {
 
     dispatchBaseStats({ type: "INIT_STATS", payload: pet.baseStats });
     setBaseStatsLoaded(true);
-  }, [pet, rip]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pet?.id]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -320,7 +370,7 @@ export function PetProvider({ children }: { children: React.ReactNode }) {
         newStats.sanity <= 0
       ) {
         clearInterval(interval);
-        setRip(true);
+        updatePet({ evolutionIds: [...pet.evolutionIds, EvolutionId.RIP] });
       }
 
       // spawn poo
@@ -335,30 +385,8 @@ export function PetProvider({ children }: { children: React.ReactNode }) {
     }, DECREMENT_INTERVAL_MS);
 
     return () => clearInterval(interval);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [baseStatsLoaded, pet, baseStats]);
-
-  const contextValue: PetContextType = {
-    pet,
-    evolution,
-    rip,
-    animation,
-    setAnimation,
-    setRip,
-    updatePet,
-    dilemma,
-    setDilemma,
-    outcome,
-    showOutcome,
-    hideOutcome,
-    baseStats,
-    incrementStat,
-    poos,
-    cleanupPoo,
-    recentDecrements,
-    recentIncrements,
-    hoverText,
-    setHoverText,
-  };
 
   return (
     <PetContext.Provider value={contextValue}>{children}</PetContext.Provider>
@@ -371,15 +399,22 @@ export function usePet() {
     throw new Error("usePet must be used within a PetProvider");
   }
 
-  return {
-    pet: context.pet,
-    evolution: context.evolution,
-    rip: context.rip,
-    animation: context.animation,
-    setAnimation: context.setAnimation,
-    setRip: context.setRip,
-    updatePet: context.updatePet,
-  };
+  return useMemo(
+    () => ({
+      pet: context.pet,
+      evolution: context.evolution,
+      animation: context.animation,
+      setAnimation: context.setAnimation,
+      updatePet: context.updatePet,
+    }),
+    [
+      context.pet,
+      context.evolution,
+      context.animation,
+      context.setAnimation,
+      context.updatePet,
+    ]
+  );
 }
 
 export function useDilemma() {
@@ -388,10 +423,13 @@ export function useDilemma() {
     throw new Error("useDilemma must be used within a PetProvider");
   }
 
-  return {
-    dilemma: context.dilemma,
-    setDilemma: context.setDilemma,
-  };
+  return useMemo(
+    () => ({
+      dilemma: context.dilemma,
+      setDilemma: context.setDilemma,
+    }),
+    [context.dilemma, context.setDilemma]
+  );
 }
 
 export function useOutcome() {
@@ -400,11 +438,14 @@ export function useOutcome() {
     throw new Error("useOutcome must be used within a PetProvider");
   }
 
-  return {
-    outcome: context.outcome,
-    showOutcome: context.showOutcome,
-    hideOutcome: context.hideOutcome,
-  };
+  return useMemo(
+    () => ({
+      outcome: context.outcome,
+      showOutcome: context.showOutcome,
+      hideOutcome: context.hideOutcome,
+    }),
+    [context.outcome, context.showOutcome, context.hideOutcome]
+  );
 }
 
 export function useBaseStats() {
@@ -413,14 +454,24 @@ export function useBaseStats() {
     throw new Error("useBaseStats must be used within a PetProvider");
   }
 
-  return {
-    baseStats: context.baseStats,
-    incrementStat: context.incrementStat,
-    poos: context.poos,
-    cleanupPoo: context.cleanupPoo,
-    recentDecrements: context.recentDecrements,
-    recentIncrements: context.recentIncrements,
-  };
+  return useMemo(
+    () => ({
+      baseStats: context.baseStats,
+      incrementStat: context.incrementStat,
+      poos: context.poos,
+      cleanupPoo: context.cleanupPoo,
+      recentDecrements: context.recentDecrements,
+      recentIncrements: context.recentIncrements,
+    }),
+    [
+      context.baseStats,
+      context.incrementStat,
+      context.poos,
+      context.cleanupPoo,
+      context.recentDecrements,
+      context.recentIncrements,
+    ]
+  );
 }
 
 export function useHoverText() {
@@ -429,8 +480,11 @@ export function useHoverText() {
     throw new Error("useHoverText must be used within a PetProvider");
   }
 
-  return {
-    hoverText: context.hoverText,
-    setHoverText: context.setHoverText,
-  };
+  return useMemo(
+    () => ({
+      hoverText: context.hoverText,
+      setHoverText: context.setHoverText,
+    }),
+    [context.hoverText, context.setHoverText]
+  );
 }

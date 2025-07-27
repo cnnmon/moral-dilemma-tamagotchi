@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { useMemo, useState } from "react";
+import { twMerge } from "tailwind-merge";
 
 export const VIEWPORT_WIDTH = 570 * 1.3;
 export const VIEWPORT_HEIGHT = 230 * 1.3;
@@ -30,9 +31,10 @@ export function Background({
           width={VIEWPORT_WIDTH}
           height={VIEWPORT_HEIGHT}
           priority={true}
-          className={`absolute w-full h-full transition-opacity duration-500 pointer-events-none ${
+          className={twMerge(
+            "absolute w-full h-full transition-opacity duration-500 pointer-events-none object-cover",
             loadedImages.includes(src) ? "opacity-100" : "opacity-0"
-          }`}
+          )}
           onLoad={() => {
             setLoadedImages((prev) => [...prev, src]);
           }}

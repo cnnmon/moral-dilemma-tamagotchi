@@ -221,7 +221,6 @@ const evolutions: Record<string, Evolution> = {
 }
 
 export function getEvolution(id: EvolutionId): Evolution {
-  console.log(id, evolutions[id]);
   if (!(id in evolutions)) {
     // gracefully handle
     return evolutions.npc;

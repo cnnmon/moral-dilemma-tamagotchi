@@ -1,6 +1,7 @@
 "use client";
 
 import { usePet } from "@/app/providers/PetProvider";
+import { EvolutionId } from "@/constants/evolutions";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect, useRef, forwardRef } from "react";
 
@@ -64,6 +65,10 @@ function MenuContent({
         {pet.name && (
           <motion.a
             onClick={() => {
+              if (pet.evolutionIds.includes(EvolutionId.RIP) || pet.age >= 2) {
+                window.location.href = "/create";
+                return;
+              }
               if (
                 pet.age < 2 &&
                 confirm(
@@ -146,10 +151,14 @@ const MobileMenu = forwardRef<
         <motion.a
           key="new-pet"
           onClick={() => {
+            if (pet.evolutionIds.includes(EvolutionId.RIP) || pet.age >= 2) {
+              window.location.href = "/create";
+              return;
+            }
             if (
               pet.age < 2 &&
               confirm(
-                `are you sure you want to abandon ${pet.name}? look at ${pet.name}'s big ol eyes ( •̯́ ^ •̯̀)`
+                `are you sure you want to abandon ${pet.name}? look at ${pet.name}'s big ol eyes ( •̯́ ^ •̯̀)`
               )
             ) {
               window.location.href = "/create";

@@ -12,6 +12,7 @@ import Image from "next/image";
 import { memo, useCallback } from "react";
 import { BaseStatsType, BaseStatKeys } from "@/constants/base";
 import { twMerge } from "tailwind-merge";
+import { dilemmas } from "@/constants/dilemmas";
 
 const WIDTH = 35;
 const HEIGHT = 35;
@@ -119,17 +120,22 @@ export default function ActionButtons({
 
   // Handle talk action - create new dilemma only if none exists
   const handleTalkAction = useCallback(() => {
-    // If there's already an active dilemma, do nothing (sanity reward comes when answered)
-    if (dilemma) {
+    if (dilemma || !pet) {
       return;
     }
 
-    // No active dilemma, try to create a new one
-    const newDilemma = pet ? getRandomUnseenDilemma(pet) : null;
+    const newDilemma = getRandomUnseenDilemma(pet);
     if (newDilemma) {
-      setDilemma(newDilemma);
+      setDilemma({
+        ...newDilemma,
+        messages: [
+          {
+            role: "system",
+            content: dilemmas[newDilemma.id].text.replaceAll("{pet}", pet.name),
+          },
+        ],
+      });
     } else {
-      // All dilemmas have been seen, increment sanity anyway
       incrementStat(BaseStatKeys.sanity);
     }
   }, [dilemma, pet, setDilemma, incrementStat]);
@@ -139,7 +145,6 @@ export default function ActionButtons({
   }
 
   const hasRip = pet.evolutionIds.includes(EvolutionId.RIP);
-
   return (
     <div className="flex flex-col items-start w-full h-full">
       {STAT_ACTIONS.map((action, index) => {

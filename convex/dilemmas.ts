@@ -6,7 +6,6 @@ import { dilemmaTemplates } from "../constants/dilemmas";
 import { DEFAULT_AVERAGE_STATS, MoralDimensionsType } from "../constants/morals";
 import processDilemmaResponse from "./lib/processDilemmaResponse";
 import { Id } from "./_generated/dataModel";
-import { evolvePetIfNeeded } from "./lib/evolvePetIfNeeded";
 import { getAverageMoralStats } from "./lib/getAverageMoralStats";
 
 type ProcessedResponse = {
@@ -264,52 +263,6 @@ export const updateDilemmaAndPet = mutation({
       ...args.updatedMoralStats,
     }
 
-    // update dilemma response
-    await ctx.db.patch(args.dilemmaId, {
-      outcome: args.outcome,
-      updatedMoralStats: newMoralStats,
-      updatedPersonality: args.updatedPersonality,
-      resolved: args.resolved,
-      overridden: args.overridden,
-    });
-
-    // if resolved
-    // update pet with new moral stats and personality
-    if (args.updatedMoralStats) {
-      // given that a new dilemma is resolved,
-      // check if you can evolve
-      // evolve if # of dilemmas have been met
-      const seenDilemmas = await ctx.db
-        .query("dilemmas")
-        .withIndex("by_petId", (q) => q.eq("petId", args.petId))
-        .filter((q) => q.eq(q.field("resolved"), true))
-        .collect();
-
-      const pet = await ctx.db.get(args.petId);
-      if (!pet) {
-        throw new Error("❌ Pet not found in database");
-      }
-
-      // update moral stats by averaging all seen dilemma moral stats
-      const averageMoralStats = getAverageMoralStats(seenDilemmas, newMoralStats);
-
-      // incl. evolutionId, age, and graduated bool
-      const evolutionAdditions = evolvePetIfNeeded(seenDilemmas.length, pet, averageMoralStats);
-      const updatedBaseStats = {
-        ...pet.baseStats,
-        ...(args.newBaseStats && {
-          ...args.newBaseStats,
-          sanity: Math.min(args.newBaseStats.sanity + 5, 10),
-        }),
-      };
-
-      // update pet with new moral stats and personality and evolution
-      await ctx.db.patch(args.petId, {
-        ...evolutionAdditions,
-        baseStats: updatedBaseStats,
-        moralStats: averageMoralStats,
-        personality: args.updatedPersonality,
-      });
-    }
+    throw new Error("not implemented");
   },
 });

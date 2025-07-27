@@ -2,41 +2,7 @@ import { usePet, useHoverText } from "@/app/providers/PetProvider";
 import { EvolutionId, getEvolutionTimeFrame } from "@/constants/evolutions";
 import ActionButtons from "./ActionButtons";
 import { useState } from "react";
-import Window from "@/components/Window";
-import { dilemmas } from "@/constants/dilemmas";
-
-function Message({ message }: { message: { role: string; content: string } }) {
-  const { pet } = usePet();
-  if (!pet) {
-    return null;
-  }
-
-  if (message.role === "system") {
-    return (
-      <div className="flex flex-wrap gap-1 text-lg">{message.content}</div>
-    );
-  }
-
-  if (message.role === "assistant") {
-    return (
-      <div className="flex justify-end">
-        <p className="w-2/3 border-2 p-2 bg-white flex flex-col">
-          <span className="font-bold">{pet.name}</span>
-          {message.content}
-        </p>
-      </div>
-    );
-  }
-
-  return (
-    <div>
-      <p className="w-full border-2 p-2 flex flex-col bg-white">
-        <span className="font-bold">you</span>
-        {message.content}
-      </p>
-    </div>
-  );
-}
+import { DilemmaTracker } from "./DilemmaTracker";
 
 export default function Header({
   onHealClick,
@@ -47,7 +13,7 @@ export default function Header({
 }) {
   const { pet, evolution } = usePet();
   const { setHoverText } = useHoverText();
-  const [showMessageLog, setShowMessageLog] = useState(false);
+  const [showDilemmaTracker, setShowDilemmaTracker] = useState(false);
 
   if (!pet || !evolution) {
     return null;
@@ -56,48 +22,6 @@ export default function Header({
   const timeFrame = getEvolutionTimeFrame(pet.age);
   const hasGraduated = pet.age >= 2; // Age 2 is the max before graduation
   const hasRip = pet.evolutionIds.includes(EvolutionId.RIP);
-
-  const MessageLogPopup = () => {
-    if (!showMessageLog) return null;
-
-    return (
-      <div className="fixed inset-0 flex items-center justify-center z-[100] bg-zinc-500/50">
-        <div className="w-full max-w-2xl">
-          <Window
-            title={`dilemma tracker`}
-            isOpen={showMessageLog}
-            setIsOpen={setShowMessageLog}
-          >
-            <div className="max-h-[80vh] overflow-y-auto space-y-4 p-4">
-              {pet.dilemmas.length === 0 && (
-                <p className="text-zinc-500 italic">
-                  no dilemmas yet. start talking to {pet.name}!
-                </p>
-              )}
-              {pet.dilemmas.map((dilemma, index) => (
-                <div key={index} className="space-y-2">
-                  <Message
-                    message={{
-                      role: "system",
-                      content: dilemmas[dilemma.id].text.replaceAll(
-                        "{pet}",
-                        pet.name
-                      ),
-                    }}
-                  />
-                  {dilemma.messages.map((message, msgIndex) => (
-                    <div key={msgIndex}>
-                      <Message message={message} />
-                    </div>
-                  ))}
-                </div>
-              ))}
-            </div>
-          </Window>
-        </div>
-      </div>
-    );
-  };
 
   return (
     <>
@@ -134,7 +58,7 @@ export default function Header({
               .{" "}
               <a
                 className="text-zinc-500 hover:text-zinc-700 underline cursor-pointer"
-                onClick={() => setShowMessageLog(true)}
+                onClick={() => setShowDilemmaTracker(true)}
                 onMouseEnter={() => setHoverText("view dilemmas")}
                 onMouseLeave={() => setHoverText(null)}
               >
@@ -151,7 +75,10 @@ export default function Header({
         </div>
       </div>
 
-      <MessageLogPopup />
+      <DilemmaTracker
+        isOpen={showDilemmaTracker}
+        setIsOpen={setShowDilemmaTracker}
+      />
     </>
   );
 }

@@ -15,7 +15,7 @@ export default function PlayMinigame({
   const animationRef = useRef<number>();
 
   const [ballPosition, setBallPosition] = useState({ x: 50, y: 50 });
-  const [ballVelocity, setBallVelocity] = useState({ x: 1, y: 1 });
+  const [ballVelocity, setBallVelocity] = useState({ x: 1.5, y: 1.5 });
   const [paddlePosition, setPaddlePosition] = useState(50);
   const [bounceCount, setBounceCount] = useState(0);
   const [gameStarted, setGameStarted] = useState(false);
@@ -28,7 +28,7 @@ export default function PlayMinigame({
 
   const resetGame = useCallback(() => {
     setBallPosition({ x: 50, y: 20 });
-    setBallVelocity({ x: (Math.random() - 0.5) * 1.5, y: 1 });
+    setBallVelocity({ x: (Math.random() - 0.5) * 3, y: 2 });
     setBounceCount(0);
     setGameStarted(false);
   }, []);
@@ -96,7 +96,7 @@ export default function PlayMinigame({
             newPos.y = ballSize / 2;
           }
 
-          // Check paddle collision
+          // Check paddle collision - adjusted for square ball
           const paddleTop = gameHeight - paddleHeight - 5;
           if (
             newPos.y + ballSize / 2 >= paddleTop &&
@@ -110,7 +110,7 @@ export default function PlayMinigame({
 
             // Add some horizontal velocity based on where ball hits paddle
             const hitPosition = (newPos.x - paddlePosition) / (paddleWidth / 2);
-            newVel.x += hitPosition * 0.5;
+            newVel.x += hitPosition * 2;
 
             setBounceCount((prev) => prev + 1);
           }
@@ -158,7 +158,7 @@ export default function PlayMinigame({
   return (
     <div className="flex w-full h-50">
       <Window
-        title="bounce the ball twice to play!"
+        title="bounce the ball twice to play (+30 happiness)"
         isOpen={isOpen}
         setIsOpen={setIsOpen}
       >
@@ -172,7 +172,7 @@ export default function PlayMinigame({
             {!gameStarted ? (
               <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-20">
                 <button
-                  className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                  className="border-2 bg-white hover:bg-zinc-100"
                   onClick={startGame}
                 >
                   Start Game
@@ -197,7 +197,7 @@ export default function PlayMinigame({
 
                 {/* Paddle */}
                 <div
-                  className="absolute bg-blue-500"
+                  className="absolute bg-black"
                   style={{
                     left: `${paddlePosition}%`,
                     bottom: "5%",
@@ -210,9 +210,9 @@ export default function PlayMinigame({
             )}
           </div>
           <div className="flex justify-between items-center">
-            <p className="text-zinc-600">Bounces: {bounceCount}/2</p>
+            <p className="text-zinc-600">bounces: {bounceCount}/2</p>
             <p className="text-zinc-600">
-              {gameStarted && "Move mouse to control paddle"}
+              {gameStarted && "move mouse to control paddle"}
             </p>
           </div>
         </div>

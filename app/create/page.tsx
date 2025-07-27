@@ -44,7 +44,7 @@ function Content() {
             alt="pan"
             width={180}
             height={180}
-            className="transform translate-x-27 no-select"
+            className="transform translate-x-27 no-select object-cover"
           />
         </Background>
         <br />

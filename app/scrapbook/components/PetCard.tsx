@@ -10,8 +10,10 @@ export default function PetCard({
   pet: Pet;
   setSelectedPet: (pet: Pet) => void;
 }) {
-  const sprite = getSprite(Animation.HAPPY, pet.evolutionIds[0] as EvolutionId);
-
+  const sprite = getSprite(
+    Animation.HAPPY,
+    pet.evolutionIds[pet.evolutionIds.length - 1] as EvolutionId
+  );
   return (
     <>
       {/* polaroid-style card */}
