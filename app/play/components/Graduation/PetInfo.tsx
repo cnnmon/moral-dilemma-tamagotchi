@@ -47,7 +47,7 @@ function Message({
   message: { role: string; content: string };
   petName: string;
 }) {
-  if (message.role === "system" || message.role === "assistant") {
+  if (message.role === "system") {
     return (
       <div className="flex flex-wrap gap-1 text-lg italic text-zinc-500 mb-2">
         {message.content}

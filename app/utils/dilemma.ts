@@ -4,12 +4,6 @@ import { MoralDimensionsType } from "@/constants/morals";
 
 // get a random unseen dilemma
 export const getRandomUnseenDilemma = (pet: Pet): ActiveDilemma | null => {
-  // if there is a dilemma that is not completed, return it
-  const incompleteDilemma = pet.dilemmas.find((d) => !d.completed);
-  if (incompleteDilemma) {
-    return incompleteDilemma;
-  }
-
   const seenDilemmas = pet.dilemmas.map((d) => d.id) || [];
   const unseenDilemmas = Object.keys(dilemmas).filter(
     (title) => !seenDilemmas.includes(title)

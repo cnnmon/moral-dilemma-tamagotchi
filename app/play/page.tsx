@@ -150,7 +150,7 @@ export default function Play() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 10 }}
                 transition={{ duration: 0.2, delay: 0.2 }}
-                className="flex w-full"
+                className="flex flex-col gap-2 w-full"
               >
                 {hasGraduated && (
                   <motion.div

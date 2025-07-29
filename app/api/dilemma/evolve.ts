@@ -7,20 +7,20 @@ export function getAverageMoralStats(
   dilemmas: ActiveDilemma[]
 ): MoralDimensionsType {
   const moralStats = {
-    compassion: 0,
-    retribution: 0,
-    devotion: 0,
-    dominance: 0,
-    purity: 0,
-    ego: 0
+    compassion: 5,
+    retribution: 5,
+    devotion: 5,
+    dominance: 5,
+    purity: 5,
+    ego: 5
   };
   const statCounts = {
-    compassion: 0,
-    retribution: 0, 
-    devotion: 0,
-    dominance: 0,
-    purity: 0,
-    ego: 0
+    compassion: 1,
+    retribution: 1, 
+    devotion: 1,
+    dominance: 1,
+    purity: 1,
+    ego: 1
   };
 
   for (const dilemma of dilemmas) {

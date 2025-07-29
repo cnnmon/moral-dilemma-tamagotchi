@@ -78,14 +78,14 @@ export function useDilemmaSubmit() {
         const newDilemma = {
           ...dilemma,
           messages: [...newMessages],
-          stats: data.stats,
+          stats: data.stats || {},
           completed: true,
         };
 
         // add outcome with moral stats changes
-        const newMoralStats = getAverageMoralStats([...pet.dilemmas, newDilemma]);
-        const moralStatsChanges = formatMoralStatsChange(pet.moralStats, newMoralStats);
-        const outcomeText = `${data.outcome} ${moralStatsChanges ? `(${moralStatsChanges.join(", ")})` : ""}`
+        const newMoralStats = data.stats ? getAverageMoralStats([...pet.dilemmas, newDilemma]) : pet.moralStats;
+        const moralStatsChanges = data.stats ? formatMoralStatsChange(pet.moralStats, newMoralStats).join(",").trim() : "";
+        const outcomeText = `${data.outcome}${moralStatsChanges ? ` (${moralStatsChanges})` : ""}`
         newDilemma.messages.push({
           role: "system" as const,
           content: outcomeText,
@@ -95,7 +95,7 @@ export function useDilemmaSubmit() {
         updatePet({
           ...pet,
           personality: data.personality,
-          moralStats: newMoralStats,
+          moralStats: data.stats ? newMoralStats : pet.moralStats,
           dilemmas: [...pet.dilemmas, newDilemma],
           ...(data.evolutionIds && { evolutionIds: data.evolutionIds }),
           ...(data.age !== undefined && { age: data.age }),

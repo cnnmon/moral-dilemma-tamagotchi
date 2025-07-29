@@ -15,7 +15,7 @@ export default function PlayMinigame({
   const animationRef = useRef<number>();
 
   const [ballPosition, setBallPosition] = useState({ x: 50, y: 50 });
-  const [ballVelocity, setBallVelocity] = useState({ x: 1.5, y: 1.5 });
+  const [ballVelocity, setBallVelocity] = useState({ x: 0.2, y: 0.2 });
   const [paddlePosition, setPaddlePosition] = useState(50);
   const [bounceCount, setBounceCount] = useState(0);
   const [gameStarted, setGameStarted] = useState(false);
@@ -28,7 +28,7 @@ export default function PlayMinigame({
 
   const resetGame = useCallback(() => {
     setBallPosition({ x: 50, y: 20 });
-    setBallVelocity({ x: (Math.random() - 0.5) * 3, y: 2 });
+    setBallVelocity({ x: (Math.random() - 0.5) * 1, y: 2 });
     setBounceCount(0);
     setGameStarted(false);
   }, []);

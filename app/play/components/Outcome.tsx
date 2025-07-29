@@ -14,7 +14,7 @@ export default function Outcome() {
   return (
     <div
       className={twMerge(
-        "fixed top-0 left-0 w-full border-2 border-black p-4 inset-x-0 max-w-2xl mx-auto mt-10 z-[1] bg-zinc-100 transform text-lg",
+        "fixed top-0 left-0 w-full border-2 border-black p-4 inset-x-0 max-w-2xl mx-auto mt-10 z-[20] bg-zinc-100 transform text-lg",
         animationClasses
       )}
     >
