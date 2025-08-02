@@ -19,10 +19,10 @@ export const dilemmas: Record<string, Dilemma> = {
     id: "lostchild",
     text: "{pet} sees a lost child crying at the mall. should {pet} help or keep their spot 1 hour into the Black Friday sale line?",
   },
-  /*sickfriend: {
+  sickfriend: {
     id: "sickfriend",
     text: "{pet}'s roommate is bedridden and asks {pet} to bring them soup, but {pet}'s edible is about to hit. should {pet} deliver the soup or let fate take its course?",
-  },*/
+  },
   homelesscat: {
     id: "homelesscat",
     text: "{pet} finds a stray cat in the rain. it looks up at {pet}, hungry and cold. should {pet} take responsibility or ignore it?",
@@ -241,12 +241,10 @@ export const dilemmas: Record<string, Dilemma> = {
     id: "saltfries",
     text: "{pet} pretends to have a salt allergy so a fast food place has to make a fresh batch of fries. should {pet} salt them in front of the workers or wait until they're out of sight?",
   },
-  /*
   traintracks: {
     id: "traintracks",
     text: "There's like some people on a train track or something, and then on the other side is like-wait no wait let me try again. Your mom and like 5 random dudes are on a track and on the other side-oh fuck I'm really high-on the other side there's like a bus of children… with malaria. Do you do it?",
   },
-  */
 };
 
 // Export types and aliases for convex compatibility
