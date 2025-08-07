@@ -9,7 +9,7 @@ import { api } from "@/convex/_generated/api";
 export function useDilemmaSubmit() {
   const { pet, updatePet } = usePet();
   const { dilemma, setDilemma } = useDilemma();
-  const { incrementStat } = useBaseStats();
+  const { incrementStat, incrementStatBy } = useBaseStats();
   const { showOutcome } = useOutcome();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const trackResponse = useMutation(api.dilemmas.trackDilemmaResponse);
@@ -70,6 +70,8 @@ export function useDilemmaSubmit() {
           ...pet,
           dilemmas: [...pet.dilemmas, newDilemma],
         });
+        // Increase sanity by half the amount of a fully completed dilemma
+        incrementStatBy(BaseStatKeys.sanity, 1.5);
         return;
       }
 

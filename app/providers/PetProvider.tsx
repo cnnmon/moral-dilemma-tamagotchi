@@ -131,6 +131,7 @@ interface PetContextType {
   // Base stats state
   baseStats: BaseStatsType;
   incrementStat: (stat: keyof BaseStatsType) => void;
+  incrementStatBy: (stat: keyof BaseStatsType, amount: number) => void;
   poos: PooType[];
   cleanupPoo: (id: number) => void;
   recentDecrements: Partial<Record<keyof BaseStatsType, number>>;
@@ -201,6 +202,32 @@ export function PetProvider({ children }: { children: React.ReactNode }) {
     }, 2000);
   }, []);
 
+  const incrementStatBy = useCallback(
+    (stat: keyof BaseStatsType, amount: number) => {
+      // temporary happy animation
+      setAnimation(Animation.HAPPY);
+      setTimeout(() => {
+        setAnimation(Animation.IDLE);
+      }, 3000);
+
+      // increment stat
+      dispatchBaseStats({
+        type: "INCREMENT_STAT",
+        payload: { stat, amount },
+      });
+
+      // track increment for animation
+      const increments = { [stat]: amount };
+      setRecentIncrements(increments);
+
+      // clear increments after animation time
+      setTimeout(() => {
+        setRecentIncrements({});
+      }, 2000);
+    },
+    []
+  );
+
   const cleanupPoo = useCallback((id: number) => {
     setPoos((prevPoos) => {
       const newPoos = prevPoos.filter((poo) => poo.id !== id);
@@ -249,6 +276,7 @@ export function PetProvider({ children }: { children: React.ReactNode }) {
       hideOutcome,
       baseStats,
       incrementStat,
+      incrementStatBy,
       poos,
       cleanupPoo,
       recentDecrements,
@@ -267,6 +295,7 @@ export function PetProvider({ children }: { children: React.ReactNode }) {
       hideOutcome,
       baseStats,
       incrementStat,
+      incrementStatBy,
       poos,
       cleanupPoo,
       recentDecrements,
@@ -461,6 +490,7 @@ export function useBaseStats() {
     () => ({
       baseStats: context.baseStats,
       incrementStat: context.incrementStat,
+      incrementStatBy: context.incrementStatBy,
       poos: context.poos,
       cleanupPoo: context.cleanupPoo,
       recentDecrements: context.recentDecrements,
@@ -469,6 +499,7 @@ export function useBaseStats() {
     [
       context.baseStats,
       context.incrementStat,
+      context.incrementStatBy,
       context.poos,
       context.cleanupPoo,
       context.recentDecrements,
