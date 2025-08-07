@@ -15,10 +15,11 @@ export default function PlayMinigame({
   const animationRef = useRef<number>();
 
   const [ballPosition, setBallPosition] = useState({ x: 50, y: 50 });
-  const [ballVelocity, setBallVelocity] = useState({ x: 0.2, y: 0.2 });
+  const [ballVelocity, setBallVelocity] = useState({ x: 14, y: 14 });
   const [paddlePosition, setPaddlePosition] = useState(50);
   const [bounceCount, setBounceCount] = useState(0);
   const [gameStarted, setGameStarted] = useState(false);
+  const lastTimeRef = useRef<number>(0);
 
   const gameWidth = 100; // percentage
   const gameHeight = 100; // percentage
@@ -28,9 +29,10 @@ export default function PlayMinigame({
 
   const resetGame = useCallback(() => {
     setBallPosition({ x: 50, y: 20 });
-    setBallVelocity({ x: (Math.random() - 0.5) * 1, y: 2 });
+    setBallVelocity({ x: (Math.random() - 0.5) * 60, y: 120 });
     setBounceCount(0);
     setGameStarted(false);
+    lastTimeRef.current = 0;
   }, []);
 
   useEffect(() => {
@@ -68,11 +70,18 @@ export default function PlayMinigame({
   useEffect(() => {
     if (!gameStarted || !isOpen) return;
 
-    const updateGame = () => {
+    const updateGame = (currentTime: number) => {
+      if (lastTimeRef.current === 0) {
+        lastTimeRef.current = currentTime;
+      }
+
+      const deltaTime = (currentTime - lastTimeRef.current) / 1000; // Convert to seconds
+      lastTimeRef.current = currentTime;
+
       setBallPosition((prevPos) => {
         const newPos = {
-          x: prevPos.x + ballVelocity.x,
-          y: prevPos.y + ballVelocity.y,
+          x: prevPos.x + ballVelocity.x * deltaTime,
+          y: prevPos.y + ballVelocity.y * deltaTime,
         };
 
         setBallVelocity((prevVel) => {
@@ -110,8 +119,7 @@ export default function PlayMinigame({
 
             // Add some horizontal velocity based on where ball hits paddle
             const hitPosition = (newPos.x - paddlePosition) / (paddleWidth / 2);
-            newVel.x += hitPosition * 2;
-
+            newVel.x += hitPosition * 200;
             setBounceCount((prev) => prev + 1);
           }
 
