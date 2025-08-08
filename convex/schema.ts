@@ -34,7 +34,24 @@ export default defineSchema({
     title: v.string(), // dilemma string identifier
     responseText: v.string(), // player's input
     outcome: v.optional(v.string()), // pet's decision or question
-    updatedMoralStats: v.optional(v.object(moralStats)),
+    messages: v.optional(
+      v.array(
+        v.object({
+          role: v.string(),
+          content: v.string(),
+        })
+      )
+    ),
+    updatedMoralStats: v.optional(
+      v.object({
+        compassion: v.optional(v.number()),
+        retribution: v.optional(v.number()),
+        devotion: v.optional(v.number()),
+        dominance: v.optional(v.number()),
+        purity: v.optional(v.number()),
+        ego: v.optional(v.number()),
+      })
+    ),
     updatedPersonality: v.optional(v.string()), // updated personality
     resolved: v.boolean(), // whether the response is resolved
     overridden: v.optional(v.boolean()), // whether the response is overridden by the pet's personality

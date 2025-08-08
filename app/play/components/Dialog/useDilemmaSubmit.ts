@@ -29,14 +29,17 @@ export function useDilemmaSubmit() {
       messages: newMessages,
     };
     setDilemma(newDilemma);
+    
+    let trackResult: { success: boolean; dilemmaId: any } | undefined;
+    
     try {
       console.log("🚀 Submitting dilemma:", newDilemma);
       
-      // Track the response in Convex
-      await trackResponse({
+      // Track the response in Convex with the full dialogue so far
+      trackResult = await trackResponse({
         title: dilemma.id,
         responseText,
-        outcome: undefined, // Will be filled by the local API processing
+        messages: newMessages,
         resolved: false,
       });
 
@@ -66,10 +69,21 @@ export function useDilemmaSubmit() {
           }],
         };
         setDilemma(newDilemma);
-        updatePet({
-          ...pet,
-          dilemmas: [...pet.dilemmas, newDilemma],
-        });
+        
+        // Update the same Convex record with the clarifying question
+        try {
+          await trackResponse({
+            id: trackResult?.dilemmaId,
+            title: dilemma.id,
+            responseText,
+            outcome: data.outcome,
+            messages: newDilemma.messages,
+            resolved: false, // Still not resolved, just a clarifying question
+          });
+        } catch (e) {
+          console.warn("Failed to update clarifying question in Convex", e);
+        }
+        
         // Increase sanity by half the amount of a fully completed dilemma
         incrementStatBy(BaseStatKeys.sanity, 1.5);
         return;
@@ -86,7 +100,7 @@ export function useDilemmaSubmit() {
 
         // add outcome with moral stats changes
         const newMoralStats = data.stats ? getAverageMoralStats([...pet.dilemmas, newDilemma]) : pet.moralStats;
-        const moralStatsChanges = data.stats ? formatMoralStatsChange(pet.moralStats, newMoralStats).join(",").trim() : "";
+        const moralStatsChanges = data.stats ? formatMoralStatsChange(pet.moralStats, newMoralStats).join(", ").trim() : "";
         const outcomeText = `${data.outcome}${moralStatsChanges ? ` (${moralStatsChanges})` : ""}`
         newDilemma.messages.push({
           role: "system" as const,
@@ -102,6 +116,22 @@ export function useDilemmaSubmit() {
           ...(data.evolutionIds && { evolutionIds: data.evolutionIds }),
           ...(data.age !== undefined && { age: data.age }),
         });
+
+        // Persist final outcome + updates back to Convex
+        try {
+          await trackResponse({
+            id: trackResult?.dilemmaId,
+            title: dilemma.id,
+            responseText,
+            outcome: data.outcome,
+            messages: newDilemma.messages,
+            updatedMoralStats: data.stats ?? undefined,
+            updatedPersonality: data.personality ?? undefined,
+            resolved: true,
+          });
+        } catch (e) {
+          console.warn("Failed to persist final dilemma outcome to Convex", e);
+        }
         incrementStat(BaseStatKeys.sanity);
         showOutcome("success", outcomeText);
         setDilemma(null);
