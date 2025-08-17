@@ -5,6 +5,7 @@ import { BaseStatKeys } from "@/constants/base";
 import { useState } from "react";
 import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
+import { Id } from "@/convex/_generated/dataModel";
 
 export function useDilemmaSubmit() {
   const { pet, updatePet } = usePet();
@@ -30,7 +31,7 @@ export function useDilemmaSubmit() {
     };
     setDilemma(newDilemma);
     
-    let trackResult: { success: boolean; dilemmaId: any } | undefined;
+    let trackResult: { success: boolean; dilemmaId: Id<"dilemmas"> } | undefined;
     
     try {
       console.log("🚀 Submitting dilemma:", newDilemma);
