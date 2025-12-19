@@ -11,7 +11,7 @@ const pixel = localFont({
 
 export const metadata: Metadata = {
   title: "principal",
-  description: "moral dilemma tamagotchi",
+  description: "a moral dilemma tamagotchi",
   icons: {
     icon: "/icon.svg",
   },
