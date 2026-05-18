@@ -4,6 +4,7 @@ import { ConvexClientProvider } from "./ConvexClientProvider";
 import { Toaster } from "sonner";
 import localFont from "next/font/local";
 import { PetProvider } from "./providers/PetProvider";
+import Menu from "@/components/Menu";
 
 const pixel = localFont({
   src: "./bitmap.otf",
@@ -25,9 +26,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${pixel.className} w-full min-h-screen flex`}>
-        <div className="w-full flex flex-col">
+        <div className="w-full flex flex-col p-4">
           <ConvexClientProvider>
-            <PetProvider>{children}</PetProvider>
+            <PetProvider>
+              <Menu />
+              {children}
+            </PetProvider>
           </ConvexClientProvider>
         </div>
         <Toaster />

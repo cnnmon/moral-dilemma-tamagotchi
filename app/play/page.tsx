@@ -10,7 +10,6 @@ import ActionButtons from "./components/Header/ActionButtons";
 import { AnimatePresence, motion } from "framer-motion";
 import HoverText from "@/components/HoverText";
 import Window from "@/components/Window";
-import Menu from "@/components/Menu";
 import HealMinigame from "./components/Header/HealMinigame";
 import FeedMinigame from "./components/Header/FeedMinigame";
 import PlayMinigame from "./components/Header/PlayMinigame";
@@ -85,7 +84,6 @@ export default function Play() {
   if (!pet || !evolution) {
     return (
       <div className="flex flex-col gap-2 sm:w-3xl p-4 w-full mb-30">
-        <Menu page="play" />
         <div className="absolute inset-0 w-full h-full flex items-center justify-center">
           <Loading />
         </div>
@@ -108,8 +106,6 @@ export default function Play() {
 
       <AnimatePresence mode="wait">
         <div className="flex flex-col gap-2 p-4">
-          <Menu page="play" />
-
           <div className="relative w-full md:w-2xl">
             {/* Left column: viewport + actions + dialog */}
             <div className="flex flex-col gap-2 w-full">

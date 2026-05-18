@@ -4,11 +4,13 @@ import {
   useHoverText,
 } from "@/app/providers/PetProvider";
 import { EvolutionId, getEvolutionTimeFrame } from "@/constants/evolutions";
+import { getSprite, Animation } from "@/constants/sprites";
 import { BaseStatKeys } from "@/constants/base";
 import { MoralStats } from "../MoralStats";
 import { DilemmaTracker } from "./DilemmaTracker";
 import { twMerge } from "tailwind-merge";
 import { useState } from "react";
+import Image from "next/image";
 
 export default function Header() {
   const { pet, evolution } = usePet();
@@ -39,6 +41,30 @@ export default function Header() {
 
         {/* pet evolution */}
         <div className="flex flex-col gap-1">
+          {/* evolution boxes */}
+          <div className="flex gap-1">
+            {[0, 1, 2].map((stage) => {
+              const evoId = pet.evolutionIds[stage] as EvolutionId | undefined;
+              const reached = !!evoId;
+              const sprite = reached ? getSprite(Animation.IDLE, evoId!) : null;
+              return (
+                <div
+                  key={stage}
+                  onMouseEnter={() => setHoverText(reached ? evoId! : "???")}
+                  onMouseLeave={() => setHoverText(null)}
+                  className={twMerge(
+                    "border-2 border-black flex-1 flex items-center justify-center cursor-default overflow-hidden aspect-square",
+                    reached ? "bg-white" : "bg-zinc-300",
+                  )}
+                >
+                  {sprite && (
+                    <Image src={sprite} alt={evoId!} width={90} height={90} />
+                  )}
+                </div>
+              );
+            })}
+          </div>
+
           <div>
             <p>{ageLabel}:</p>
             {/* dilemma progress bar */}

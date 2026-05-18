@@ -6,6 +6,9 @@ import { getPets, Pet } from "../storage/pet";
 import Graduation from "../play/components/Graduation";
 import Loading from "../play/components/Loading";
 import { useRouter } from "next/navigation";
+import { motion } from "framer-motion";
+import { Background } from "@/components/Background";
+import Image from "next/image";
 
 export default function ScrapbookPage() {
   const [pets, setPets] = useState<Pet[]>([]);
@@ -34,23 +37,35 @@ export default function ScrapbookPage() {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center p-4 sm:p-0 sm:w-xl w-full">
-      <div className="flex flex-col items-center justify-center pb-2">
-        <a
-          className="text-zinc-500 underline hover:text-white hover:bg-zinc-500"
-          onClick={() => router.push("/play")}
-        >
-          back
-        </a>
-      </div>
-      <Scrapbook pets={pets} setSelectedPet={setSelectedPet} />
-      {selectedPet && (
-        <Graduation
-          pet={selectedPet}
-          graduationOpen={selectedPet !== null}
-          setGraduationOpen={() => setSelectedPet(null)}
-        />
-      )}
-    </div>
+    <>
+      <motion.div
+        key="create-page"
+        className="flex flex-col items-center gap-4 w-full sm:w-xl p-4 sm:p-0"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -20 }}
+        transition={{ duration: 0.3 }}
+      >
+        <Background backgroundSrcs={["/scrapbook.png"]}>
+          <Image
+            src="/egg.gif"
+            alt="egg"
+            width={180}
+            height={180}
+            className="no-select"
+          />
+        </Background>
+        <br />
+
+        <Scrapbook pets={pets} setSelectedPet={setSelectedPet} />
+        {selectedPet && (
+          <Graduation
+            pet={selectedPet}
+            graduationOpen={selectedPet !== null}
+            setGraduationOpen={() => setSelectedPet(null)}
+          />
+        )}
+      </motion.div>
+    </>
   );
 }

@@ -17,7 +17,10 @@ const LOW_STAT_MESSAGES: Record<string, string> = {
   hunger: "i'm hungry… (￣﹃￣)",
   health: "i don't feel so good (ᵕ–﹏–)🌡️",
   happiness: "i need someone to play with… (｡•́︿•̀｡)",
-  sanity: "i have a problem… ( ˶•ᴖ•) !!",
+};
+
+const LOW_STAT_IMAGES: Record<string, string> = {
+  sanity: "/grumble.gif",
 };
 
 const Viewport = React.memo(function Viewport() {
@@ -27,12 +30,15 @@ const Viewport = React.memo(function Viewport() {
   const [isAlmostDead, setIsAlmostDead] = useState(false);
 
   // find the lowest stat below threshold for speech bubble
-  const speechMessage = useMemo(() => {
-    if (!pet || pet.age >= 2 || pet.evolutionIds.includes(EvolutionId.RIP)) return null;
+  const speechBubble = useMemo(() => {
+    if (!pet || pet.age >= 2 || pet.evolutionIds.includes(EvolutionId.RIP))
+      return null;
     const lowest = Object.entries(baseStats)
       .filter(([, v]) => v < LOW_STAT_THRESHOLD)
       .sort(([, a], [, b]) => a - b)[0];
-    return lowest ? LOW_STAT_MESSAGES[lowest[0]] ?? null : null;
+    if (!lowest) return null;
+    const [key] = lowest;
+    return { key, message: LOW_STAT_MESSAGES[key], image: LOW_STAT_IMAGES[key] };
   }, [baseStats, pet]);
   const [imagesLoaded, setImagesLoaded] = useState(false);
   const prevStatsRef = useRef(baseStats);
@@ -124,6 +130,7 @@ const Viewport = React.memo(function Viewport() {
       className="relative flex items-center justify-center no-drag flex-1"
     >
       <Outcome />
+
       {/* Lazy load poos after main content */}
       {imagesLoaded &&
         poos.map(({ id, x, y }) => {
@@ -154,18 +161,20 @@ const Viewport = React.memo(function Viewport() {
 
       {/* speech bubble for low stats */}
       <AnimatePresence>
-        {speechMessage && !dilemma && (
+        {speechBubble && !dilemma && (
           <motion.div
-            key={speechMessage}
-            className="absolute bottom-3 left-0 right-0 flex justify-center z-10 pointer-events-none"
+            key={speechBubble.key}
+            className="absolute w-xs bg-zinc-100 z-10 border border-2 p-2 mt-[-80px] text-center"
             initial={{ opacity: 0, y: 6 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 6 }}
             transition={{ duration: 0.4 }}
           >
-            <p className="border-2 border-black bg-zinc-100 px-3 py-1 max-w-xs text-center">
-              {speechMessage}
-            </p>
+            {speechBubble.image ? (
+              <Image src={speechBubble.image} alt={speechBubble.key} width={48} height={48} className="mx-auto" />
+            ) : (
+              <p>{speechBubble.message}</p>
+            )}
           </motion.div>
         )}
       </AnimatePresence>

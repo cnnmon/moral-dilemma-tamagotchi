@@ -150,7 +150,7 @@ export default function ActionButtons({
   return (
     <div className="w-full border-2 border-black bg-zinc-100 h-fit">
       <div className="border-b-2 border-black px-2 py-1 text-lg">
-        actions you may take
+        what do you do?
       </div>
       <div className="flex pointer-events-auto">
         {STAT_ACTIONS.map((action, index) => {

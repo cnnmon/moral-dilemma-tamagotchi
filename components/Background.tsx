@@ -33,22 +33,27 @@ export function Background({
           priority={true}
           className={twMerge(
             "absolute w-full h-full transition-opacity duration-500 pointer-events-none object-cover",
-            loadedImages.includes(src) ? "opacity-100" : "opacity-0"
+            loadedImages.includes(src) ? "opacity-100" : "opacity-0",
           )}
           onLoad={() => {
             setLoadedImages((prev) => [...prev, src]);
           }}
         />
       )),
-    [backgroundSrcs, loadedImages]
+    [backgroundSrcs, loadedImages],
   );
 
   return (
     <AnimatePresence key="bg">
+      <motion.div
+        key="fade-in-white"
+        initial={{ opacity: 1 }}
+        animate={{ opacity: 0 }}
+        transition={{ duration: 0.5 }}
+        className="absolute inset-0 bg-white pointer-events-none z-50"
+      />
+
       <div className="w-full flex items-center justify-center relative">
-        {isAlmostDead && (
-          <div className="absolute w-full h-full bg-red-500/50 opacity-75" />
-        )}
         <motion.div
           key="background-container"
           initial={{ opacity: 0 }}
@@ -60,6 +65,9 @@ export function Background({
             height: VIEWPORT_HEIGHT,
           }}
         >
+          {isAlmostDead && (
+            <div className="absolute w-full h-full bg-red-500/50 opacity-75" />
+          )}
           {hasOverlay && (
             <Image
               src="/walnut.png"
