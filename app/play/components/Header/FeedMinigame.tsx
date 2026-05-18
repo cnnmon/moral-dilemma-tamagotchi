@@ -17,7 +17,7 @@ export default function FeedMinigame({
   const [isComplete, setIsComplete] = useState(false);
 
   const mouseHistoryRef = useRef<{ x: number; y: number; timestamp: number }[]>(
-    []
+    [],
   );
   const shakeRequirement = 3; // Number of direction changes needed
 
@@ -42,7 +42,7 @@ export default function FeedMinigame({
 
     // Keep only recent history (last 1 second)
     mouseHistoryRef.current = history.filter(
-      (pos) => now - pos.timestamp < 1000
+      (pos) => now - pos.timestamp < 1000,
     );
 
     if (history.length < 4) return;
@@ -74,7 +74,7 @@ export default function FeedMinigame({
       setIsComplete(true);
       setTimeout(() => {
         incrementStat(
-          "hunger" as keyof import("@/constants/base").BaseStatsType
+          "hunger" as keyof import("@/constants/base").BaseStatsType,
         );
         setIsOpen(false);
       }, 500);
@@ -103,7 +103,7 @@ export default function FeedMinigame({
   return (
     <div className="flex w-full h-50">
       <Window
-        title={`shake to feed (+30 hunger) ${shakeProgress}/${shakeRequirement}`}
+        title={`shake to feed (+10 hunger) ${shakeProgress}/${shakeRequirement}`}
         isOpen={isOpen}
         setIsOpen={setIsOpen}
       >

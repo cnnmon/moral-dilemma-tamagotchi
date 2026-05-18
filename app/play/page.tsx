@@ -6,7 +6,7 @@ import { usePet, useHoverText } from "../providers/PetProvider";
 import Viewport from "./components/Viewport";
 import Dialog from "./components/Dialog";
 import Header from "./components/Header";
-import { MoralStats } from "./components/MoralStats";
+import ActionButtons from "./components/Header/ActionButtons";
 import { AnimatePresence, motion } from "framer-motion";
 import HoverText from "@/components/HoverText";
 import Window from "@/components/Window";
@@ -14,7 +14,6 @@ import Menu from "@/components/Menu";
 import HealMinigame from "./components/Header/HealMinigame";
 import FeedMinigame from "./components/Header/FeedMinigame";
 import PlayMinigame from "./components/Header/PlayMinigame";
-import Outcome from "./components/Outcome";
 import Graduation from "./components/Graduation";
 import { EvolutionId } from "@/constants/evolutions";
 
@@ -87,7 +86,7 @@ export default function Play() {
     return (
       <div className="flex flex-col gap-2 sm:w-3xl p-4 w-full mb-30">
         <Menu page="play" />
-        <div className="flex items-center justify-center h-96">
+        <div className="absolute inset-0 w-full h-full flex items-center justify-center">
           <Loading />
         </div>
       </div>
@@ -95,11 +94,8 @@ export default function Play() {
   }
 
   return (
-    <>
+    <div>
       <HoverText hoverText={hoverText} />
-
-      {/* Lazy load outcome modal */}
-      <Outcome />
 
       {/* graduation modal */}
       {graduationOpen && (
@@ -111,92 +107,89 @@ export default function Play() {
       )}
 
       <AnimatePresence mode="wait">
-        <div className="flex flex-col gap-2 sm:w-3xl p-4 w-full mb-30">
+        <div className="flex flex-col gap-2 p-4">
           <Menu page="play" />
 
-          {/* pet stats - reduce initial animation delay */}
-          <motion.div
-            key="stats"
-            className="w-full pointer-events-none"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3 }}
-          >
-            <Header
-              onHealClick={() => setHealMinigameOpen(true)}
-              onFeedClick={() => setFeedMinigameOpen(true)}
-              onPlayClick={() => setPlayMinigameOpen(true)}
-            />
-          </motion.div>
+          <div className="relative w-full md:w-2xl">
+            {/* Left column: viewport + actions + dialog */}
+            <div className="flex flex-col gap-2 w-full">
+              <Viewport />
 
-          {/* main viewport */}
-          <Viewport />
-
-          {/* graduated or active pet ui */}
-          <div className="flex sm:flex-row flex-col gap-2 w-full">
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3, delay: 0.1 }}
-              className="sm:max-w-3xs"
-            >
-              <div className="border-2 border-black p-2 bg-zinc-100 mb-2 w-full">
-                <MoralStats moralStats={pet.moralStats} />
-              </div>
-            </motion.div>
-            <AnimatePresence>
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 10 }}
-                transition={{ duration: 0.2, delay: 0.2 }}
-                className="flex flex-col gap-2 w-full"
+                transition={{ duration: 0.3 }}
+                className="pointer-events-auto"
               >
-                {hasGraduated && (
-                  <motion.div
-                    key="graduated"
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5 }}
-                    className="w-full"
-                  >
-                    <Window title="°˖✧◝(⁰▿⁰)◜✧˖°">
-                      <div className="flex flex-col gap-1 p-3">
-                        <p>
-                          happy graduation! after {pet.dilemmas.length}{" "}
-                          dilemmas,
-                          {pet.name} has learned a lot from you and is ready to
-                          start a new journey.
-                        </p>
-                        <a
-                          onClick={() => setGraduationOpen(true)}
-                          className="underline"
-                        >
-                          🎓 collect graduation certificate
-                        </a>
-                        <a href="/scrapbook" className="underline">
-                          📷 check out scrapbook
-                        </a>
-                        <a href="/create" className="underline">
-                          adopt a new pet
-                        </a>
-                      </div>
-                    </Window>
-                  </motion.div>
-                )}
-                <Content
-                  healMinigameOpen={healMinigameOpen}
-                  feedMinigameOpen={feedMinigameOpen}
-                  playMinigameOpen={playMinigameOpen}
-                  setHealMinigameOpen={setHealMinigameOpen}
-                  setFeedMinigameOpen={setFeedMinigameOpen}
-                  setPlayMinigameOpen={setPlayMinigameOpen}
+                <ActionButtons
+                  onHealClick={() => setHealMinigameOpen(true)}
+                  onFeedClick={() => setFeedMinigameOpen(true)}
+                  onPlayClick={() => setPlayMinigameOpen(true)}
                 />
               </motion.div>
-            </AnimatePresence>
+
+              <AnimatePresence>
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 10 }}
+                  transition={{ duration: 0.2, delay: 0.1 }}
+                  className="flex flex-col gap-2 w-full"
+                >
+                  {hasGraduated && (
+                    <motion.div
+                      key="graduated"
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.5 }}
+                    >
+                      <Window title="°˖✧◝(⁰▿⁰)◜✧˖°">
+                        <div className="flex flex-col gap-1 p-3">
+                          <p>
+                            happy graduation! after {pet.dilemmas.length}{" "}
+                            dilemmas, {pet.name} has learned a lot from you and
+                            is ready to start a new journey.
+                          </p>
+                          <a
+                            onClick={() => setGraduationOpen(true)}
+                            className="underline"
+                          >
+                            🎓 collect graduation certificate
+                          </a>
+                          <a href="/scrapbook" className="underline">
+                            📷 check out scrapbook
+                          </a>
+                          <a href="/create" className="underline">
+                            adopt a new pet
+                          </a>
+                        </div>
+                      </Window>
+                    </motion.div>
+                  )}
+                  <Content
+                    healMinigameOpen={healMinigameOpen}
+                    feedMinigameOpen={feedMinigameOpen}
+                    playMinigameOpen={playMinigameOpen}
+                    setHealMinigameOpen={setHealMinigameOpen}
+                    setFeedMinigameOpen={setFeedMinigameOpen}
+                    setPlayMinigameOpen={setPlayMinigameOpen}
+                  />
+                </motion.div>
+              </AnimatePresence>
+            </div>
           </div>
+
+          {/* Right column: pet info + base stats + morality */}
+          <motion.div
+            className="md:absolute md:right-0 md:top-0 z-[80] h-full bg-[var(--color-background)] md:border-l-2 p-5 md:w-80 md:ml-2 w-full flex flex-col gap-2 mt-2 md:mt-0"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: 0.1 }}
+          >
+            <Header />
+          </motion.div>
         </div>
       </AnimatePresence>
-    </>
+    </div>
   );
 }

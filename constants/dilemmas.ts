@@ -241,10 +241,36 @@ export const dilemmas: Record<string, Dilemma> = {
     id: "saltfries",
     text: "{pet} pretends to have a salt allergy so a fast food place has to make a fresh batch of fries. should {pet} salt them in front of the workers or wait until they're out of sight?",
   },
-  traintracks: {
+  /*traintracks: {
     id: "traintracks",
     text: "There's like some people on a train track or something, and then on the other side is like-wait no wait let me try again. Your mom and like 5 random dudes are on a track and on the other side-oh fuck I'm really high-on the other side there's like a bus of children… with malaria. Do you do it?",
+  },*/
+
+  // extras
+  votingbloc: {
+    id: "votingbloc",
+    text: "{pet}'s single vote will never decide an election. should {pet} bother voting, or stay home?"
   },
+  petadvises: {
+    id: "petadvises",
+    text: "another digital pet asks {pet} for moral advice. should {pet} tell them what to do, or refuse to decide for them?"
+  },
+  investtip: { // moral luck
+    id: "investtip",
+    text: "{pet} put your life savings into a memecoin. it paid off enormously. {pet}'s friends now call {pet} a genius. should {pet} accept the praise?",
+  },
+  oneztwenty: {
+    id: "oneztwenty",
+    text: "{pet} can spend the afternoon comforting one sad friend, or the same afternoon doing dull admin work for a group that will reach twenty sad strangers. should {pet} help one or twenty?",
+  },
+  bullysnitch: {
+    id: "bullysnitch",
+    text: "{pet} watches a kid get bullied in the hallway. the kid begs {pet} not to report it to a teacher, because last time it just made things worse. should {pet} report it anyway, or respect the kid?",
+  },
+  relativism: {
+    id: "relativism",
+    text: "{pet} decides there's no real right or wrong, just opinions. then {pet} watches someone do something that feels obviously wrong. should {pet} step in anyway, or stay out of it to be consistent with what {pet} believes?",
+  }
 };
 
 // Export types and aliases for convex compatibility

@@ -40,13 +40,13 @@ const ActionButton = memo(function ActionButton({
   return (
     <motion.div
       className={twMerge(
-        "flex justify-center items-center relative w-14 h-full group transition-opacity duration-300",
-        !disabled && "hover:bg-zinc-200"
+        "flex justify-center items-center py-1 relative group transition-opacity duration-300 hover:bg-zinc-200",
+        !disabled && "hover:bg-zinc-200",
       )}
       animate={{
         backgroundColor: hasWarning
           ? ["#ef4444", "#f87171", "#ef4444"]
-          : "#f4f4f5",
+          : undefined,
       }}
       transition={{
         duration: 1,
@@ -79,28 +79,28 @@ const ActionButton = memo(function ActionButton({
 const STAT_ACTIONS = [
   {
     src: "/actions/heal.png",
-    alt: "heal (+30 health)",
+    alt: "heal (+10 health)",
     object: "bandaid" as ObjectKey,
     type: "cursor" as const,
     stat: "health" as keyof BaseStatsType,
   },
   {
     src: "/actions/feed.png",
-    alt: "feed (+30 hunger)",
+    alt: "feed (+10 hunger)",
     object: "burger" as ObjectKey,
     type: "cursor" as const,
     stat: "hunger" as keyof BaseStatsType,
   },
   {
     src: "/actions/play.png",
-    alt: "play (+30 happiness)",
+    alt: "play (+10 happiness)",
     object: "ball" as ObjectKey,
     type: "cursor" as const,
     stat: "happiness" as keyof BaseStatsType,
   },
   {
     src: "/actions/talk.png",
-    alt: "talk (+30 sanity)",
+    alt: "talk (+10 sanity)",
     object: "talk" as ObjectKey,
     type: "cursor" as const,
     stat: "sanity" as keyof BaseStatsType,
@@ -148,64 +148,38 @@ export default function ActionButtons({
 
   const hasRip = pet.evolutionIds.includes(EvolutionId.RIP);
   return (
-    <div className="flex flex-col items-start w-full h-full">
-      {STAT_ACTIONS.map((action, index) => {
-        const statKey = action.stat;
-        const value = baseStats[statKey];
-
-        return (
-          <div
-            key={statKey}
-            className="flex items-center pointer-events-auto w-full h-full"
-          >
-            {/* Action button */}
+    <div className="w-full border-2 border-black bg-zinc-100 h-fit">
+      <div className="border-b-2 border-black px-2 py-1 text-lg">
+        actions you may take
+      </div>
+      <div className="flex pointer-events-auto">
+        {STAT_ACTIONS.map((action, index) => {
+          const value = baseStats[action.stat];
+          return (
             <div
+              key={action.stat}
               className={twMerge(
-                "bg-zinc-100 border-r-2 h-full",
-                index < STAT_ACTIONS.length - 1 ? "border-b-2" : "border-b-0"
+                "flex-1",
+                index < STAT_ACTIONS.length - 1 ? "border-r-2" : "",
               )}
             >
               <ActionButton
                 src={action.src}
                 alt={action.alt}
                 onClick={() => {
-                  if (action.stat === "health") {
-                    onHealClick?.();
-                  } else if (action.stat === "hunger") {
-                    onFeedClick?.();
-                  } else if (action.stat === "happiness") {
-                    onPlayClick?.();
-                  } else if (action.stat === "sanity") {
-                    handleTalkAction();
-                  } else {
-                    incrementStat(action.stat);
-                  }
+                  if (action.stat === "health") onHealClick?.();
+                  else if (action.stat === "hunger") onFeedClick?.();
+                  else if (action.stat === "happiness") onPlayClick?.();
+                  else if (action.stat === "sanity") handleTalkAction();
+                  else incrementStat(action.stat);
                 }}
                 disabled={hasRip}
                 hasWarning={value < 2}
               />
             </div>
-
-            {/* Stat display */}
-            <div className="flex w-full h-full relative">
-              <div
-                className={twMerge(
-                  "w-full h-full",
-                  index < STAT_ACTIONS.length - 1 ? "border-b-2" : "border-b-0"
-                )}
-              >
-                <div
-                  className="bg-zinc-500 h-full"
-                  style={{ width: `${value * 10}%` }}
-                ></div>
-              </div>
-              <div className="flex items-center justify-center w-10 h-full absolute right-0">
-                <p className="text-zinc-700">{Math.round(value * 10)}%</p>
-              </div>
-            </div>
-          </div>
-        );
-      })}
+          );
+        })}
+      </div>
     </div>
   );
 }

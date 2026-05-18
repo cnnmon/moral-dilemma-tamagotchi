@@ -25,7 +25,6 @@ function ConfirmPopup({
   petName: string;
 }) {
   if (!isOpen) return null;
-
   return (
     <AnimatePresence>
       <motion.div
@@ -35,32 +34,71 @@ function ConfirmPopup({
         exit={{ opacity: 0 }}
       >
         <motion.div
-          className="bg-white border-2 border-black p-6 max-w-sm mx-4 text-center"
+          className="bg-white border-2 border-black max-w-sm"
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.8, opacity: 0 }}
         >
-          <p className="text-zinc-700 mb-6">
+          <p className="text-zinc-700 p-4">
             are you sure you want to abandon {petName}? look at {petName}&apos;s
             big ol eyes ( •̯́ ^ •̯̀)
           </p>
-          <div className="flex gap-4 justify-center">
-            <button
-              onClick={onCancel}
-              className="px-4 py-2 border-2 border-black hover:bg-zinc-100"
-            >
-              cancel
-            </button>
-            <button
-              onClick={onConfirm}
-              className="px-4 py-2 bg-black text-white hover:bg-zinc-800"
-            >
-              abandon
-            </button>
+          <div className="flex gap-4 justify-between px-4 border-t-2">
+            <a onClick={onCancel}>cancel</a>
+            <a onClick={onConfirm}>yes, i want to abandon</a>
           </div>
         </motion.div>
       </motion.div>
     </AnimatePresence>
+  );
+}
+
+function LivingRoomDropdown({ showConfirmPopup }: { showConfirmPopup: () => void }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLSpanElement>(null);
+  const { pet } = usePet();
+
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    }
+    if (open) document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, [open]);
+
+  return (
+    <span ref={ref} className="relative">
+      <span
+        className="underline cursor-pointer hover:text-zinc-800"
+        onClick={() => setOpen((v) => !v)}
+      >
+        living room
+      </span>
+      {open && (
+        <div className="absolute top-full left-0 mt-1 bg-white border-2 border-black z-50 flex flex-col min-w-max">
+          <a
+            href="/scrapbook"
+            className="px-3 py-1 hover:bg-zinc-100"
+            onClick={() => setOpen(false)}
+          >
+            scrapbook
+          </a>
+          <a
+            className="px-3 py-1 hover:bg-zinc-100 cursor-pointer"
+            onClick={() => {
+              setOpen(false);
+              if (!pet || pet.evolutionIds.includes(EvolutionId.RIP) || pet.age >= 2) {
+                window.location.href = "/create";
+              } else {
+                showConfirmPopup();
+              }
+            }}
+          >
+            orphanage
+          </a>
+        </div>
+      )}
+    </span>
   );
 }
 
@@ -106,60 +144,29 @@ function MenuContent({
 
   return (
     <>
-      <AnimatePresence>
-        <motion.span
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.3, delay: 0.1 }}
-        >
-          {`${pathToText[page]}${page === "play" ? ` > ${pet.name}` : ""}`}
-        </motion.span>
-      </AnimatePresence>
-      <AnimatePresence>
-        {pet.name && (
-          <motion.a
-            onClick={() => {
-              if (pet.evolutionIds.includes(EvolutionId.RIP) || pet.age >= 2) {
-                window.location.href = "/create";
-                return;
-              }
-              if (pet.age < 2) {
-                showConfirmPopup();
-              }
-            }}
-            className="hover:text-zinc-800 no-drag"
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3, delay: 0.3 }}
-          >
-            new pet
-          </motion.a>
+      <motion.span
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.3, delay: 0.1 }}
+      >
+        {page === "play" ? (
+          <>home &gt; <LivingRoomDropdown showConfirmPopup={showConfirmPopup} /> &gt; {pet.name}</>
+        ) : (
+          pathToText[page]
         )}
-      </AnimatePresence>
+      </motion.span>
 
-      <AnimatePresence>
-        <motion.a
-          href="/scrapbook"
-          className="hover:text-zinc-800 no-drag"
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3, delay: 0.4 }}
-        >
-          scrapbook
-        </motion.a>
-      </AnimatePresence>
-
-      <AnimatePresence>
+      <div className="flex gap-4">
         <motion.a
           href="/about"
           className="hover:text-zinc-800 no-drag"
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3, delay: 0.5 }}
+          transition={{ duration: 0.3, delay: 0.4 }}
         >
           about
         </motion.a>
-      </AnimatePresence>
+      </div>
     </>
   );
 }
@@ -193,7 +200,7 @@ const MobileMenu = forwardRef<
         transition={{ duration: 0.2 }}
       >
         back
-      </motion.a>
+      </motion.a>,
     );
   } else {
     if (pet.name) {
@@ -216,7 +223,7 @@ const MobileMenu = forwardRef<
           transition={{ duration: 0.2 }}
         >
           new pet
-        </motion.a>
+        </motion.a>,
       );
     }
 
@@ -231,7 +238,7 @@ const MobileMenu = forwardRef<
         transition={{ duration: 0.2, delay: 0.1 }}
       >
         scrapbook
-      </motion.a>
+      </motion.a>,
     );
 
     menuItems.push(
@@ -245,7 +252,7 @@ const MobileMenu = forwardRef<
         transition={{ duration: 0.2, delay: 0.2 }}
       >
         about
-      </motion.a>
+      </motion.a>,
     );
   }
 

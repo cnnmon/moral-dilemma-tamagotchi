@@ -51,7 +51,7 @@ export default function HealMinigame({
   return (
     <div className="flex w-full h-50">
       <Window
-        title="click to apply bandaid (+30 health)"
+        title="click to apply bandaid (+10 health)"
         isOpen={isOpen}
         setIsOpen={setIsOpen}
       >

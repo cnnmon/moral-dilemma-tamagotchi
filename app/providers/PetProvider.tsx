@@ -29,8 +29,9 @@ type Outcome = {
 };
 
 const POO_STORAGE_KEY = "poos";
+const BASE_STATS_KEY = (petId: string) => `baseStats_${petId}`;
 const DECREMENT_INTERVAL_MS = 10000;
-const BASE_STATS_DECREMENT_VALUE = 1;
+const BASE_STATS_DECREMENT_VALUE = 0.3;
 const MAX_POOS = 10;
 const POO_CHANCE = 0.05;
 
@@ -56,7 +57,7 @@ type StatsAction =
 // Move reducer outside component to prevent recreation
 function baseStatsReducer(
   state: BaseStatsType,
-  action: StatsAction
+  action: StatsAction,
 ): BaseStatsType {
   switch (action.type) {
     case "INIT_STATS":
@@ -78,11 +79,11 @@ function baseStatsReducer(
         [statToDecrement]: Math.max(
           0,
           state[statToDecrement as keyof BaseStatsType] -
-            BASE_STATS_DECREMENT_VALUE * Math.random()
+            BASE_STATS_DECREMENT_VALUE * Math.random(),
         ),
         sanity: Math.max(
           0,
-          state.sanity - BASE_STATS_DECREMENT_VALUE * Math.random()
+          state.sanity - BASE_STATS_DECREMENT_VALUE * Math.random(),
         ),
       };
 
@@ -92,7 +93,7 @@ function baseStatsReducer(
         ...state,
         [action.payload.stat]: Math.min(
           state[action.payload.stat] + action.payload.amount,
-          10
+          10,
         ),
       };
     case "RESET_STATS":
@@ -124,7 +125,7 @@ interface PetContextType {
   showOutcome: (
     type: "success" | "error",
     message: string,
-    duration?: number
+    duration?: number,
   ) => void;
   hideOutcome: () => void;
 
@@ -171,10 +172,10 @@ export function PetProvider({ children }: { children: React.ReactNode }) {
     () =>
       pet?.evolutionIds && pet.evolutionIds.length > 0
         ? getEvolution(
-            pet.evolutionIds[pet.evolutionIds.length - 1] as EvolutionIdType
+            pet.evolutionIds[pet.evolutionIds.length - 1] as EvolutionIdType,
           )
         : null,
-    [pet?.evolutionIds]
+    [pet?.evolutionIds],
   );
 
   // Callback functions for base stats
@@ -225,7 +226,7 @@ export function PetProvider({ children }: { children: React.ReactNode }) {
         setRecentIncrements({});
       }, 2000);
     },
-    []
+    [],
   );
 
   const cleanupPoo = useCallback((id: number) => {
@@ -244,14 +245,14 @@ export function PetProvider({ children }: { children: React.ReactNode }) {
       setPet(updatedPet);
       savePet(updatedPet);
     },
-    [pet]
+    [pet],
   );
 
   const showOutcome = useCallback(
     (type: "success" | "error", message: string) => {
       setOutcome({ type, message, visible: true });
     },
-    []
+    [],
   );
 
   const hideOutcome = useCallback(() => {
@@ -301,7 +302,7 @@ export function PetProvider({ children }: { children: React.ReactNode }) {
       recentDecrements,
       recentIncrements,
       hoverText,
-    ]
+    ],
   );
 
   // Optimize pet loading - use ref to prevent re-triggering
@@ -349,7 +350,7 @@ export function PetProvider({ children }: { children: React.ReactNode }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pet?.id]);
 
-  // on mount, set the base stats to saved base stats
+  // on mount, load stats from localStorage (falls back to pet.baseStats)
   useEffect(() => {
     if (!pet || pet.age >= 2) return;
 
@@ -359,10 +360,22 @@ export function PetProvider({ children }: { children: React.ReactNode }) {
       return;
     }
 
-    dispatchBaseStats({ type: "INIT_STATS", payload: pet.baseStats });
+    try {
+      const saved = localStorage.getItem(BASE_STATS_KEY(pet.id));
+      const stats = saved ? JSON.parse(saved) : pet.baseStats;
+      dispatchBaseStats({ type: "INIT_STATS", payload: stats });
+    } catch {
+      dispatchBaseStats({ type: "INIT_STATS", payload: pet.baseStats });
+    }
     setBaseStatsLoaded(true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pet?.id]);
+
+  // persist stats to localStorage whenever they change
+  useEffect(() => {
+    if (!pet || !baseStatsLoaded) return;
+    localStorage.setItem(BASE_STATS_KEY(pet.id), JSON.stringify(baseStats));
+  }, [baseStats, pet, baseStatsLoaded]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -394,7 +407,7 @@ export function PetProvider({ children }: { children: React.ReactNode }) {
         }, 2000);
       }
 
-      // check if any stat has reached zero -> game over
+      /* check if any stat has reached zero -> game over
       if (
         newStats.health <= 0 ||
         newStats.hunger <= 0 ||
@@ -404,6 +417,7 @@ export function PetProvider({ children }: { children: React.ReactNode }) {
         clearInterval(interval);
         updatePet({ evolutionIds: [...pet.evolutionIds, EvolutionId.RIP] });
       }
+      */
 
       // spawn poo
       setPoos((prevPoos) => {
@@ -445,7 +459,7 @@ export function usePet() {
       context.animation,
       context.setAnimation,
       context.updatePet,
-    ]
+    ],
   );
 }
 
@@ -460,7 +474,7 @@ export function useDilemma() {
       dilemma: context.dilemma,
       setDilemma: context.setDilemma,
     }),
-    [context.dilemma, context.setDilemma]
+    [context.dilemma, context.setDilemma],
   );
 }
 
@@ -476,7 +490,7 @@ export function useOutcome() {
       showOutcome: context.showOutcome,
       hideOutcome: context.hideOutcome,
     }),
-    [context.outcome, context.showOutcome, context.hideOutcome]
+    [context.outcome, context.showOutcome, context.hideOutcome],
   );
 }
 
@@ -504,7 +518,7 @@ export function useBaseStats() {
       context.cleanupPoo,
       context.recentDecrements,
       context.recentIncrements,
-    ]
+    ],
   );
 }
 
@@ -519,6 +533,6 @@ export function useHoverText() {
       hoverText: context.hoverText,
       setHoverText: context.setHoverText,
     }),
-    [context.hoverText, context.setHoverText]
+    [context.hoverText, context.setHoverText],
   );
 }

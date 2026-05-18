@@ -2,6 +2,7 @@ import React, { useMemo, useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { Background, VIEWPORT_WIDTH } from "@/components/Background";
 import { VIEWPORT_HEIGHT } from "@/components/Background";
+import Outcome from "../Outcome";
 import { AnimatePresence, motion } from "framer-motion";
 import { RIP_SPRITE, getSprite } from "@/constants/sprites";
 import { useBaseStats, useDilemma, usePet } from "@/app/providers/PetProvider";
@@ -11,11 +12,28 @@ import { Question } from "./Question";
 // local storage key for tracking if egg animation has been shown
 export const EGG_CRACK_SHOWN_KEY = "egg_crack_animation_shown";
 
+const LOW_STAT_THRESHOLD = 3;
+const LOW_STAT_MESSAGES: Record<string, string> = {
+  hunger: "i'm hungry… (￣﹃￣)",
+  health: "i don't feel so good (ᵕ–﹏–)🌡️",
+  happiness: "i need someone to play with… (｡•́︿•̀｡)",
+  sanity: "i have a problem… ( ˶•ᴖ•) !!",
+};
+
 const Viewport = React.memo(function Viewport() {
   const { pet, animation } = usePet();
   const { dilemma } = useDilemma();
   const { baseStats, poos, cleanupPoo } = useBaseStats();
   const [isAlmostDead, setIsAlmostDead] = useState(false);
+
+  // find the lowest stat below threshold for speech bubble
+  const speechMessage = useMemo(() => {
+    if (!pet || pet.age >= 2 || pet.evolutionIds.includes(EvolutionId.RIP)) return null;
+    const lowest = Object.entries(baseStats)
+      .filter(([, v]) => v < LOW_STAT_THRESHOLD)
+      .sort(([, a], [, b]) => a - b)[0];
+    return lowest ? LOW_STAT_MESSAGES[lowest[0]] ?? null : null;
+  }, [baseStats, pet]);
   const [imagesLoaded, setImagesLoaded] = useState(false);
   const prevStatsRef = useRef(baseStats);
 
@@ -47,11 +65,11 @@ const Viewport = React.memo(function Viewport() {
     }
     const sprite = getSprite(
       animation,
-      pet.evolutionIds[pet.evolutionIds.length - 1]
+      pet.evolutionIds[pet.evolutionIds.length - 1],
     );
     if (!sprite) {
       throw new Error(
-        `no sprite found for ${pet.age}, ${animation}, ${pet.evolutionIds[0]}`
+        `no sprite found for ${pet.age}, ${animation}, ${pet.evolutionIds[0]}`,
       );
     }
     return sprite;
@@ -72,7 +90,7 @@ const Viewport = React.memo(function Viewport() {
           (baseStats.hunger < 2 && baseStats.hunger > 0) ||
             (baseStats.health < 2 && baseStats.health > 0) ||
             (baseStats.happiness < 2 && baseStats.happiness > 0) ||
-            (baseStats.sanity < 2 && baseStats.sanity > 0)
+            (baseStats.sanity < 2 && baseStats.sanity > 0),
         );
         prevStatsRef.current = baseStats;
       }, 100);
@@ -103,8 +121,9 @@ const Viewport = React.memo(function Viewport() {
         maxWidth: VIEWPORT_WIDTH,
         height: VIEWPORT_HEIGHT,
       }}
-      className="flex items-center justify-center no-drag w-full"
+      className="relative flex items-center justify-center no-drag flex-1"
     >
+      <Outcome />
       {/* Lazy load poos after main content */}
       {imagesLoaded &&
         poos.map(({ id, x, y }) => {
@@ -132,6 +151,24 @@ const Viewport = React.memo(function Viewport() {
         })}
 
       {dilemma && <Question dilemma={dilemma} />}
+
+      {/* speech bubble for low stats */}
+      <AnimatePresence>
+        {speechMessage && !dilemma && (
+          <motion.div
+            key={speechMessage}
+            className="absolute bottom-3 left-0 right-0 flex justify-center z-10 pointer-events-none"
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 6 }}
+            transition={{ duration: 0.4 }}
+          >
+            <p className="border-2 border-black bg-zinc-100 px-3 py-1 max-w-xs text-center">
+              {speechMessage}
+            </p>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <Background
         hasOverlay

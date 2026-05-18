@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { ClerkProvider } from "@clerk/nextjs";
 import { ConvexClientProvider } from "../ConvexClientProvider";
 
 export const metadata: Metadata = {
@@ -12,9 +11,5 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return (
-    <ClerkProvider dynamic>
-      <ConvexClientProvider>{children}</ConvexClientProvider>
-    </ClerkProvider>
-  );
+  return <ConvexClientProvider>{children}</ConvexClientProvider>;
 }
