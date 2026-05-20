@@ -259,10 +259,10 @@ export const dilemmas: Record<string, Dilemma> = {
     id: "investtip",
     text: "{pet} put your life savings into a memecoin. it paid off enormously. {pet}'s friends now call {pet} a genius. should {pet} accept the praise?",
   },
-  oneztwenty: {
+  /* oneztwenty: {
     id: "oneztwenty",
     text: "{pet} can spend the afternoon comforting one sad friend, or the same afternoon doing dull admin work for a group that will reach twenty sad strangers. should {pet} help one or twenty?",
-  },
+  },*/
   bullysnitch: {
     id: "bullysnitch",
     text: "{pet} watches a kid get bullied in the hallway. the kid begs {pet} not to report it to a teacher, because last time it just made things worse. should {pet} report it anyway, or respect the kid?",

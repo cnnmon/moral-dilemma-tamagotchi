@@ -23,7 +23,7 @@ export default function Certificate({ children }: CertificateProps) {
       <div className="fixed top-10 p-4 opacity-50">
         <div className="border border-zinc-800 rounded-full p-1">
           <div className="w-24 h-24 flex items-center justify-center border border-zinc-400 rounded-full">
-            <span className="text-2xl tracking-widest rotate-45">official</span>
+            <span className="text-2xl rotate-45">official</span>
           </div>
         </div>
       </div>

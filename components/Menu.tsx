@@ -24,7 +24,7 @@ type Segment = {
   options?: SegmentOption[];
 };
 
-function useBreadcrumb(page: Page, showAbout: () => void): Segment[] {
+function useBreadcrumb(page: Page): Segment[] {
   const { pet } = usePet();
 
   // All nav destinations from the root, excluding current page
@@ -277,7 +277,7 @@ export default function Menu() {
   const menuRef = useRef<HTMLDivElement>(null);
   const mobileMenuRef = useRef<HTMLDivElement>(null);
   const { pet } = usePet();
-  const segments = useBreadcrumb(page ?? "play", () => setAboutOpen(true));
+  const segments = useBreadcrumb(page ?? "play");
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {

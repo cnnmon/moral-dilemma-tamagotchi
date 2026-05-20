@@ -5,7 +5,7 @@ import Image from "next/image";
 
 export default function HealMinigame({ onClose }: { onClose: () => void }) {
   const { incrementStat } = useBaseStats();
-  const [targetPosition, setTargetPosition] = useState(() => ({
+  const [targetPosition] = useState(() => ({
     x: Math.random() * 80 + 10,
     y: Math.random() * 80 + 10,
   }));

@@ -73,10 +73,8 @@ const STAT_HOVER: Record<string, string> = {
 };
 
 const Viewport = React.memo(function Viewport({
-  onDilemmaClick,
   onStatClick,
 }: {
-  onDilemmaClick?: () => void;
   onStatClick?: (stat: string) => void;
 }) {
   const { pet, animation } = usePet();

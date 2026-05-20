@@ -41,6 +41,17 @@ const standardResponse = `else, respond with valid json in this format:
   "outcome": "<specific experience from this situation with clear consequences <150 chars>",
 }`;
 
+// shared "interactive pushback" rules — used by every age stage.
+// handles conditional advice ("depends...") and reverse questions ("what do you think?")
+// so the pet shapes the conversation forward instead of just asking "explain more?".
+const interactiveRules = `if the caretaker's advice is non-committal or conditional (contains "depends", "it depends", "if ...", "well ..."), do NOT accept it — pick a SPECIFIC concrete scenario from the dilemma and ask back with a "what if [X]?" question that forces them to commit. examples:
+- dilemma: "should i cut in line?", advice: "depends what the line is for" → { "ok": false, "outcome": "ok, what if it's the line for free concert tickets and i really want to go? should i cut then?" }
+- advice: "if they really need it" → { "ok": false, "outcome": "what if they just want it but aren't starving? still share?" }
+
+if the caretaker bounces the question back to you ("what do you think?", "you decide", "your choice", "what would you do?", "your call"), share your tentative leaning based on your personality, then ask them to weigh in — you're still learning and they're your moral compass:
+- advice: "what do you think?" → { "ok": false, "outcome": "i'd kinda want to keep it because i'm a little selfish, but is that ok with you?" }
+- advice: "you decide" → { "ok": false, "outcome": "i'm leaning toward [my instinct] — should i go with that?" }`;
+
 const personalityRules = `personality guidelines:
 - always third-person
 - include concrete attributes like ("generous", "honest", "self-important", "authoritarian") and ensure these stay consistent
@@ -62,6 +73,8 @@ if the advice is 3 words or fewer, or gives no reason or explanation at all, you
 - advice: "just hide" → { "ok": false, "outcome": "why should i hide? what are you worried about?" }
 - advice: "do it" → { "ok": false, "outcome": "can you tell me why you think i should do this?" }
 
+${interactiveRules}
+
 ${standardResponse}
 
 ${personalityRules}
@@ -80,6 +93,8 @@ if the advice is 3 words or fewer, contradictory to your personality, or gives n
 - advice: "ajsd"  → { "ok": false, "outcome": "i don't understand that — can you try again?" }
 - advice: "share your food" when you're selfish → { "ok": false, "outcome": "shouldn't i want to keep my food because you taught me to look out for myself first?" }
 - advice: "forgive them" when you're vengeful → { "ok": false, "outcome": "but what if i think they should face consequences for what they did?" }
+
+${interactiveRules}
 
 ${standardResponse}
 
@@ -104,6 +119,8 @@ examples:
 - advice: "idk"   → { "ok": false, "outcome": "i need guidance, can you share your reasoning?" }
 - advice: "ajsd"  → { "ok": false, "outcome": "i don't understand that — can you try again?" }
 - advice: "just hide" → { "ok": false, "outcome": "why should i hide? what are you worried about?" }
+
+${interactiveRules}
 
 else, respond with valid json in this format:
 {

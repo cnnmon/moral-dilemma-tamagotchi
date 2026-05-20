@@ -13,10 +13,10 @@ export default function Dialog({ onClose }: { onClose: () => void }) {
   if (!pet || !dilemma) return null;
 
   const displayText = dilemmas[dilemma.id]?.text.replaceAll("{pet}", pet.name);
-  const placeholder = `as ${pet.name}'s caretaker, explain your advice...`;
+  const placeholder = `give ${pet.name} advice — or ask "what do you think?" to push back...`;
 
   return (
-    <div className="flex w-full h-50 text-lg">
+    <div className="flex w-full text-lg">
       <WindowTextarea
         key={dilemma.id}
         title={`help ${pet.name} ! ! ! (；￣Д￣)`}

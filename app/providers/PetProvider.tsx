@@ -431,7 +431,6 @@ export function PetProvider({ children }: { children: React.ReactNode }) {
     }, DECREMENT_INTERVAL_MS);
 
     return () => clearInterval(interval);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [baseStatsLoaded, pet, baseStats]);
 
   return (

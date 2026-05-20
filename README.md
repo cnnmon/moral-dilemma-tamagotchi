@@ -20,5 +20,13 @@ loosely inspired by jonathan haidt's six moral foundations theory.
 unlock them all!
 <img width="15609" height="11450" alt="Evolution Guide-1" src="https://github.com/user-attachments/assets/ce3c3f04-a6b8-4fc4-8cec-fcf1a5eb037a" />
 
+## conversation flow
+- caretaker provides advice; pet returns `ok: true` (accept + stats/personality update) or `ok: false` (clarifying question)
+- pet pushes back on three patterns:
+  - **vague** (≤3 words, no "because") → "can you explain why?"
+  - **conditional** ("depends...", "if...") → picks a concrete case: "what if [X]?"
+  - **reverse question** ("what do you think?") → shares a tentative leaning, asks caretaker to confirm
+- after one round of clarification, pet accepts any reasoned reply to avoid loops (`prompt.ts`)
+
 ## system
 <img width="4878" height="2006" alt="Principal System-1" src="https://github.com/user-attachments/assets/a45cebfc-af46-4597-9415-af92b6a48849" />

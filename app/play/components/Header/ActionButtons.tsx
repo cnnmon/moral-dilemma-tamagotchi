@@ -119,7 +119,7 @@ export default function ActionButtons({
   onPlayClick?: () => void;
   onTalkClick?: () => void;
 }) {
-  const { baseStats, incrementStat } = useBaseStats();
+  const { incrementStat } = useBaseStats();
   const { pet } = usePet();
   const { dilemma, setDilemma } = useDilemma();
   const { hideOutcome } = useOutcome();
@@ -163,7 +163,6 @@ export default function ActionButtons({
       </div>
       <div className="flex pointer-events-auto">
         {STAT_ACTIONS.map((action, index) => {
-          const value = baseStats[action.stat];
           return (
             <div
               key={action.stat}

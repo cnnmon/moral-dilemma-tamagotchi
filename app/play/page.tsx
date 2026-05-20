@@ -59,11 +59,12 @@ export default function Play() {
   const { dilemma } = useDilemma();
   const hasGraduated = pet?.age !== undefined && pet.age >= 2;
 
-  // auto-open dialog when a new dilemma arrives
+  // auto-open dialog when a new dilemma arrives, close when it clears
+  const dilemmaId = dilemma?.id;
   useEffect(() => {
-    if (dilemma) setActivePanel("dialog");
+    if (dilemmaId) setActivePanel("dialog");
     else setActivePanel((prev) => (prev === "dialog" ? null : prev));
-  }, [dilemma?.id]);
+  }, [dilemmaId]);
 
   if (!pet || !evolution) {
     return (
@@ -93,7 +94,6 @@ export default function Play() {
           <div className="relative flex flex-1 w-full md:w-[calc(100%-320px)] md:max-w-[740px]">
             <div className="flex flex-col gap-2 w-full h-full">
               <Viewport
-                onDilemmaClick={() => setActivePanel("dialog")}
                 onStatClick={(stat) => {
                   const map: Record<string, typeof activePanel> = {
                     hunger: "feed",
