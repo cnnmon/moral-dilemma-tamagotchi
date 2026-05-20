@@ -7,7 +7,7 @@ import { evolvePetIfNeeded, getAverageMoralStats } from "./evolve";
 import { getPrompt } from "./prompt";
 
 const openai = new OpenAI({
-  apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY,
+  apiKey: process.env.OPENAI_API_KEY,
 });
 
 type ProcessedResponse = {
