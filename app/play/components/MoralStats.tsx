@@ -26,7 +26,7 @@ export function MoralStats({
   const { setHoverText } = useHoverText();
 
   return (
-    <div className="flex flex-col" style={{ zIndex: -2 }}>
+    <div className="flex flex-col">
       <AnimatePresence mode="popLayout">
         {moralStatsWritten.length ? (
           moralStatsWritten.map(({ key, description, percentage }) => {

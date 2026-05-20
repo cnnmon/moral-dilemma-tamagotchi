@@ -1,20 +1,19 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Scrapbook from "./components/Scrapbook";
+import Scrapbook, { getScrapbookPage } from "./components/Scrapbook";
 import { getPets, Pet } from "../storage/pet";
 import Graduation from "../play/components/Graduation";
 import Loading from "../play/components/Loading";
-import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Background } from "@/components/Background";
-import Image from "next/image";
+import { evolutions } from "@/constants/evolutions";
 
 export default function ScrapbookPage() {
   const [pets, setPets] = useState<Pet[]>([]);
   const [selectedPet, setSelectedPet] = useState<Pet | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const router = useRouter();
+  const [page, setPage] = useState(0);
 
   useEffect(() => {
     try {
@@ -36,28 +35,57 @@ export default function ScrapbookPage() {
     );
   }
 
+  const { clampedPage, totalPages, graduatedPets } = getScrapbookPage(pets, page);
+  const canPrev = clampedPage > 0;
+  const canNext = clampedPage < totalPages - 1;
+
+  const evolutionSet = new Set(graduatedPets.flatMap((p) => p.evolutionIds));
+  const evolutionText = evolutionSet.size === 0
+    ? "no evolutions yet"
+    : `${evolutionSet.size} evolutions collected out of ${Object.keys(evolutions).length}`;
+
   return (
     <>
       <motion.div
         key="create-page"
-        className="flex flex-col items-center gap-4 w-full sm:w-xl p-4 sm:p-0"
+        className="flex flex-col items-center gap-2 w-full sm:w-xl p-4 sm:p-0 relative text-lg"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -20 }}
         transition={{ duration: 0.3 }}
       >
-        <Background backgroundSrcs={["/scrapbook.png"]}>
-          <Image
-            src="/egg.gif"
-            alt="egg"
-            width={180}
-            height={180}
-            className="no-select"
-          />
-        </Background>
-        <br />
+        <div className="relative w-full">
+          <Background backgroundSrcs={["/scrapbook.png"]}><div /></Background>
+          <div className="absolute inset-0 flex items-center">
+            <Scrapbook pets={pets} page={clampedPage} setSelectedPet={setSelectedPet} />
+          </div>
+        </div>
 
-        <Scrapbook pets={pets} setSelectedPet={setSelectedPet} />
+        {/* pagination + meta — outside and below the book */}
+        <div className="flex items-center gap-3 text-zinc-500">
+          <a
+            onClick={() => canPrev && setPage(clampedPage - 1)}
+            className={`transition-opacity ${canPrev ? "cursor-pointer hover:opacity-70" : "opacity-30 pointer-events-none"}`}
+          >
+            prev page
+          </a>
+          <span>{clampedPage + 1} / {totalPages}</span>
+          <a
+            onClick={() => canNext && setPage(clampedPage + 1)}
+            className={`transition-opacity ${canNext ? "cursor-pointer hover:opacity-70" : "opacity-30 pointer-events-none"}`}
+          >
+            next page
+          </a>
+        </div>
+
+        <p className="text-zinc-500 italic">{evolutionText}</p>
+
+        {graduatedPets.length === 0 && (
+          <p className="text-zinc-500 italic">
+            no graduated pets yet! come back when you&apos;ve been a more committed parent...
+          </p>
+        )}
+
         {selectedPet && (
           <Graduation
             pet={selectedPet}

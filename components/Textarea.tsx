@@ -34,7 +34,7 @@ export function Textarea({
     if (isSubmitting) {
       const intervalId = setInterval(() => {
         setFlavorTextIndex(
-          (prevIndex) => (prevIndex + 1) % thinkingFlavorText.length
+          (prevIndex) => (prevIndex + 1) % thinkingFlavorText.length,
         );
       }, 1000);
       return () => clearInterval(intervalId);
@@ -46,7 +46,7 @@ export function Textarea({
       <textarea
         className={twMerge(
           `w-full h-24 resize-none border-2 border-black bg-zinc-200 outline-none p-2 pointer-events-auto`,
-          isDisabled && "opacity-50 cursor-not-allowed"
+          isDisabled && "opacity-50 cursor-not-allowed",
         )}
         value={value}
         onChange={(e) => {
@@ -65,7 +65,7 @@ export function Textarea({
         </p>
       </div>
 
-      <p className="text-right text-zinc-400 mt-[-35px] px-3 mb-2 text-[16px]">
+      <p className="text-right text-zinc-400 mt-[-35px] px-2 text-lg mb-2">
         {!isSubmitting ? (
           <span>
             press enter to{" "}

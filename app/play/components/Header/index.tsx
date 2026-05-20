@@ -23,29 +23,24 @@ export default function Header() {
   }
 
   const timeFrame = getEvolutionTimeFrame(pet.age);
-  const hasGraduated = pet.age >= 2;
-  const hasRip = pet.evolutionIds.includes(EvolutionId.RIP);
   const remaining = Math.max(0, timeFrame - pet.dilemmas.length);
   const progress = Math.min(pet.dilemmas.length / timeFrame, 1);
 
-  const ageLabel = hasGraduated
-    ? `${pet.dilemmas.length} dilemmas completed`
-    : hasRip
-      ? `died as a ${evolution.id}`
-      : `${remaining} more dilemmas to next ${pet.age === 1 ? "graduation" : "evolution"} (${pet.age + 1}/3)`;
-
   return (
     <div className="text-lg leading-tight">
-      <div className="flex flex-col gap-4">
-        <h1>{pet.name}</h1>
-
-        {/* pet evolution */}
-        <div className="flex flex-col gap-1">
-          {/* evolution boxes */}
-          <div className="flex gap-1">
+      {/* mobile: two-column layout; desktop: single column */}
+      <div className="flex gap-4 md:flex-col md:gap-4">
+        {/* left col on mobile: evolutions */}
+        <div className="flex flex-col gap-2 md:flex-none w-[20%] md:w-full">
+          <div className="flex items-center gap-2">
+            <p>evolutions</p>
+            <div className="flex-1 border-t-2 border-black" />
+          </div>
+          <div className="flex md:flex-row flex-col gap-1">
             {[0, 1, 2].map((stage) => {
               const evoId = pet.evolutionIds[stage] as EvolutionId | undefined;
               const reached = !!evoId;
+              const isNext = !reached && pet.evolutionIds.length === stage;
               const sprite = reached ? getSprite(Animation.IDLE, evoId!) : null;
               return (
                 <div
@@ -58,70 +53,89 @@ export default function Header() {
                   )}
                 >
                   {sprite && (
-                    <Image src={sprite} alt={evoId!} width={90} height={90} />
+                    <Image
+                      src={sprite}
+                      alt={evoId!}
+                      width={90}
+                      height={90}
+                      className="w-full h-full"
+                    />
+                  )}
+                  {isNext && (
+                    <div className="p-3 flex flex-col gap-2 opacity-60">
+                      <p className="text-center leading-4">
+                        {remaining} dilemma{remaining === 1 ? "" : "s"} needed
+                      </p>
+                      <div className="w-full border-2 border-black h-3 bg-white">
+                        <div
+                          className="bg-zinc-800 h-full"
+                          style={{ width: `${progress * 100}%` }}
+                        />
+                      </div>
+                    </div>
                   )}
                 </div>
               );
             })}
           </div>
+          <div className="text-right">
+            <a
+              className="text-zinc-500 hover:text-zinc-700 underline cursor-pointer pointer-events-auto w-fit"
+              onClick={() => setShowDilemmaTracker(true)}
+            >
+              view dilemmas
+            </a>
+          </div>
+        </div>
 
-          <div>
-            <p>{ageLabel}:</p>
-            {/* dilemma progress bar */}
-            <div className="w-full border-2 border-black h-5">
-              <div
-                className="bg-zinc-800 h-full"
-                style={{ width: `${progress * 100}%` }}
-              />
+        {/* right col on mobile: info + stats + morality */}
+        <div className="flex flex-col gap-4 flex-1 md:flex-none">
+          {/* pet info */}
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center gap-2">
+              <p>info</p>
+              <div className="flex-1 border-t-2 border-black" />
+            </div>
+            <div className="border-2 p-2 bg-zinc-100">
+              <p>
+                {pet.name}
+                <span className="opacity-50"> is a </span>
+                {evolution.id}, a {evolution.description}.{" "}
+                <i>{pet.personality}</i>
+              </p>
             </div>
           </div>
 
-          <a
-            className="text-zinc-500 hover:text-zinc-700 underline cursor-pointer pointer-events-auto"
-            onClick={() => setShowDilemmaTracker(true)}
-          >
-            view history
-          </a>
-        </div>
-
-        {/* pet name + age */}
-        <div className="border-2 p-2 bg-zinc-100">
-          <p>
-            {pet.name}
-            <span className="opacity-50"> is a </span>
-            {evolution.id}, a {evolution.description}. <i>{pet.personality}</i>
-          </p>
-        </div>
-
-        {/* base stats */}
-        <div className="flex flex-col gap-1">
-          <div className="flex items-center gap-2">
-            <p>stats</p>
-            <div className="flex-1 border-t-2 border-black" />
-          </div>
-          {Object.values(BaseStatKeys).map((stat) => (
-            <div key={stat} className="flex items-center gap-2 h-4">
-              <span className="w-18 shrink-0">{stat}</span>
-              <div className="flex-1 border-2 border-black h-full">
-                <div
-                  className={twMerge(
-                    "h-full",
-                    baseStats[stat] < 2 ? "bg-red-500" : "bg-zinc-800",
-                  )}
-                  style={{ width: `${baseStats[stat] * 10}%` }}
-                />
+          {/* base stats */}
+          <div className="flex flex-col gap-1">
+            <div className="flex items-center gap-2">
+              <p>stats</p>
+              <div className="flex-1 border-t-2 border-black" />
+            </div>
+            {Object.values(BaseStatKeys).map((stat) => (
+              <div key={stat} className="flex items-center gap-2 h-4">
+                <span className="w-18 shrink-0">{stat}</span>
+                <div className="flex-1 border-2 border-black h-full bg-white">
+                  <div
+                    className={twMerge(
+                      "h-full",
+                      baseStats[stat] < 2 ? "bg-red-500" : "bg-zinc-800",
+                    )}
+                    style={{ width: `${baseStats[stat] * 10}%` }}
+                  />
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
-
-        {/* morality */}
-        <div className="flex flex-col">
-          <div className="flex items-center gap-2">
-            <p>morality</p>
-            <div className="flex-1 border-t-2 border-black" />
+            ))}
           </div>
-          <MoralStats moralStats={pet.moralStats} />
+
+          {/* morality */}
+          <div className="flex flex-col">
+            <div className="flex items-center gap-2">
+              <p>morality</p>
+              <div className="flex-1 border-t-2 border-black" />
+            </div>
+            <MoralStats moralStats={pet.moralStats} />
+          </div>
         </div>
       </div>
 

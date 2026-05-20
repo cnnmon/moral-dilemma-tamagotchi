@@ -15,7 +15,7 @@ export function Background({
   backgroundSrcs: string[];
   hasOverlay?: boolean;
   isAlmostDead?: boolean;
-  children: React.ReactNode;
+  children?: React.ReactNode;
 }) {
   // state to track loaded images
   const [loadedImages, setLoadedImages] = useState<string[]>([]);
@@ -50,7 +50,7 @@ export function Background({
         initial={{ opacity: 1 }}
         animate={{ opacity: 0 }}
         transition={{ duration: 0.5 }}
-        className="absolute inset-0 bg-white pointer-events-none z-50"
+        className="absolute inset-0 bg-white pointer-events-none z-30"
       />
 
       <div className="w-full flex items-center justify-center relative">

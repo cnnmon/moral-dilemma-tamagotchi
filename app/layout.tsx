@@ -26,7 +26,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${pixel.className} w-full min-h-screen flex`}>
-        <div className="w-full flex flex-col p-4">
+        <div className="w-full flex flex-col p-4 gap-2">
           <ConvexClientProvider>
             <PetProvider>
               <Menu />

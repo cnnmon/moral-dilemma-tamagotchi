@@ -4,13 +4,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import Image from "next/image";
 import { Animation, getSprite } from "@/constants/sprites";
 
-export default function PlayMinigame({
-  isOpen,
-  setIsOpen,
-}: {
-  isOpen: boolean;
-  setIsOpen: (open: boolean) => void;
-}) {
+export default function PlayMinigame({ onClose }: { onClose: () => void }) {
   const { incrementStat } = useBaseStats();
   const { pet } = usePet();
   const gameAreaRef = useRef<HTMLDivElement>(null);
@@ -42,20 +36,16 @@ export default function PlayMinigame({
   }, []);
 
   useEffect(() => {
-    if (isOpen) {
-      resetGame();
-    }
-  }, [isOpen, resetGame]);
+    resetGame();
+  }, [resetGame]);
 
   // Handle game completion when bounceCount reaches 2
   useEffect(() => {
     if (bounceCount >= 2) {
-      incrementStat(
-        "happiness" as keyof import("@/constants/base").BaseStatsType,
-      );
-      setIsOpen(false);
+      incrementStat("happiness" as keyof import("@/constants/base").BaseStatsType);
+      onClose();
     }
-  }, [bounceCount, incrementStat, setIsOpen]);
+  }, [bounceCount, incrementStat, onClose]);
 
   const handleMouseMove = useCallback(
     (e: React.MouseEvent) => {
@@ -74,7 +64,7 @@ export default function PlayMinigame({
   };
 
   useEffect(() => {
-    if (!gameStarted || !isOpen) return;
+    if (!gameStarted || !gameAreaRef.current) return;
 
     const updateGame = (currentTime: number) => {
       if (lastTimeRef.current === 0) {
@@ -155,7 +145,6 @@ export default function PlayMinigame({
     };
   }, [
     gameStarted,
-    isOpen,
     ballVelocity,
     paddlePosition,
     paddleWidth,
@@ -163,19 +152,13 @@ export default function PlayMinigame({
     gameHeight,
     ballSize,
     incrementStat,
-    setIsOpen,
+    onClose,
     resetGame,
   ]);
 
-  if (!isOpen) return null;
-
   return (
     <div className="flex w-full h-50">
-      <Window
-        title="bounce the ball twice to play (+10 happiness)"
-        isOpen={isOpen}
-        setIsOpen={setIsOpen}
-      >
+      <Window title="bounce the ball twice to play (+10 happiness)" setIsOpen={onClose}>
         <div className="flex flex-col gap-2 p-2">
           <div
             ref={gameAreaRef}
@@ -212,13 +195,16 @@ export default function PlayMinigame({
                 )}
 
                 {/* Paddle */}
-                <div
-                  className="absolute bg-black"
+                <Image
+                  src="/uwantahand.png"
+                  alt="paddle"
+                  width={120}
+                  height={60}
+                  className="absolute pointer-events-none"
                   style={{
                     left: `${paddlePosition}%`,
-                    bottom: "5%",
-                    width: `${paddleWidth}%`,
-                    height: `${paddleHeight}%`,
+                    bottom: "2%",
+                    width: `${paddleWidth * 1.5}%`,
                     transform: "translateX(-50%)",
                   }}
                 />

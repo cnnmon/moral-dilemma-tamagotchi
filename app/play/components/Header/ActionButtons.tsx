@@ -4,6 +4,7 @@ import {
   usePet,
   useHoverText,
   useDilemma,
+  useOutcome,
 } from "@/app/providers/PetProvider";
 import { EvolutionId } from "@/constants/evolutions";
 import { ObjectKey } from "@/constants/objects";
@@ -111,18 +112,24 @@ export default function ActionButtons({
   onHealClick,
   onFeedClick,
   onPlayClick,
+  onTalkClick,
 }: {
   onHealClick?: () => void;
   onFeedClick?: () => void;
   onPlayClick?: () => void;
+  onTalkClick?: () => void;
 }) {
   const { baseStats, incrementStat } = useBaseStats();
   const { pet } = usePet();
   const { dilemma, setDilemma } = useDilemma();
+  const { hideOutcome } = useOutcome();
 
-  // Handle talk action - create new dilemma only if none exists
+  // Handle talk action - open existing dilemma or create a new one
   const handleTalkAction = useCallback(() => {
-    if (dilemma || !pet) {
+    if (!pet) return;
+
+    if (dilemma) {
+      onTalkClick?.();
       return;
     }
 
@@ -137,10 +144,12 @@ export default function ActionButtons({
           },
         ],
       });
+      hideOutcome();
+      onTalkClick?.();
     } else {
       incrementStat(BaseStatKeys.sanity);
     }
-  }, [dilemma, pet, setDilemma, incrementStat]);
+  }, [dilemma, pet, setDilemma, incrementStat, onTalkClick, hideOutcome]);
 
   if (!pet) {
     return null;
@@ -174,7 +183,7 @@ export default function ActionButtons({
                   else incrementStat(action.stat);
                 }}
                 disabled={hasRip}
-                hasWarning={value < 2}
+                hasWarning={false} //value < 2}
               />
             </div>
           );

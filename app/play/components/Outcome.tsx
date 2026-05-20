@@ -9,8 +9,10 @@ export default function Outcome() {
 
   // split "outcome text (+key1, -key2)" into body and changes
   const parenIdx = outcome.message.lastIndexOf(" (");
-  const mainText = parenIdx > -1 ? outcome.message.slice(0, parenIdx) : outcome.message;
-  const changesRaw = parenIdx > -1 ? outcome.message.slice(parenIdx + 2, -1) : "";
+  const mainText =
+    parenIdx > -1 ? outcome.message.slice(0, parenIdx) : outcome.message;
+  const changesRaw =
+    parenIdx > -1 ? outcome.message.slice(parenIdx + 2, -1) : "";
   const changes = changesRaw ? changesRaw.split(",").map((s) => s.trim()) : [];
 
   const animationClasses = outcome.visible
@@ -18,11 +20,11 @@ export default function Outcome() {
     : "opacity-0 scale-90";
 
   return (
-    <div className="absolute inset-0 flex items-center justify-center z-20">
+    <div className="absolute top-0 flex items-center justify-center pt-4 z-30 text-lg">
       <div
         className={twMerge(
-          "border-2 border-black p-4 bg-zinc-100 transform transition-all duration-300 relative mx-4",
-          animationClasses
+          "border-2 border-black p-3 bg-zinc-100 transform transition-all duration-300 relative mx-4",
+          animationClasses,
         )}
       >
         <button
@@ -35,11 +37,18 @@ export default function Outcome() {
           {mainText}
           {changes.length > 0 && (
             <>
-              {" "}(
+              {" "}
+              (
               {changes.map((c, i) => (
                 <span
                   key={i}
-                  className={c.startsWith("-") ? "text-red-500" : ""}
+                  className={
+                    c.startsWith("-")
+                      ? "text-red-500"
+                      : c.startsWith("+")
+                        ? "text-green-600"
+                        : ""
+                  }
                 >
                   {c}
                   {i < changes.length - 1 ? ", " : ""}

@@ -6,6 +6,7 @@ import { useState, useEffect, useRef, forwardRef } from "react";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
 import Window from "@/components/Window";
+import { twMerge } from "tailwind-merge";
 
 type Page = "play" | "create" | "scrapbook";
 
@@ -16,11 +17,7 @@ function pageFromPathname(pathname: string): Page | null {
   return null;
 }
 
-type SegmentOption = {
-  label: string;
-  onClick?: () => void;
-  children?: SegmentOption[];
-};
+type SegmentOption = { label: string; subtitle?: string; onClick: () => void };
 type Segment = {
   label: string;
   onClick?: () => void;
@@ -30,157 +27,83 @@ type Segment = {
 function useBreadcrumb(page: Page, showAbout: () => void): Segment[] {
   const { pet } = usePet();
 
-  // "home" is a category — expands to living room & scrapbook
-  const homeOption: SegmentOption = {
-    label: "home",
-    children: [
-      {
-        label: "living room",
-        onClick: () => {
-          window.location.href = "/play";
-        },
-      },
-      {
-        label: "scrapbook",
-        onClick: () => {
-          window.location.href = "/scrapbook";
-        },
-      },
-    ],
-  };
+  // All nav destinations from the root, excluding current page
+  const rootOptions: SegmentOption[] = [
+    ...(page !== "play" && pet
+      ? [
+          {
+            label: "living room",
+            subtitle: "home for your pet",
+            onClick: () => {
+              window.location.href = "/play";
+            },
+          },
+        ]
+      : []),
+    ...(page !== "create"
+      ? [
+          {
+            label: "orphanage",
+            subtitle: "+ new pet",
+            onClick: () => {
+              window.location.href = "/create";
+            },
+          },
+        ]
+      : []),
+    ...(page !== "scrapbook"
+      ? [
+          {
+            label: "scrapbook",
+            subtitle: "graduated pets",
+            onClick: () => {
+              window.location.href = "/scrapbook";
+            },
+          },
+        ]
+      : []),
+  ];
 
-  const slot1: Segment =
+  const root: Segment =
     page === "create"
-      ? { label: "orphanage", options: [homeOption] }
+      ? { label: "orphanage", options: rootOptions }
       : {
           label: "home",
           onClick: () => {
             window.location.href = "/play";
           },
-          options: [
-            {
-              label: "orphanage",
-              onClick: () => {
-                window.location.href = "/create";
-              },
-            },
-          ],
+          options: rootOptions,
         };
 
   if (page === "play") {
     return [
-      slot1,
-      {
-        label: "living room",
-        onClick: () => {
-          window.location.href = "/play";
-        },
-        options: [
-          {
-            label: "scrapbook",
-            onClick: () => {
-              window.location.href = "/scrapbook";
-            },
-          },
-        ],
-      },
+      root,
+      { label: "living room" },
       ...(pet ? [{ label: pet.name }] : []),
     ];
   }
-
   if (page === "scrapbook") {
-    return [
-      slot1,
-      {
-        label: "scrapbook",
-        options: [
-          {
-            label: "living room",
-            onClick: () => {
-              window.location.href = "/play";
-            },
-          },
-        ],
-      },
-    ];
+    return [root, { label: "scrapbook" }];
   }
-
-  return [slot1];
-}
-
-// A row in a dropdown — may itself have a children flyout
-function DropdownItem({
-  option,
-  onClose,
-  isLast,
-}: {
-  option: SegmentOption;
-  onClose: () => void;
-  isLast: boolean;
-}) {
-  const [open, setOpen] = useState(false);
-  const ref = useRef<HTMLSpanElement>(null);
-  const hasChildren = option.children && option.children.length > 0;
-
-  return (
-    <span
-      ref={ref}
-      className={`relative flex items-center justify-between gap-4 px-3 py-1 hover:bg-zinc-200 cursor-pointer${!isLast ? " border-b-2" : ""}`}
-      onMouseEnter={() => hasChildren && setOpen(true)}
-      onMouseLeave={() => setOpen(false)}
-      onClick={() => {
-        if (option.onClick) {
-          onClose();
-          option.onClick();
-        }
-      }}
-    >
-      <span>{option.label}</span>
-      {hasChildren && <span className="opacity-40 text-xs">›</span>}
-      <AnimatePresence>
-        {open && hasChildren && (
-          <motion.div
-            className="absolute left-full top-0 ml-[2px] bg-white border-2 border-black z-50 flex flex-col min-w-max"
-            initial={{ opacity: 0, x: -4 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -4 }}
-            transition={{ duration: 0.12 }}
-          >
-            {option.children!.map((child, i) => (
-              <span
-                key={child.label}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onClose();
-                  child.onClick?.();
-                }}
-                className={`px-3 py-1 hover:bg-zinc-200 cursor-pointer${i < option.children!.length - 1 ? " border-b-2" : ""}`}
-              >
-                {child.label}
-              </span>
-            ))}
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </span>
-  );
+  return [root];
 }
 
 // A single breadcrumb segment — hover to reveal alternatives
 function BreadcrumbSegment({ segment }: { segment: Segment }) {
   const [open, setOpen] = useState(false);
-  const ref = useRef<HTMLSpanElement>(null);
   const hasOptions = segment.options && segment.options.length > 0;
 
   return (
     <span
-      ref={ref}
       className="relative"
       onMouseEnter={() => hasOptions && setOpen(true)}
       onMouseLeave={() => setOpen(false)}
     >
       {segment.onClick || hasOptions ? (
-        <a onClick={segment.onClick} className="cursor-pointer hover:text-zinc-800">
+        <a
+          onClick={segment.onClick}
+          className="cursor-pointer hover:text-zinc-800"
+        >
           {segment.label}
         </a>
       ) : (
@@ -195,13 +118,20 @@ function BreadcrumbSegment({ segment }: { segment: Segment }) {
             exit={{ opacity: 0, y: -4 }}
             transition={{ duration: 0.12 }}
           >
-            {segment.options!.map((opt, i) => (
-              <DropdownItem
-                key={opt.label}
-                option={opt}
-                onClose={() => setOpen(false)}
-                isLast={i === segment.options!.length - 1}
-              />
+            {segment.options!.map(({ label, subtitle, onClick }, i) => (
+              <span
+                key={label}
+                onClick={() => {
+                  setOpen(false);
+                  onClick();
+                }}
+                className={`flex items-baseline gap-3 px-3 py-1 hover:bg-zinc-200 cursor-pointer${i < segment.options!.length - 1 ? " border-b-2" : ""}`}
+              >
+                <span>{label}</span>
+                {subtitle && (
+                  <span className="opacity-70 text-sm">({subtitle})</span>
+                )}
+              </span>
             ))}
           </motion.div>
         )}
@@ -299,12 +229,8 @@ const MobileMenu = forwardRef<
   }
 >(({ segments, isOpen, onClose, showAbout }, ref) => {
   const allOptions = [
-    ...segments.flatMap((s) =>
-      (s.options ?? []).flatMap((o) =>
-        o.children ? o.children : o.onClick ? [o] : [],
-      ),
-    ),
-    { label: "about", onClick: showAbout },
+    ...segments.flatMap((s) => s.options ?? []),
+    { label: "about", subtitle: undefined, onClick: showAbout },
   ];
 
   return (
@@ -350,6 +276,7 @@ export default function Menu() {
   const [aboutOpen, setAboutOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const mobileMenuRef = useRef<HTMLDivElement>(null);
+  const { pet } = usePet();
   const segments = useBreadcrumb(page ?? "play", () => setAboutOpen(true));
 
   useEffect(() => {
@@ -369,15 +296,21 @@ export default function Menu() {
   }, [mobileMenuOpen]);
 
   if (!page) return null;
+  if (page === "play" && !pet) return null;
 
   return (
     <>
       <div className="w-full flex justify-between items-center text-zinc-500 text-lg">
-        <div className="hidden md:flex items-center justify-between w-full">
+        <div
+          className={twMerge(
+            "hidden md:flex items-center justify-between w-full",
+            page === "play" && "w-[calc(100%-320px)]",
+          )}
+        >
           <Breadcrumb segments={segments} />
           <a
             onClick={() => setAboutOpen(true)}
-            className="cursor-pointer hover:text-zinc-800 z-[90]"
+            className="cursor-pointer hover:text-zinc-800"
           >
             about
           </a>
