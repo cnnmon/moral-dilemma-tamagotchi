@@ -304,7 +304,7 @@ const Viewport = React.memo(function Viewport({
                   width={VIEWPORT_WIDTH / 5}
                   height={VIEWPORT_HEIGHT / 5}
                   priority
-                  className="translate-y-[30%] no-select"
+                  className="translate-y-[30%] no-select pointer-events-none"
                 />
               )}
             </motion.div>
