@@ -1,33 +1,20 @@
 import Window from "@/components/Window";
 import { useBaseStats } from "@/app/providers/PetProvider";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Image from "next/image";
 
-export default function HealMinigame({
-  isOpen,
-  setIsOpen,
-}: {
-  isOpen: boolean;
-  setIsOpen: (open: boolean) => void;
-}) {
+export default function HealMinigame({ onClose }: { onClose: () => void }) {
   const { incrementStat } = useBaseStats();
-  const [targetPosition, setTargetPosition] = useState({ x: 50, y: 50 });
+  const [targetPosition, setTargetPosition] = useState(() => ({
+    x: Math.random() * 80 + 10,
+    y: Math.random() * 80 + 10,
+  }));
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [isMouseInBox, setIsMouseInBox] = useState(false);
 
-  useEffect(() => {
-    if (isOpen) {
-      // Generate random position for the "x" when minigame opens
-      setTargetPosition({
-        x: Math.random() * 80 + 10, // 10% to 90% from left
-        y: Math.random() * 80 + 10, // 10% to 90% from top
-      });
-    }
-  }, [isOpen]);
-
   const handleTargetClick = () => {
     incrementStat("health" as keyof import("@/constants/base").BaseStatsType);
-    setIsOpen(false);
+    onClose();
   };
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -46,15 +33,9 @@ export default function HealMinigame({
     setIsMouseInBox(false);
   };
 
-  if (!isOpen) return null;
-
   return (
     <div className="flex w-full h-50">
-      <Window
-        title="click to apply bandaid (+30 health)"
-        isOpen={isOpen}
-        setIsOpen={setIsOpen}
-      >
+      <Window title="click to apply bandaid (+10 health)" setIsOpen={onClose}>
         <div className="p-3">
           <div
             className="relative w-full h-40 bg-zinc-50 border-2 bg-zinc-200 overflow-hidden"

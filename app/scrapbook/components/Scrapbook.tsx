@@ -1,57 +1,45 @@
-import { evolutions } from "@/constants/evolutions";
+"use client";
+
 import PetCard from "./PetCard";
 import { Pet } from "@/app/storage/pet";
 
+const PER_PAGE = 2;
+
+export function getScrapbookPage(pets: Pet[], page: number) {
+  const graduatedPets = pets.filter((p) => p.age >= 2);
+  const totalPages = Math.max(1, Math.ceil(graduatedPets.length / PER_PAGE));
+  const clampedPage = Math.min(page, totalPages - 1);
+  return {
+    left: graduatedPets[clampedPage * PER_PAGE] ?? null,
+    right: graduatedPets[clampedPage * PER_PAGE + 1] ?? null,
+    clampedPage,
+    totalPages,
+    graduatedPets,
+  };
+}
+
 export default function Scrapbook({
   pets,
+  page,
   setSelectedPet,
 }: {
   pets?: Pet[];
+  page: number;
   setSelectedPet: (pet: Pet | null) => void;
 }) {
   if (pets === undefined) {
-    return (
-      <div className="grid grid-cols-2 sm:grid-cols-4 bg-zinc-200">
-        {[...Array(4)].map((_, index) => (
-          <div key={index} className="relative">
-            <div className="h-60 bg-zinc-300 w-36 animate-pulse flex items-center justify-center"></div>
-          </div>
-        ))}
-      </div>
-    );
+    return <div className="h-10 w-full bg-zinc-300 animate-pulse" />;
   }
 
-  const graduatedPets = pets.filter((pet) => pet.age >= 2);
-
-  // count number of unique evolutions collected
-  const evolutionSet = new Set(
-    graduatedPets.flatMap((pet) => pet.evolutionIds)
-  );
-  const evolutionCount = evolutionSet.size;
-  const evolutionText =
-    evolutionCount === 0
-      ? "no evolutions yet"
-      : evolutionCount === 1
-        ? "1 evolution"
-        : `${evolutionCount} evolutions`;
+  const { left, right } = getScrapbookPage(pets, page);
 
   return (
-    <div className="flex flex-col gap-2 bg-zinc-200 w-full p-3 text-lg">
-      <p className="text-zinc-500 italic">
-        {evolutionText} collected out of {Object.keys(evolutions).length}
-      </p>
-      {graduatedPets.length === 0 && (
-        <p className="text-zinc-500 italic">
-          no graduated pets yet! come back when you&apos;ve been a more
-          committed parent...
-        </p>
-      )}
-      <div className="grid grid-cols-2 sm:grid-cols-4">
-        {graduatedPets.map((pet) => (
-          <div key={pet.id} className="relative">
-            <PetCard pet={pet} setSelectedPet={setSelectedPet} />
-          </div>
-        ))}
+    <div className="flex w-full justify-around px-8">
+      <div className="flex items-center justify-center w-1/2">
+        {left ? <PetCard pet={left} setSelectedPet={setSelectedPet} /> : null}
+      </div>
+      <div className="flex items-center justify-center w-1/2">
+        {right ? <PetCard pet={right} setSelectedPet={setSelectedPet} /> : null}
       </div>
     </div>
   );

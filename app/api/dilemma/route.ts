@@ -7,7 +7,7 @@ import { evolvePetIfNeeded, getAverageMoralStats } from "./evolve";
 import { getPrompt } from "./prompt";
 
 const openai = new OpenAI({
-  apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY,
+  apiKey: process.env.OPENAI_API_KEY,
 });
 
 type ProcessedResponse = {
@@ -32,7 +32,7 @@ async function processDilemmaResponse(pet: Pet, dilemma: ActiveDilemma): Promise
 
   try {
     const completion = await openai.chat.completions.create({
-      model: 'gpt-4o-mini-2024-07-18',
+      model: 'gpt-5.4-nano-2026-03-17',
       messages,
       temperature: 0.7,
       response_format: { type: 'json_object' },

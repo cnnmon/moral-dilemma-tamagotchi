@@ -2,20 +2,109 @@ import React, { useMemo, useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { Background, VIEWPORT_WIDTH } from "@/components/Background";
 import { VIEWPORT_HEIGHT } from "@/components/Background";
+import Outcome from "../Outcome";
 import { AnimatePresence, motion } from "framer-motion";
 import { RIP_SPRITE, getSprite } from "@/constants/sprites";
-import { useBaseStats, useDilemma, usePet } from "@/app/providers/PetProvider";
+import {
+  useBaseStats,
+  useDilemma,
+  usePet,
+  useHoverText,
+} from "@/app/providers/PetProvider";
 import { EvolutionId } from "@/constants/evolutions";
-import { Question } from "./Question";
+import { ActiveDilemma } from "@/app/storage/pet";
 
+function ConversationScroll({
+  messages,
+}: {
+  messages: ActiveDilemma["messages"];
+}) {
+  const scrollRef = useRef<HTMLDivElement>(null);
+  // only assistant messages (pet's clarifying questions), not user replies
+  const petMessages = messages.filter((m) => m.role === "assistant");
+
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
+  }, [messages.length]);
+
+  const display = petMessages;
+
+  if (!display.length) return null;
+
+  return (
+    <motion.div
+      className="absolute top-0 z-20"
+      initial={{ opacity: 0, y: -4 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -4 }}
+      transition={{ duration: 0.3 }}
+    >
+      <div ref={scrollRef} className="flex flex-col gap-1 overflow-y-auto p-4">
+        {display.map((msg, i) => (
+          <p
+            key={i}
+            className="w-full px-3 py-2 bg-zinc-100 border-2 border-black text-lg"
+          >
+            {msg.content}
+          </p>
+        ))}
+      </div>
+    </motion.div>
+  );
+}
 // local storage key for tracking if egg animation has been shown
 export const EGG_CRACK_SHOWN_KEY = "egg_crack_animation_shown";
 
-const Viewport = React.memo(function Viewport() {
+const LOW_STAT_THRESHOLD = 3;
+const LOW_STAT_MESSAGES: Record<string, string> = {
+  hunger: "i'm hungry… (￣﹃￣)",
+  health: "i don't feel so good (ᵕ–﹏–)🌡️",
+  happiness: "i need someone to play with… (｡•́︿•̀｡)",
+  sanity: "i have a problem… ( ˶•ᴖ•) !!",
+};
+
+const STAT_HOVER: Record<string, string> = {
+  hunger: "feed me",
+  health: "heal me",
+  happiness: "play with me",
+  sanity: "answer dilemma",
+};
+
+const Viewport = React.memo(function Viewport({
+  onDilemmaClick,
+  onStatClick,
+}: {
+  onDilemmaClick?: () => void;
+  onStatClick?: (stat: string) => void;
+}) {
   const { pet, animation } = usePet();
   const { dilemma } = useDilemma();
+  const { setHoverText } = useHoverText();
   const { baseStats, poos, cleanupPoo } = useBaseStats();
   const [isAlmostDead, setIsAlmostDead] = useState(false);
+
+  // find the lowest stat below threshold for speech bubble
+  const speechBubble = useMemo(() => {
+    if (!pet || pet.age >= 2 || pet.evolutionIds.includes(EvolutionId.RIP))
+      return null;
+    const lowest = Object.entries(baseStats)
+      .filter(([, v]) => v < LOW_STAT_THRESHOLD)
+      .sort(([, a], [, b]) => a - b)[0];
+    if (!lowest) return null;
+    const [key] = lowest;
+    return { key, message: LOW_STAT_MESSAGES[key] };
+  }, [baseStats, pet]);
+
+  // show grumble when pet is "thinking" (last message is from user, awaiting response)
+  const isThinking = useMemo(() => {
+    if (!dilemma || dilemma.completed) return false;
+    const last = [...dilemma.messages]
+      .reverse()
+      .find((m) => m.role !== "system");
+    return last?.role === "user";
+  }, [dilemma]);
   const [imagesLoaded, setImagesLoaded] = useState(false);
   const prevStatsRef = useRef(baseStats);
 
@@ -47,11 +136,11 @@ const Viewport = React.memo(function Viewport() {
     }
     const sprite = getSprite(
       animation,
-      pet.evolutionIds[pet.evolutionIds.length - 1]
+      pet.evolutionIds[pet.evolutionIds.length - 1],
     );
     if (!sprite) {
       throw new Error(
-        `no sprite found for ${pet.age}, ${animation}, ${pet.evolutionIds[0]}`
+        `no sprite found for ${pet.age}, ${animation}, ${pet.evolutionIds[0]}`,
       );
     }
     return sprite;
@@ -72,7 +161,7 @@ const Viewport = React.memo(function Viewport() {
           (baseStats.hunger < 2 && baseStats.hunger > 0) ||
             (baseStats.health < 2 && baseStats.health > 0) ||
             (baseStats.happiness < 2 && baseStats.happiness > 0) ||
-            (baseStats.sanity < 2 && baseStats.sanity > 0)
+            (baseStats.sanity < 2 && baseStats.sanity > 0),
         );
         prevStatsRef.current = baseStats;
       }, 100);
@@ -103,7 +192,7 @@ const Viewport = React.memo(function Viewport() {
         maxWidth: VIEWPORT_WIDTH,
         height: VIEWPORT_HEIGHT,
       }}
-      className="flex items-center justify-center no-drag w-full"
+      className="relative flex items-center justify-center no-drag flex-1 overflow-hidden"
     >
       {/* Lazy load poos after main content */}
       {imagesLoaded &&
@@ -114,10 +203,10 @@ const Viewport = React.memo(function Viewport() {
             <div
               key={id}
               className="absolute z-20 cursor-pointer hover:opacity-50 transition-opacity"
-              style={{
-                transform: `translate(${left}px, ${top}px)`,
-              }}
+              style={{ transform: `translate(${left}px, ${top}px)` }}
               onClick={() => cleanupPoo(id)}
+              onMouseEnter={() => setHoverText("pick up poo")}
+              onMouseLeave={() => setHoverText(null)}
             >
               <Image
                 src="/poo.gif"
@@ -131,7 +220,50 @@ const Viewport = React.memo(function Viewport() {
           );
         })}
 
-      {dilemma && <Question dilemma={dilemma} />}
+      {/* conversation thread — only back-and-forth, shown when there are messages */}
+      <AnimatePresence>
+        {dilemma && dilemma.messages.length > 0 && (
+          <ConversationScroll messages={dilemma.messages} />
+        )}
+      </AnimatePresence>
+
+      {/* grumble gif — shown while pet is thinking */}
+      <AnimatePresence>
+        {isThinking && (
+          <motion.div
+            className="absolute z-20 top-2 right-2 pointer-events-none"
+            initial={{ opacity: 0, y: -4 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -4 }}
+            transition={{ duration: 0.3 }}
+          >
+            <Image src="/grumble.gif" alt="thinking" width={48} height={48} />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* speech bubble for low stats */}
+      <AnimatePresence>
+        {speechBubble && !dilemma && (
+          <motion.div
+            key={speechBubble.key}
+            className="absolute z-20 w-xs bg-zinc-100 border-2 p-2 mt-[-80px] text-center hover:opacity-70! cursor-pointer"
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 6 }}
+            transition={{ duration: 0.4 }}
+            onMouseEnter={() =>
+              setHoverText(STAT_HOVER[speechBubble.key] ?? null)
+            }
+            onMouseLeave={() => setHoverText(null)}
+            onClick={() => onStatClick?.(speechBubble.key)}
+          >
+            <p>{speechBubble.message}</p>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <Outcome />
 
       <Background
         hasOverlay
@@ -174,7 +306,7 @@ const Viewport = React.memo(function Viewport() {
                   width={VIEWPORT_WIDTH / 5}
                   height={VIEWPORT_HEIGHT / 5}
                   priority
-                  className="translate-y-[30%] cursor-grab no-select"
+                  className="translate-y-[30%] no-select"
                 />
               )}
             </motion.div>

@@ -22,20 +22,19 @@ export default function HoverText({ hoverText }: { hoverText: string | null }) {
   }
 
   return (
-    <div className="z-40 pointer-events-none">
+    <>
       {hoverText && (
         <p
-          className="absolute px-2 border-2 bg-zinc-100 flex justify-center items-center"
+          className="fixed z-[999] pointer-events-none px-2 border-2 bg-zinc-100 flex justify-center items-center"
           style={{
             top: mousePosition.y,
             left: mousePosition.x,
             transform: "translate(10px, 10px)",
-            pointerEvents: "none",
           }}
         >
           {hoverText}
         </p>
       )}
-    </div>
+    </>
   );
 }

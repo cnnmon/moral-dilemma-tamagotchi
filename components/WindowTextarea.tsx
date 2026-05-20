@@ -8,6 +8,7 @@ export default function WindowTextarea({
   children,
   exitable = true,
   disabled = false,
+  setIsOpen,
 }: {
   title: string;
   placeholder: string;
@@ -15,14 +16,15 @@ export default function WindowTextarea({
   children: React.ReactNode;
   exitable?: boolean;
   disabled?: boolean;
+  setIsOpen?: () => void;
 }) {
   return (
     <div className="flex flex-col gap-2 w-full">
-      <Window exitable={exitable} title={title}>
+      <Window exitable={exitable} title={title} setIsOpen={setIsOpen}>
         <div className="flex flex-col gap-2 p-3">
           {children}
           <div
-            className="w-full sm:max-w-2xl transition-all duration-300"
+            className="w-full"
             style={{
               opacity: 1,
               transform: "translateY(0)",

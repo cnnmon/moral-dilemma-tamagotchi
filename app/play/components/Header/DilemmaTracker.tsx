@@ -47,7 +47,7 @@ export function DilemmaTracker({
   }
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center z-[100] bg-zinc-500/50">
+    <div className="fixed inset-0 flex items-center justify-center z-50 bg-zinc-500/50">
       <div className="w-full max-w-2xl">
         <Window title={`dilemma tracker`} isOpen={isOpen} setIsOpen={setIsOpen}>
           <div className="max-h-[80vh] overflow-y-auto space-y-4 p-4">

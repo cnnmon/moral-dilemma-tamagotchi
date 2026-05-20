@@ -1,17 +1,17 @@
 import Window from "@/components/Window";
-import { useBaseStats } from "@/app/providers/PetProvider";
+import { useBaseStats, usePet } from "@/app/providers/PetProvider";
 import { useState, useEffect, useRef, useCallback } from "react";
 import Image from "next/image";
+import { Animation, getSprite } from "@/constants/sprites";
 
-export default function PlayMinigame({
-  isOpen,
-  setIsOpen,
-}: {
-  isOpen: boolean;
-  setIsOpen: (open: boolean) => void;
-}) {
+export default function PlayMinigame({ onClose }: { onClose: () => void }) {
   const { incrementStat } = useBaseStats();
+  const { pet } = usePet();
   const gameAreaRef = useRef<HTMLDivElement>(null);
+
+  const petSprite = pet
+    ? getSprite(Animation.HAPPY, pet.evolutionIds[pet.evolutionIds.length - 1]) ?? getSprite(Animation.IDLE, pet.evolutionIds[pet.evolutionIds.length - 1])
+    : null;
   const animationRef = useRef<number>();
 
   const [ballPosition, setBallPosition] = useState({ x: 50, y: 50 });
@@ -36,20 +36,16 @@ export default function PlayMinigame({
   }, []);
 
   useEffect(() => {
-    if (isOpen) {
-      resetGame();
-    }
-  }, [isOpen, resetGame]);
+    resetGame();
+  }, [resetGame]);
 
   // Handle game completion when bounceCount reaches 2
   useEffect(() => {
     if (bounceCount >= 2) {
-      incrementStat(
-        "happiness" as keyof import("@/constants/base").BaseStatsType
-      );
-      setIsOpen(false);
+      incrementStat("happiness" as keyof import("@/constants/base").BaseStatsType);
+      onClose();
     }
-  }, [bounceCount, incrementStat, setIsOpen]);
+  }, [bounceCount, incrementStat, onClose]);
 
   const handleMouseMove = useCallback(
     (e: React.MouseEvent) => {
@@ -57,10 +53,10 @@ export default function PlayMinigame({
       const rect = gameAreaRef.current.getBoundingClientRect();
       const mouseX = ((e.clientX - rect.left) / rect.width) * 100;
       setPaddlePosition(
-        Math.max(paddleWidth / 2, Math.min(100 - paddleWidth / 2, mouseX))
+        Math.max(paddleWidth / 2, Math.min(100 - paddleWidth / 2, mouseX)),
       );
     },
-    [paddleWidth]
+    [paddleWidth],
   );
 
   const startGame = () => {
@@ -68,7 +64,7 @@ export default function PlayMinigame({
   };
 
   useEffect(() => {
-    if (!gameStarted || !isOpen) return;
+    if (!gameStarted || !gameAreaRef.current) return;
 
     const updateGame = (currentTime: number) => {
       if (lastTimeRef.current === 0) {
@@ -95,7 +91,7 @@ export default function PlayMinigame({
             newVel.x = -newVel.x;
             newPos.x = Math.max(
               ballSize / 2,
-              Math.min(gameWidth - ballSize / 2, newPos.x)
+              Math.min(gameWidth - ballSize / 2, newPos.x),
             );
           }
 
@@ -149,7 +145,6 @@ export default function PlayMinigame({
     };
   }, [
     gameStarted,
-    isOpen,
     ballVelocity,
     paddlePosition,
     paddleWidth,
@@ -157,71 +152,59 @@ export default function PlayMinigame({
     gameHeight,
     ballSize,
     incrementStat,
-    setIsOpen,
+    onClose,
     resetGame,
   ]);
 
-  if (!isOpen) return null;
-
   return (
     <div className="flex w-full h-50">
-      <Window
-        title="bounce the ball twice to play (+30 happiness)"
-        isOpen={isOpen}
-        setIsOpen={setIsOpen}
-      >
+      <Window title="bounce the ball twice to play (+10 happiness)" setIsOpen={onClose}>
         <div className="flex flex-col gap-2 p-2">
           <div
             ref={gameAreaRef}
-            className="relative w-full h-40 bg-zinc-50 border-2 cursor-none overflow-hidden"
+            className={`relative w-full h-40 bg-zinc-50 border-2 overflow-hidden ${gameStarted ? "cursor-none" : "cursor-pointer"}`}
             onMouseMove={handleMouseMove}
             onClick={!gameStarted ? startGame : undefined}
           >
             {!gameStarted ? (
               <div className="absolute inset-0 flex items-center justify-center bg-zinc-400 bg-opacity-20">
                 <button
-                  className="border-2 bg-white hover:bg-zinc-100 rounded-lg"
+                  className="border-2 bg-white hover:bg-zinc-100 px-3 py-1"
                   onClick={startGame}
                 >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    className="lucide lucide-play"
-                  >
-                    <polygon points="5 3 19 12 5 21 5 3"></polygon>
-                  </svg>
+                  click to play
                 </button>
               </div>
             ) : (
               <>
-                {/* Ball */}
-                <Image
-                  src="/actions/play.png"
-                  alt="ball"
-                  width={100}
-                  height={100}
-                  className="absolute rounded-full transition-none"
-                  style={{
-                    left: `${ballPosition.x}%`,
-                    top: `${ballPosition.y}%`,
-                    width: `${ballSize}%`,
-                    transform: "translate(-50%, -50%)",
-                  }}
-                />
+                {/* Pet as bouncing ball */}
+                {petSprite && (
+                  <Image
+                    src={petSprite}
+                    alt="birb"
+                    width={100}
+                    height={100}
+                    className="absolute transition-none no-drag"
+                    style={{
+                      left: `${ballPosition.x}%`,
+                      top: `${ballPosition.y}%`,
+                      width: `${ballSize}%`,
+                      transform: `translate(-50%, -50%) scaleX(${ballVelocity.x > 0 ? 1 : -1})`,
+                    }}
+                  />
+                )}
 
                 {/* Paddle */}
-                <div
-                  className="absolute bg-black"
+                <Image
+                  src="/uwantahand.png"
+                  alt="paddle"
+                  width={120}
+                  height={60}
+                  className="absolute pointer-events-none"
                   style={{
                     left: `${paddlePosition}%`,
-                    bottom: "5%",
-                    width: `${paddleWidth}%`,
-                    height: `${paddleHeight}%`,
+                    bottom: "2%",
+                    width: `${paddleWidth * 1.5}%`,
                     transform: "translateX(-50%)",
                   }}
                 />
