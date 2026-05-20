@@ -235,7 +235,7 @@ const Viewport = React.memo(function Viewport({
             exit={{ opacity: 0, y: -4 }}
             transition={{ duration: 0.3 }}
           >
-            <Image src="/grumble.gif" alt="thinking" width={48} height={48} />
+            <Image src="/grumble.gif" alt="thinking" width={60} height={60} />
           </motion.div>
         )}
       </AnimatePresence>
@@ -245,7 +245,7 @@ const Viewport = React.memo(function Viewport({
         {speechBubble && !dilemma && (
           <motion.div
             key={speechBubble.key}
-            className="absolute z-20 w-xs bg-zinc-100 border-2 px-3 py-2 mt-[-20px] text-center hover:opacity-70! cursor-pointer"
+            className="absolute z-10 w-xs bg-zinc-100 border-2 px-3 py-2 mt-[-20px] text-center hover:opacity-70! cursor-pointer"
             initial={{ opacity: 0, y: 6 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 6 }}
