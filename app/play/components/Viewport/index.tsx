@@ -35,7 +35,7 @@ function ConversationScroll({
 
   return (
     <motion.div
-      className="absolute top-0 z-20"
+      className="absolute mt-[-20px] z-10 max-w-lg"
       initial={{ opacity: 0, y: -4 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -4 }}
@@ -66,10 +66,10 @@ const LOW_STAT_MESSAGES: Record<string, string> = {
 };
 
 const STAT_HOVER: Record<string, string> = {
-  hunger: "feed me",
-  health: "heal me",
-  happiness: "play with me",
-  sanity: "answer dilemma",
+  hunger: "feed (+hunger)",
+  health: "heal (+health)",
+  happiness: "play (+happiness)",
+  sanity: "answer dilemma (+sanity)",
 };
 
 const Viewport = React.memo(function Viewport({
@@ -203,7 +203,7 @@ const Viewport = React.memo(function Viewport({
               className="absolute z-20 cursor-pointer hover:opacity-50 transition-opacity"
               style={{ transform: `translate(${left}px, ${top}px)` }}
               onClick={() => cleanupPoo(id)}
-              onMouseEnter={() => setHoverText("pick up poo")}
+              onMouseEnter={() => setHoverText("pick up (-poo)")}
               onMouseLeave={() => setHoverText(null)}
             >
               <Image
@@ -245,7 +245,7 @@ const Viewport = React.memo(function Viewport({
         {speechBubble && !dilemma && (
           <motion.div
             key={speechBubble.key}
-            className="absolute z-20 w-xs bg-zinc-100 border-2 p-2 mt-[-80px] text-center hover:opacity-70! cursor-pointer"
+            className="absolute z-20 w-xs bg-zinc-100 border-2 px-3 py-2 mt-[-20px] text-center hover:opacity-70! cursor-pointer"
             initial={{ opacity: 0, y: 6 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 6 }}

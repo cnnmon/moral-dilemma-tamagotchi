@@ -80,28 +80,28 @@ const ActionButton = memo(function ActionButton({
 const STAT_ACTIONS = [
   {
     src: "/actions/heal.png",
-    alt: "heal (+10 health)",
+    alt: "heal (+health)",
     object: "bandaid" as ObjectKey,
     type: "cursor" as const,
     stat: "health" as keyof BaseStatsType,
   },
   {
     src: "/actions/feed.png",
-    alt: "feed (+10 hunger)",
+    alt: "feed (+hunger)",
     object: "burger" as ObjectKey,
     type: "cursor" as const,
     stat: "hunger" as keyof BaseStatsType,
   },
   {
     src: "/actions/play.png",
-    alt: "play (+10 happiness)",
+    alt: "play (+happiness)",
     object: "ball" as ObjectKey,
     type: "cursor" as const,
     stat: "happiness" as keyof BaseStatsType,
   },
   {
     src: "/actions/talk.png",
-    alt: "talk (+10 sanity)",
+    alt: "answer dilemma (+sanity)",
     object: "talk" as ObjectKey,
     type: "cursor" as const,
     stat: "sanity" as keyof BaseStatsType,

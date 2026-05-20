@@ -3,6 +3,28 @@ import { useEffect, useState } from "react";
 // check if it's a mobile device
 const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
+// split text into parts so +tokens/-tokens (e.g. "+hunger", "-poo") can be colored.
+// lookbehind ensures we only match tokens at start of string or after space/comma/paren,
+// so hyphens inside words like "self-sacrificing" aren't treated as negative tokens.
+const TOKEN_RE = /((?<=^|[\s(,])[+-][\w-]+)/g;
+
+const renderHoverText = (text: string) =>
+  text.split(TOKEN_RE).map((part, i) => {
+    if (part.startsWith("+"))
+      return (
+        <span key={i} className="text-[#3493DC]">
+          {part}
+        </span>
+      );
+    if (part.startsWith("-"))
+      return (
+        <span key={i} className="text-red-500">
+          {part}
+        </span>
+      );
+    return part;
+  });
+
 export default function HoverText({ hoverText }: { hoverText: string | null }) {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
@@ -32,7 +54,7 @@ export default function HoverText({ hoverText }: { hoverText: string | null }) {
             transform: "translate(10px, 10px)",
           }}
         >
-          {hoverText}
+          {renderHoverText(hoverText)}
         </p>
       )}
     </>
