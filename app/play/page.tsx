@@ -164,9 +164,8 @@ export default function Play() {
                       <div className="flex flex-col gap-1 p-3">
                         <p>
                           happy graduation! after {pet.dilemmas.length}{" "}
-                          dilemmas,
-                          {pet.name} has learned a lot from you and is ready to
-                          start a new journey.
+                          dilemmas, {pet.name} has learned a lot from you and is
+                          ready to start a new journey.
                         </p>
                         <a
                           onClick={() => setGraduationOpen(true)}
