@@ -273,7 +273,7 @@ const Viewport = React.memo(function Viewport({
             <AnimatePresence mode="wait">
               {showEggCrack && (
                 <motion.div
-                  className="absolute top-[63px] left-[-20px] w-[180px] h-[150px] z-10 flex items-center justify-center"
+                  className="absolute top-[63px] left-[-20px] w-[180px] h-[150px] z-10 flex items-center justify-center pointer-events-none"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
@@ -284,7 +284,7 @@ const Viewport = React.memo(function Viewport({
                     alt="egg cracking"
                     width={VIEWPORT_WIDTH / 5}
                     height={VIEWPORT_HEIGHT / 5}
-                    className="absolute z-10 w-full h-full"
+                    className="absolute w-full h-full"
                     priority
                   />
                 </motion.div>
@@ -296,6 +296,7 @@ const Viewport = React.memo(function Viewport({
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.3, delay: showEggCrack ? 1.4 : 0.1 }}
+              className="pointer-events-none"
             >
               {petSprite && (
                 <Image
@@ -304,7 +305,7 @@ const Viewport = React.memo(function Viewport({
                   width={VIEWPORT_WIDTH / 5}
                   height={VIEWPORT_HEIGHT / 5}
                   priority
-                  className="translate-y-[30%] no-select pointer-events-none"
+                  className="translate-y-[30%] no-select"
                 />
               )}
             </motion.div>
