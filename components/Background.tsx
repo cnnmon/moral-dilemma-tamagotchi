@@ -88,7 +88,7 @@ export function Background({
             />
           )}
           {memoizedBackgroundImages}
-          <div className="z-10">{children}</div>
+          <div className="z-10 pointer-events-none">{children}</div>
         </motion.div>
       </div>
     </AnimatePresence>
