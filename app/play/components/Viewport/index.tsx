@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useEffect, useRef } from "react";
+import React, { useMemo, useState, useEffect, useRef, useCallback } from "react";
 import Image from "next/image";
 import { Background, VIEWPORT_WIDTH } from "@/components/Background";
 import { VIEWPORT_HEIGHT } from "@/components/Background";
@@ -10,9 +10,13 @@ import {
   useDilemma,
   usePet,
   useHoverText,
+  useOutcome,
 } from "@/app/providers/PetProvider";
 import { EvolutionId } from "@/constants/evolutions";
 import { ActiveDilemma } from "@/app/storage/pet";
+import { getRandomUnseenDilemma } from "@/app/utils/dilemma";
+import { dilemmas } from "@/constants/dilemmas";
+import { BaseStatKeys } from "@/constants/base";
 
 function ConversationScroll({
   messages,
@@ -73,15 +77,38 @@ const STAT_HOVER: Record<string, string> = {
 };
 
 const Viewport = React.memo(function Viewport({
-  onStatClick,
+  onHealClick,
+  onFeedClick,
+  onPlayClick,
+  onTalkClick,
 }: {
-  onStatClick?: (stat: string) => void;
+  onHealClick?: () => void;
+  onFeedClick?: () => void;
+  onPlayClick?: () => void;
+  onTalkClick?: () => void;
 }) {
-  const { pet, animation } = usePet();
-  const { dilemma } = useDilemma();
+  const { pet, animation, updatePet } = usePet();
+  const { dilemma, setDilemma } = useDilemma();
   const { setHoverText } = useHoverText();
-  const { baseStats, poos, cleanupPoo } = useBaseStats();
+  const { baseStats, poos, cleanupPoo, incrementStat } = useBaseStats();
+  const { hideOutcome } = useOutcome();
   const [isAlmostDead, setIsAlmostDead] = useState(false);
+
+  const handleSanityClick = useCallback(() => {
+    if (!pet) return;
+    const newDilemma = getRandomUnseenDilemma(pet);
+    if (newDilemma) {
+      updatePet({ dilemmas: [...pet.dilemmas, { id: newDilemma.id, messages: [], completed: false }] });
+      setDilemma({
+        ...newDilemma,
+        messages: [{ role: "system", content: dilemmas[newDilemma.id].text.replaceAll("{pet}", pet.name) }],
+      });
+      hideOutcome();
+      onTalkClick?.();
+    } else {
+      incrementStat(BaseStatKeys.sanity);
+    }
+  }, [pet, updatePet, setDilemma, incrementStat, onTalkClick, hideOutcome]);
 
   // find the lowest stat below threshold for speech bubble
   const speechBubble = useMemo(() => {
@@ -245,7 +272,7 @@ const Viewport = React.memo(function Viewport({
         {speechBubble && !dilemma && (
           <motion.div
             key={speechBubble.key}
-            className="absolute z-10 w-xs bg-zinc-100 border-2 px-3 py-2 mt-[-20px] text-center hover:opacity-70! cursor-pointer"
+            className="absolute z-50 w-xs bg-zinc-100 border-2 px-3 py-2 mt-[-20px] text-center hover:opacity-70! cursor-pointer pointer-events-auto"
             initial={{ opacity: 0, y: 6 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 6 }}
@@ -254,7 +281,12 @@ const Viewport = React.memo(function Viewport({
               setHoverText(STAT_HOVER[speechBubble.key] ?? null)
             }
             onMouseLeave={() => setHoverText(null)}
-            onClick={() => onStatClick?.(speechBubble.key)}
+            onClick={() => {
+              if (speechBubble.key === "health") onHealClick?.();
+              else if (speechBubble.key === "hunger") onFeedClick?.();
+              else if (speechBubble.key === "happiness") onPlayClick?.();
+              else if (speechBubble.key === "sanity") handleSanityClick();
+            }}
           >
             <p>{speechBubble.message}</p>
           </motion.div>

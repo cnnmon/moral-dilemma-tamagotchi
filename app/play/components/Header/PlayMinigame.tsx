@@ -195,16 +195,13 @@ export default function PlayMinigame({ onClose }: { onClose: () => void }) {
                 )}
 
                 {/* Paddle */}
-                <Image
-                  src="/uwantahand.png"
-                  alt="paddle"
-                  width={120}
-                  height={60}
-                  className="absolute pointer-events-none"
+                <div
+                  className="absolute pointer-events-none bg-zinc-800 rounded-sm"
                   style={{
                     left: `${paddlePosition}%`,
-                    bottom: "2%",
-                    width: `${paddleWidth * 1.5}%`,
+                    bottom: `${paddleHeight + 2}%`,
+                    width: `${paddleWidth}%`,
+                    height: `${paddleHeight}%`,
                     transform: "translateX(-50%)",
                   }}
                 />

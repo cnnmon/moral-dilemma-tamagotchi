@@ -109,11 +109,16 @@ export function useDilemmaSubmit() {
         });
 
         setDilemma(newDilemma);
+        // replace the unresolved entry added when the dilemma was opened, or append as fallback
+        const existingIdx = pet.dilemmas.findIndex(d => d.id === dilemma.id && !d.completed);
+        const updatedDilemmas = existingIdx >= 0
+          ? pet.dilemmas.map((d, i) => i === existingIdx ? newDilemma : d)
+          : [...pet.dilemmas, newDilemma];
         updatePet({
           ...pet,
           personality: data.personality,
           moralStats: data.stats ? newMoralStats : pet.moralStats,
-          dilemmas: [...pet.dilemmas, newDilemma],
+          dilemmas: updatedDilemmas,
           ...(data.evolutionIds && { evolutionIds: data.evolutionIds }),
           ...(data.age !== undefined && { age: data.age }),
         });

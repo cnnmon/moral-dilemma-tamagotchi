@@ -93,9 +93,11 @@ function evolveFromStage1ToStage2(
     case EvolutionId.HEDONIST:
       return dominantTrait?.includes("logical") ? EvolutionId.SIGMA : EvolutionId.CULTLEADER;
     case EvolutionId.EMPATH:
-      return EvolutionId.SAINT;
+      return dominantTrait?.includes("loyal") ? EvolutionId.SAINT : EvolutionId.CULTLEADER;
     case EvolutionId.DEVOUT:
-      return EvolutionId.CULTLEADER;
+      return dominantTrait?.includes("punishing") ? EvolutionId.GAVEL : EvolutionId.SAINT;
+    case EvolutionId.NPC:
+      return dominantTrait?.includes("emotional") ? EvolutionId.GUARDIAN : EvolutionId.SIGMA;
     default:
       return EvolutionId.GRADUATED;
   }

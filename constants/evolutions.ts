@@ -168,8 +168,8 @@ export const stage1Evolutions: Record<Stage1EvolutionId, Stage1Evolution> = {
     id: EvolutionId.NPC,
     description: "ordinary bird seeking meaning in simplicity",
     nextStages: {
-      [attributes[MoralDimensions.purity].low]: EvolutionId.ARISTOCRAT,
-      [attributes[MoralDimensions.compassion].low]: EvolutionId.NPC,
+      [attributes[MoralDimensions.compassion].high]: EvolutionId.GUARDIAN,
+      [attributes[MoralDimensions.compassion].low]: EvolutionId.SIGMA,
     },
   },
 }

@@ -120,7 +120,7 @@ export default function ActionButtons({
   onTalkClick?: () => void;
 }) {
   const { incrementStat } = useBaseStats();
-  const { pet } = usePet();
+  const { pet, updatePet } = usePet();
   const { dilemma, setDilemma } = useDilemma();
   const { hideOutcome } = useOutcome();
 
@@ -135,6 +135,7 @@ export default function ActionButtons({
 
     const newDilemma = getRandomUnseenDilemma(pet);
     if (newDilemma) {
+      updatePet({ dilemmas: [...pet.dilemmas, { id: newDilemma.id, messages: [], completed: false }] });
       setDilemma({
         ...newDilemma,
         messages: [
@@ -149,7 +150,7 @@ export default function ActionButtons({
     } else {
       incrementStat(BaseStatKeys.sanity);
     }
-  }, [dilemma, pet, setDilemma, incrementStat, onTalkClick, hideOutcome]);
+  }, [dilemma, pet, updatePet, setDilemma, incrementStat, onTalkClick, hideOutcome]);
 
   if (!pet) {
     return null;

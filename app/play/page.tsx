@@ -94,15 +94,10 @@ export default function Play() {
           <div className="relative flex flex-1 w-full md:w-[calc(100%-320px)] md:max-w-[740px]">
             <div className="flex flex-col gap-2 w-full h-full">
               <Viewport
-                onStatClick={(stat) => {
-                  const map: Record<string, typeof activePanel> = {
-                    hunger: "feed",
-                    health: "heal",
-                    happiness: "play",
-                    sanity: "dialog",
-                  };
-                  setActivePanel(map[stat] ?? null);
-                }}
+                onHealClick={() => setActivePanel("heal")}
+                onFeedClick={() => setActivePanel("feed")}
+                onPlayClick={() => setActivePanel("play")}
+                onTalkClick={() => setActivePanel("dialog")}
               />
 
               <div className="relative">

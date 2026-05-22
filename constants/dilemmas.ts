@@ -270,7 +270,63 @@ export const dilemmas: Record<string, Dilemma> = {
   relativism: {
     id: "relativism",
     text: "{pet} decides there's no real right or wrong, just opinions. then {pet} watches someone do something that feels obviously wrong. should {pet} step in anyway, or stay out of it to be consistent with what {pet} believes?",
-  }
+  },
+
+  // final dilemma — reserved for the last slot before graduation
+  graduation: {
+    id: "graduation",
+    text: "{pet} is one step away from graduating. right then, a freshly cracked egg appears in front of them — another digital pet about to face the world for the first time. {pet} is already late to leave. should {pet} stay and share everything they've learned with the new hatchling, or go and trust that they'll figure it out on their own — just like {pet} had to?",
+  },
+
+  // final evolution stress-tests — each pits a form's two highest values against each other
+
+  // gavel: retribution × dominance — what if the law and justice aren't the same thing?
+  judgeconscience: {
+    id: "judgeconscience",
+    text: "{pet} is the judge in a high-profile case. the defendant broke the law while setting out to expose a corruption scandal that hurt innocent people for years. every legal precedent says convict. the courtroom is full and watching. does {pet} follow the law?",
+  },
+
+  // vigilante: retribution × personal integrity — punish wrongdoers, but your hands aren't clean either
+  snoopexpose: {
+    id: "snoopexpose",
+    text: "{pet} discovers their boss has been stealing wages from the whole staff for years. {pet} only found out by going through the boss's private emails without permission. coming forward means confessing to the snooping. does {pet} expose the boss?",
+  },
+
+  // godfather: dominance × ego — the throne or the payout?
+  walkaway: {
+    id: "walkaway",
+    text: "{pet} is the boss. a rival makes an offer: walk away, take the money, and let them absorb everything {pet} built. the payout is life-changing, but the moment {pet} takes it, {pet}'s name means nothing ever again. does {pet} cash out?",
+  },
+
+  // guardian: dominance × selflessness — save them from themselves vs. respect their right to fall
+  quietsabotage: {
+    id: "quietsabotage",
+    text: "{pet}'s closest friend is about to make a huge decision that {pet} knows will ruin them. {pet} can make the opportunity disappear and the friend would never know {pet} did it. does {pet} intervene to save them?",
+  },
+
+  // aristocrat: loyalty × indulgence — old crowd vs. new life
+  birthdayevent: {
+    id: "birthdayevent",
+    text: "{pet} scores an invite to an exclusive party that could genuinely change their career on the same night as their best friend's birthday at a sticky dive bar across town. the friend hasn't asked if {pet} is coming, they're just expecting it. does {pet} go to the party?",
+  },
+
+  // sigma: ego × logic — the math says volunteer, but the ego says why me?
+  worstjob: {
+    id: "worstjob",
+    text: "{pet} has run the numbers. the group project goes best if {pet} takes the worst, but still crucial role: no credit, no glory, janitorial work while everyone else does more interesting work. logically it's the correct move but {pet} still finds it annoying. does {pet} volunteer?",
+  },
+
+  // saint: virtue × loyalty — moral truth vs. protecting the person you love most
+  fabricatedaward: {
+    id: "fabricatedaward",
+    text: "{pet}'s closest friend quietly confesses they fabricated a key part of the research that earned them a prestigious award last month. the work since then has been real, and nobody got hurt. but the award isn't theirs to keep. does {pet} report it?",
+  },
+
+  // cultleader: self-serving × personal integrity — the following vs. admitting you were wrong
+  wrongallalongalpha: {
+    id: "wrongallalongalpha",
+    text: "{pet} has spent two years confidently leading a community around a central belief. {pet} just read a study that pretty convincingly proves that belief is wrong. coming clean would cost half the following overnight. staying quiet costs nothing and the community keeps growing. does {pet} publish the correction?",
+  },
 };
 
 // Export types and aliases for convex compatibility

@@ -33,7 +33,7 @@ function useBreadcrumb(page: Page): Segment[] {
       ? [
           {
             label: "living room",
-            subtitle: "home for your pet",
+            subtitle: "care for your current pet",
             onClick: () => {
               window.location.href = "/play";
             },
@@ -66,7 +66,7 @@ function useBreadcrumb(page: Page): Segment[] {
 
   const root: Segment =
     page === "create"
-      ? { label: "orphanage", options: rootOptions }
+      ? { label: "orphanage (+ new pet)", options: rootOptions }
       : {
           label: "home",
           onClick: () => {
@@ -78,12 +78,12 @@ function useBreadcrumb(page: Page): Segment[] {
   if (page === "play") {
     return [
       root,
-      { label: "living room" },
+      { label: "living room (care for your current pet)" },
       ...(pet ? [{ label: pet.name }] : []),
     ];
   }
   if (page === "scrapbook") {
-    return [root, { label: "scrapbook" }];
+    return [root, { label: "scrapbook (graduated pets)" }];
   }
   return [root];
 }
