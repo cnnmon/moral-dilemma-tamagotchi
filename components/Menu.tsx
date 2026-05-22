@@ -92,16 +92,38 @@ function useBreadcrumb(page: Page): Segment[] {
 function BreadcrumbSegment({ segment }: { segment: Segment }) {
   const [open, setOpen] = useState(false);
   const hasOptions = segment.options && segment.options.length > 0;
+  const segmentRef = useRef<HTMLSpanElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        segmentRef.current &&
+        !segmentRef.current.contains(event.target as Node)
+      ) {
+        setOpen(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [open]);
 
   return (
     <span
+      ref={segmentRef}
       className="relative"
-      onMouseEnter={() => hasOptions && setOpen(true)}
-      onMouseLeave={() => setOpen(false)}
     >
       {segment.onClick || hasOptions ? (
         <a
-          onClick={segment.onClick}
+          onClick={() => {
+            if (hasOptions) {
+              setOpen((prev) => !prev);
+              return;
+            }
+            segment.onClick?.();
+          }}
           className="cursor-pointer hover:text-zinc-800"
         >
           {segment.label}

@@ -50,7 +50,6 @@ export function getAverageMoralStats(
 function evolveFromBabyToStage1(
   moralStatsWritten: { key: string; description: string; percentage: number }[]
 ): EvolutionId {
-  // Simple evolution logic based on dominant moral trait
   for (const attribute of moralStatsWritten) {
     switch (attribute.description) {
       case "highly emotional":
@@ -78,26 +77,26 @@ function evolveFromBabyToStage1(
 
 function evolveFromStage1ToStage2(
   currentEvolutionId: EvolutionId,
-  moralStatsWritten: { key: string; description: string; percentage: number }[]
+  moralStatsWritten: { key: string; description: string; percentage: number; value: number }[]
 ): EvolutionId {
-  // Stage 2 evolution based on current evolution + dominant traits
-  const dominantTrait = moralStatsWritten[0]?.description;
-  
+  // each branch checks its own determining stat directly, not just the overall dominant trait
+  const stat = (key: string) => moralStatsWritten.find((s) => s.key === key)?.value ?? 5;
+
   switch (currentEvolutionId) {
-    case EvolutionId.WATCHER:
-      return dominantTrait?.includes("authoritarian") ? EvolutionId.GAVEL : EvolutionId.VIGILANTE;
-    case EvolutionId.SOLDIER:
-      return dominantTrait?.includes("self-serving") ? EvolutionId.GODFATHER : EvolutionId.GUARDIAN;
-    case EvolutionId.TEACHERSPET:
-      return dominantTrait?.includes("indulgent") ? EvolutionId.ARISTOCRAT : EvolutionId.SAINT;
-    case EvolutionId.HEDONIST:
-      return dominantTrait?.includes("logical") ? EvolutionId.SIGMA : EvolutionId.CULTLEADER;
-    case EvolutionId.EMPATH:
-      return dominantTrait?.includes("loyal") ? EvolutionId.SAINT : EvolutionId.CULTLEADER;
-    case EvolutionId.DEVOUT:
-      return dominantTrait?.includes("punishing") ? EvolutionId.GAVEL : EvolutionId.SAINT;
-    case EvolutionId.NPC:
-      return dominantTrait?.includes("emotional") ? EvolutionId.GUARDIAN : EvolutionId.SIGMA;
+    case EvolutionId.WATCHER:    // retribution: dominance high → gavel, low → vigilante
+      return stat("dominance") > 5 ? EvolutionId.GAVEL : EvolutionId.VIGILANTE;
+    case EvolutionId.SOLDIER:    // devotion: ego high → godfather, low → guardian
+      return stat("ego") > 5 ? EvolutionId.GODFATHER : EvolutionId.GUARDIAN;
+    case EvolutionId.TEACHERSPET: // dominance: purity high → saint, low → aristocrat
+      return stat("purity") > 5 ? EvolutionId.SAINT : EvolutionId.ARISTOCRAT;
+    case EvolutionId.HEDONIST:   // ego: compassion low → sigma, high → cultleader
+      return stat("compassion") > 5 ? EvolutionId.CULTLEADER : EvolutionId.SIGMA;
+    case EvolutionId.EMPATH:     // compassion: devotion high → saint, low → cultleader
+      return stat("devotion") > 5 ? EvolutionId.SAINT : EvolutionId.CULTLEADER;
+    case EvolutionId.DEVOUT:     // purity: retribution high → gavel, low → saint
+      return stat("retribution") > 5 ? EvolutionId.GAVEL : EvolutionId.SAINT;
+    case EvolutionId.NPC:        // fallback: compassion high → guardian, low → sigma
+      return stat("compassion") > 5 ? EvolutionId.GUARDIAN : EvolutionId.SIGMA;
     default:
       return EvolutionId.GRADUATED;
   }

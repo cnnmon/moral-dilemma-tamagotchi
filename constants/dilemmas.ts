@@ -1,7 +1,11 @@
+import type { MoralDimensionsType } from "@/constants/morals";
+
 // represents a moral choice presented to the player
 export interface Dilemma {
   id: string;
   text: string;
+  // optional gate — dilemma only enters the pool when this returns true
+  condition?: (stats: MoralDimensionsType) => boolean;
 }
 
 // all dilemmas organized by attribute
@@ -124,6 +128,7 @@ export const dilemmas: Record<string, Dilemma> = {
   controversialgovernment: {
     id: "controversialgovernment",
     text: "{pet} is offered a position in a controversial ruler's government doing something fun. do they accept or refuse?",
+    condition: (s) => s.dominance > 5.5, // only tempting for power-hungry pets
   },
   gamenight: {
     id: "gamenight",
@@ -141,7 +146,40 @@ export const dilemmas: Record<string, Dilemma> = {
     id: "hallmonitor",
     text: "{pet} is the hall monitor at school when their friend gets in trouble. should {pet} lead with leniency or strict discipline?",
   },
-  
+  zerotolerancehr: {
+    id: "zerotolerancehr",
+    text: "{pet} is secret society group leader. a friend everyone agrees is good let your secret slip on accident. letting them get away with it would undermine the whole system. does {pet} kick them out?",
+  },
+  shoesoff: {
+    id: "ownrule",
+    text: "{pet}'s parent (you) has made a strict house rule: no shoes inside. {pet} just got home exhausted, wings full, and really doesn't want to deal with it. does {pet} break the rule?",
+  },
+  illegalprotest: {
+    id: "illegalprotest",
+    text: "{pet}'s city just passed a law that unjustly affects {pet}'s community. a protest is organized, but showing up means getting arrested. does {pet} join?",
+    condition: (s) => s.retribution > 5 || s.purity > 5,
+  },
+  badorders: {
+    id: "badorders",
+    text: "{pet}'s teacher punishes a friend in a way {pet} thinks is wrong; not illegal, just unjust. complaining might lead to getting grouped in with the punishment. does {pet} accept it?",
+  },
+  expertdisagrees: {
+    id: "expertdisagrees",
+    text: "a doctor tells {pet} the treatment plan they need. {pet} read something online that contradicts it. does {pet} follow the doctor's orders or go with their own research?",
+  },
+  oldpolicy: {
+    id: "oldpolicy",
+    text: "the club {pet} belongs to has a policy that made sense 20 years ago but is now clearly outdated. nobody enforces it. does {pet} still follow it?",
+  },
+  unilateralplan: {
+    id: "unilateralplan",
+    text: "{pet}'s friend group has been loosely planning a trip for weeks and getting nowhere. {pet} could just book it (pick the dates, the place, everything) and present it as done. does {pet} do it without waiting for consensus?",
+  },
+  informationgatekeeper: {
+    id: "informationgatekeeper",
+    text: "{pet} has information that would help their team but would also cause unnecessary panic. nobody made {pet} the decision-maker here. does {pet} decide who gets to know and when?",
+  },
+
   // purity dilemmas
   fishcoin: {
     id: "fishcoin",
@@ -154,6 +192,7 @@ export const dilemmas: Record<string, Dilemma> = {
   redballoon: {
     id: "redballoon",
     text: "{pet} notices a child gleefully holding a red balloon. they smile at {pet}. should {pet} pop the balloon for fun?",
+    condition: (s) => s.purity < 5 || s.ego > 5.5, // dark impulse only surfaces once the pet has shown some callousness
   },
   fastfashion: {
     id: "fastfashion",
@@ -162,6 +201,7 @@ export const dilemmas: Record<string, Dilemma> = {
   simulationtheory: {
     id: "simulationtheory",
     text: "{pet} becomes convinced they're living in a computer simulation. should {pet} try to 'break out' by doing increasingly bizarre things, or continue living normally?",
+    condition: (s) => s.compassion < 5, // detached/logical type who could entertain this
   },
   flushtoilet: {
     id: "flushtoilet",
@@ -188,6 +228,7 @@ export const dilemmas: Record<string, Dilemma> = {
   organdonation: {
     id: "organdonation",
     text: "{pet} discovers they're a perfect match to donate a kidney to someone on the transplant list. the surgery has risks and recovery will be painful. should {pet} volunteer or pretend they never found out?",
+    condition: (s) => s.compassion > 5.5, // only a compassionate pet genuinely wrestles with this
   },
   inheritancesplit: {
     id: "inheritancesplit",
@@ -222,6 +263,7 @@ export const dilemmas: Record<string, Dilemma> = {
   digitalpet: {
     id: "digitalpet",
     text: "{pet} finds themself at the bottom of a cliff, when another digital pet falls from the top and shatters both of their knees. they are writhing in pain and screaming for help. should {pet} help them?",
+    condition: (s) => s.compassion > 5, // only hits hard for emotionally attuned pets
   },
   goodintentionsroad: {
     id: "goodintentionsroad",
@@ -234,12 +276,14 @@ export const dilemmas: Record<string, Dilemma> = {
   butterfly: {
     id: "butterfly",
     text: "{pet} sees a butterfly. should {pet} kill it?",
+    condition: (s) => s.purity < 5, // wouldn't even cross a virtuous pet's mind
   },
 
   // bad person dilemmas
   saltfries: {
     id: "saltfries",
     text: "{pet} pretends to have a salt allergy so a fast food place has to make a fresh batch of fries. should {pet} salt them in front of the workers or wait until they're out of sight?",
+    condition: (s) => s.purity < 5, // already assumed {pet} did the bad thing — only fits an impure pet
   },
   /*traintracks: {
     id: "traintracks",
@@ -258,18 +302,20 @@ export const dilemmas: Record<string, Dilemma> = {
   investtip: { // moral luck
     id: "investtip",
     text: "{pet} put your life savings into a memecoin. it paid off enormously. {pet}'s friends now call {pet} a genius. should {pet} accept the praise?",
+    condition: (s) => s.ego > 5.5, // only stings as a dilemma if the pet already cares about self-image
   },
-  /* oneztwenty: {
+  oneztwenty: {
     id: "oneztwenty",
-    text: "{pet} can spend the afternoon comforting one sad friend, or the same afternoon doing dull admin work for a group that will reach twenty sad strangers. should {pet} help one or twenty?",
-  },*/
+    text: "{pet} can spend the afternoon saving one fish from fishing, or the same afternoon doing dull admin work for a nonprofit that will save twenty sad fish in the same time. should {pet} help one or twenty?",
+  },
   bullysnitch: {
     id: "bullysnitch",
     text: "{pet} watches a kid get bullied in the hallway. the kid begs {pet} not to report it to a teacher, because last time it just made things worse. should {pet} report it anyway, or respect the kid?",
   },
   relativism: {
     id: "relativism",
-    text: "{pet} decides there's no real right or wrong, just opinions. then {pet} watches someone do something that feels obviously wrong. should {pet} step in anyway, or stay out of it to be consistent with what {pet} believes?",
+    text: "{pet} decides there's no real right or wrong, just opinions. then {pet} watches someone do something that feels obviously wrong. should {pet} step in?",
+    condition: (s) => s.retribution < 5.5 && s.purity < 5.5, // only fits a pet that has shown moral flexibility, not a rigid enforcer
   },
 
   // final dilemma — reserved for the last slot before graduation
@@ -279,7 +325,6 @@ export const dilemmas: Record<string, Dilemma> = {
   },
 
   // final evolution stress-tests — each pits a form's two highest values against each other
-
   // gavel: retribution × dominance — what if the law and justice aren't the same thing?
   judgeconscience: {
     id: "judgeconscience",
@@ -325,7 +370,7 @@ export const dilemmas: Record<string, Dilemma> = {
   // cultleader: self-serving × personal integrity — the following vs. admitting you were wrong
   wrongallalongalpha: {
     id: "wrongallalongalpha",
-    text: "{pet} has spent two years confidently leading a community around a central belief. {pet} just read a study that pretty convincingly proves that belief is wrong. coming clean would cost half the following overnight. staying quiet costs nothing and the community keeps growing. does {pet} publish the correction?",
+    text: "{pet} has spent two years leading a community built around the belief that digital pets who never sleep evolve faster. a new study just proved sleep is critical — members have been unknowingly harming their pets. coming clean would fracture the following overnight. staying quiet costs nothing and the community keeps growing. does {pet} publish the correction?",
   },
 };
 

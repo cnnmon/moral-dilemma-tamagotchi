@@ -135,15 +135,15 @@ export default function ActionButtons({
 
     const newDilemma = getRandomUnseenDilemma(pet);
     if (newDilemma) {
-      updatePet({ dilemmas: [...pet.dilemmas, { id: newDilemma.id, messages: [], completed: false }] });
+      const existing = pet.dilemmas.find((d) => d.id === newDilemma.id && !d.completed);
+      if (!existing) {
+        updatePet({ dilemmas: [...pet.dilemmas, { id: newDilemma.id, messages: [], completed: false }] });
+      }
       setDilemma({
         ...newDilemma,
-        messages: [
-          {
-            role: "system",
-            content: dilemmas[newDilemma.id].text.replaceAll("{pet}", pet.name),
-          },
-        ],
+        messages: existing?.messages.length
+          ? existing.messages
+          : [{ role: "system", content: dilemmas[newDilemma.id].text.replaceAll("{pet}", pet.name) }],
       });
       hideOutcome();
       onTalkClick?.();

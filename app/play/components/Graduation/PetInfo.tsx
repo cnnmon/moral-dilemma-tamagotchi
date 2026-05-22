@@ -84,9 +84,11 @@ function MemoryCard({
   dilemma: ActiveDilemma;
   petName: string;
 }) {
+  const messages = Array.isArray(dilemma.messages) ? dilemma.messages : [];
+
   return (
     <div className="space-y-2">
-      {dilemma.messages.map((message, msgIndex) => (
+      {messages.map((message, msgIndex) => (
         <Message key={msgIndex} message={message} petName={petName} />
       ))}
     </div>
@@ -156,8 +158,11 @@ export default function PetInfo({
   pet: Pet;
   hoveredEvolutionId?: EvolutionId;
 }) {
+  const memories = pet.dilemmas.filter(
+    (dilemma) => Array.isArray(dilemma.messages) && dilemma.messages.length > 0,
+  );
   const [currentPage, setCurrentPage] = useState(1);
-  const totalPages = Math.ceil((pet.dilemmas?.length || 0) / 1);
+  const totalPages = memories.length;
 
   const goToPreviousPage = () => {
     if (currentPage > 1) setCurrentPage(currentPage - 1);
@@ -174,7 +179,7 @@ export default function PetInfo({
         hoveredEvolutionId={hoveredEvolutionId}
       />
       <MemoriesSection
-        dilemmas={pet.dilemmas}
+        dilemmas={memories}
         currentPage={currentPage}
         totalPages={totalPages}
         onPrevious={goToPreviousPage}

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Scrapbook, { getScrapbookPage } from "./components/Scrapbook";
+import EvolutionGraphModal from "./components/EvolutionGraphModal";
 import { getPets, Pet } from "../storage/pet";
 import Graduation from "../play/components/Graduation";
 import Loading from "../play/components/Loading";
@@ -14,6 +15,7 @@ export default function ScrapbookPage() {
   const [selectedPet, setSelectedPet] = useState<Pet | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [page, setPage] = useState(0);
+  const [evolutionGraphOpen, setEvolutionGraphOpen] = useState(false);
 
   useEffect(() => {
     try {
@@ -40,15 +42,13 @@ export default function ScrapbookPage() {
   const canNext = clampedPage < totalPages - 1;
 
   const evolutionSet = new Set(graduatedPets.flatMap((p) => p.evolutionIds));
-  const evolutionText = evolutionSet.size === 0
-    ? "no evolutions yet"
-    : `${evolutionSet.size} evolutions collected out of ${Object.keys(evolutions).length}`;
+  const evolutionText = `${evolutionSet.size} evolutions collected out of ${Object.keys(evolutions).length}`;
 
   return (
     <>
       <motion.div
         key="create-page"
-        className="flex flex-col items-center gap-2 w-full sm:w-xl p-4 sm:p-0 relative text-lg"
+        className="flex flex-col items-center gap-2 w-full sm:w-xl p-4 sm:p-0 relative text-lg select-none"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -20 }}
@@ -78,7 +78,9 @@ export default function ScrapbookPage() {
           </a>
         </div>
 
-        <p className="text-zinc-500 italic">{evolutionText}</p>
+        <div className="flex gap-2">
+          {evolutionText} <a className="cursor-pointer text-zinc-500 italic hover:opacity-70" onClick={() => setEvolutionGraphOpen(true)}>(see all)</a>
+        </div>
 
         {graduatedPets.length === 0 && (
           <p className="text-zinc-500 italic">
@@ -93,6 +95,12 @@ export default function ScrapbookPage() {
             setGraduationOpen={() => setSelectedPet(null)}
           />
         )}
+
+        <EvolutionGraphModal
+          isOpen={evolutionGraphOpen}
+          evolutionSet={evolutionSet}
+          onClose={() => setEvolutionGraphOpen(false)}
+        />
       </motion.div>
     </>
   );

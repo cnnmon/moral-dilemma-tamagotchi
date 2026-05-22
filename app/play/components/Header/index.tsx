@@ -64,7 +64,7 @@ export default function Header() {
                   {isNext && (
                     <div className="p-3 flex flex-col gap-2 opacity-60">
                       <p className="text-center leading-4">
-                        {remaining} dilemma{remaining === 1 ? "" : "s"} needed
+                        {remaining + 1} dilemma{(remaining + 1) === 1 ? "" : "s"} needed
                       </p>
                       <div className="w-full border-2 border-black h-3 bg-white">
                         <div

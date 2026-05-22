@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Loading from "./components/Loading";
 import { usePet, useHoverText, useDilemma } from "../providers/PetProvider";
 import Viewport from "./components/Viewport";
@@ -14,7 +14,8 @@ import HealMinigame from "./components/Header/HealMinigame";
 import FeedMinigame from "./components/Header/FeedMinigame";
 import PlayMinigame from "./components/Header/PlayMinigame";
 import Graduation from "./components/Graduation";
-import { EvolutionId } from "@/constants/evolutions";
+import { EvolutionId, getEvolutionTimeFrame } from "@/constants/evolutions";
+import { getAverageMoralStats } from "@/app/api/dilemma/evolve";
 
 type ActivePanel = "heal" | "feed" | "play" | "dialog" | null;
 
@@ -51,13 +52,50 @@ function Content({
   return null;
 }
 
+function useDebugRevert() {
+  const { pet, updatePet } = usePet();
+
+  return useCallback(() => {
+    if (!pet) return;
+
+    // find the index of the last resolved dilemma
+    let lastIdx = -1;
+    for (let i = pet.dilemmas.length - 1; i >= 0; i--) {
+      if (pet.dilemmas[i].completed && pet.dilemmas[i].stats) { lastIdx = i; break; }
+    }
+    if (lastIdx === -1) return;
+
+    const remaining = pet.dilemmas.filter((_, i) => i !== lastIdx);
+    const resolved = remaining.filter((d) => d.completed && d.stats);
+    const newMoralStats = getAverageMoralStats(resolved);
+
+    // roll back evolution if that dilemma crossed a threshold
+    let newAge = pet.age;
+    let newEvolutionIds = pet.evolutionIds;
+    if (pet.age >= 1 && resolved.length < getEvolutionTimeFrame(pet.age - 1)) {
+      newAge = pet.age - 1;
+      newEvolutionIds = pet.evolutionIds.slice(0, -1);
+    }
+
+    updatePet({ dilemmas: remaining, moralStats: newMoralStats, age: newAge, evolutionIds: newEvolutionIds });
+  }, [pet, updatePet]);
+}
+
 export default function Play() {
   const [graduationOpen, setGraduationOpen] = useState(false);
   const [activePanel, setActivePanel] = useState<ActivePanel>(null);
+  const [debugVisible, setDebugVisible] = useState(false);
   const { pet, evolution } = usePet();
   const { hoverText } = useHoverText();
   const { dilemma } = useDilemma();
   const hasGraduated = pet?.age !== undefined && pet.age >= 2;
+  const revertLastDilemma = useDebugRevert();
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") setDebugVisible((v) => !v); };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
 
   // auto-open dialog when a new dilemma arrives, close when it clears
   const dilemmaId = dilemma?.id;
@@ -184,6 +222,18 @@ export default function Play() {
           </motion.div>
         </div>
       </AnimatePresence>
+
+      {debugVisible && (
+        <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-[9999] flex items-center gap-2 bg-white border-2 border-black px-3 py-1.5 shadow-md">
+          <span className="text-zinc-400 text-xs">debug</span>
+          <button
+            onClick={revertLastDilemma}
+            className="border border-zinc-400 px-2 py-0.5 hover:bg-zinc-100 text-zinc-700"
+          >
+            ↩ revert last dilemma
+          </button>
+        </div>
+      )}
     </div>
   );
 }

@@ -88,9 +88,9 @@ export function getMoralStatsWritten(
   const stats = moralStatsParsed.reduce(
     (acc, stat) => {
       let prefix = "";
-      if (stat.value > 7 || stat.value < 3) {
+      if (stat.value > 6 || stat.value < 5) {
         prefix = "highly ";
-      } else if (stat.value > 6 || stat.value < 4) {
+      } else if (stat.value > 5.5 || stat.value < 4.5) {
         prefix = "moderately ";
       } else if (stat.value === 5) {
         prefix = "";
