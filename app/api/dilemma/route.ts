@@ -101,7 +101,9 @@ export async function POST(request: NextRequest) {
         if (evolutionResult) {
           console.log("🐦 Pet evolving:", evolutionResult);
           evolutionUpdate = {
-            evolutionIds: [...pet.evolutionIds, evolutionResult.evolutionId],
+            ...(evolutionResult.evolutionId && {
+              evolutionIds: [...pet.evolutionIds, evolutionResult.evolutionId],
+            }),
             age: evolutionResult.age,
           };
         }

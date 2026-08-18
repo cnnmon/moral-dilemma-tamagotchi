@@ -17,6 +17,7 @@ import { ActiveDilemma } from "@/app/storage/pet";
 import { getRandomUnseenDilemma } from "@/app/utils/dilemma";
 import { dilemmas } from "@/constants/dilemmas";
 import { BaseStatKeys } from "@/constants/base";
+import FeatheredScroll from "@/components/FeatheredScroll";
 
 function ConversationScroll({
   messages,
@@ -24,37 +25,43 @@ function ConversationScroll({
   messages: ActiveDilemma["messages"];
 }) {
   const scrollRef = useRef<HTMLDivElement>(null);
-  // only assistant messages (pet's clarifying questions), not user replies
-  const petMessages = messages.filter((m) => m.role === "assistant");
+  // only assistant messages (pet's clarifying questions), newest first
+  const petMessages = messages
+    .filter((m) => m.role === "assistant")
+    .slice()
+    .reverse();
 
+  // keep the newest bubble pinned at the top when a new one arrives
   useEffect(() => {
     if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+      scrollRef.current.scrollTop = 0;
     }
   }, [messages.length]);
 
-  const display = petMessages;
-
-  if (!display.length) return null;
+  if (!petMessages.length) return null;
 
   return (
     <motion.div
-      className="absolute mt-[-20px] z-10 max-w-lg"
+      className="absolute top-4 bottom-4 left-1/2 -translate-x-1/2 z-10 w-full max-w-lg px-4"
       initial={{ opacity: 0, y: -4 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -4 }}
       transition={{ duration: 0.3 }}
     >
-      <div ref={scrollRef} className="flex flex-col gap-1 overflow-y-auto p-4">
-        {display.map((msg, i) => (
+      <FeatheredScroll
+        ref={scrollRef}
+        direction="vertical"
+        className="max-h-full flex-col gap-1 overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+      >
+        {petMessages.map((msg, i) => (
           <p
-            key={i}
-            className="w-full px-3 py-2 bg-zinc-100 border-2 border-black text-lg"
+            key={`${petMessages.length - i}`}
+            className="w-full shrink-0 px-3 py-2 bg-zinc-100 border-2 border-black text-lg"
           >
             {msg.content}
           </p>
         ))}
-      </div>
+      </FeatheredScroll>
     </motion.div>
   );
 }
@@ -117,7 +124,7 @@ const Viewport = React.memo(function Viewport({
 
   // find the lowest stat below threshold for speech bubble
   const speechBubble = useMemo(() => {
-    if (!pet || pet.age >= 2 || pet.evolutionIds.includes(EvolutionId.RIP))
+    if (!pet || pet.age >= 3 || pet.evolutionIds.includes(EvolutionId.RIP))
       return null;
     const lowest = Object.entries(baseStats)
       .filter(([, v]) => v < LOW_STAT_THRESHOLD)
@@ -202,7 +209,7 @@ const Viewport = React.memo(function Viewport({
 
   // undo effects when graduated
   useEffect(() => {
-    if (pet?.age && pet.age >= 2) {
+    if (pet?.age && pet.age >= 3) {
       setIsAlmostDead(false);
     }
   }, [pet?.age]);

@@ -20,7 +20,7 @@ function getLatestPetsById(pets: Pet[]) {
 }
 
 export function getScrapbookPage(pets: Pet[], page: number) {
-  const graduatedPets = getLatestPetsById(pets).filter((p) => p.age >= 2);
+  const graduatedPets = getLatestPetsById(pets).filter((p) => p.age >= 3);
   const totalPages = Math.max(1, Math.ceil(graduatedPets.length / PER_PAGE));
   const clampedPage = Math.min(page, totalPages - 1);
   const pageStart = clampedPage * PER_PAGE;

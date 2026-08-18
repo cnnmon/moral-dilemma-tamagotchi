@@ -88,7 +88,7 @@ export default function Play() {
   const { pet, evolution } = usePet();
   const { hoverText } = useHoverText();
   const { dilemma } = useDilemma();
-  const hasGraduated = pet?.age !== undefined && pet.age >= 2;
+  const hasGraduated = pet?.age !== undefined && pet.age >= 3;
   const revertLastDilemma = useDebugRevert();
 
   useEffect(() => {

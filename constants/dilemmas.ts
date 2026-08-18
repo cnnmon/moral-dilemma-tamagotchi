@@ -364,13 +364,13 @@ export const dilemmas: Record<string, Dilemma> = {
   // saint: virtue × loyalty — moral truth vs. protecting the person you love most
   fabricatedaward: {
     id: "fabricatedaward",
-    text: "{pet}'s closest friend quietly confesses they fabricated a key part of the research that earned them a prestigious award last month. the work since then has been real, and nobody got hurt. but the award isn't theirs to keep. does {pet} report it?",
+    text: "{pet}'s closest friend confesses they fabricated a key part of the research that earned them a prestigious award last month. nobody got hurt, but the award isn't theirs to keep. does {pet} report it?",
   },
 
   // cultleader: self-serving × personal integrity — the following vs. admitting you were wrong
   wrongallalongalpha: {
     id: "wrongallalongalpha",
-    text: "{pet} has spent two years leading a community built around the belief that digital pets who never sleep evolve faster. a new study just proved sleep is critical — members have been unknowingly harming their pets. coming clean would fracture the following overnight. staying quiet costs nothing and the community keeps growing. does {pet} publish the correction?",
+    text: "{pet} has spent two years leading a community built around the belief that digital pets who never sleep evolve faster. a new study just proved sleep is critical! does {pet} publish the correction to improve their community's lives?",
   },
 };
 

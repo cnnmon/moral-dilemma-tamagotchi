@@ -352,7 +352,7 @@ export function PetProvider({ children }: { children: React.ReactNode }) {
 
   // on mount, load stats from localStorage (falls back to pet.baseStats)
   useEffect(() => {
-    if (!pet || pet.age >= 2) return;
+    if (!pet || pet.age >= 3) return;
 
     if (pet.evolutionIds.includes(EvolutionId.RIP)) {
       dispatchBaseStats({ type: "RESET_STATS" });
@@ -380,7 +380,7 @@ export function PetProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const interval = setInterval(() => {
       // only decrement stats when page is focused
-      if (!pet || pet.age >= 2) return;
+      if (!pet || pet.age >= 3) return;
 
       // decrement stats
       const prevStats = { ...baseStats };
