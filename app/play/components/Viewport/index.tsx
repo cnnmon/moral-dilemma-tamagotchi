@@ -17,51 +17,29 @@ import { ActiveDilemma } from "@/app/storage/pet";
 import { getRandomUnseenDilemma } from "@/app/utils/dilemma";
 import { dilemmas } from "@/constants/dilemmas";
 import { BaseStatKeys } from "@/constants/base";
-import FeatheredScroll from "@/components/FeatheredScroll";
 
 function ConversationScroll({
   messages,
 }: {
   messages: ActiveDilemma["messages"];
 }) {
-  const scrollRef = useRef<HTMLDivElement>(null);
-  // only assistant messages (pet's clarifying questions), newest first
-  const petMessages = messages
-    .filter((m) => m.role === "assistant")
-    .slice()
-    .reverse();
+  // only show the pet's latest clarifying question
+  const latest = messages.filter((m) => m.role === "assistant").at(-1);
 
-  // keep the newest bubble pinned at the top when a new one arrives
-  useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = 0;
-    }
-  }, [messages.length]);
-
-  if (!petMessages.length) return null;
+  if (!latest) return null;
 
   return (
     <motion.div
-      className="absolute top-4 bottom-4 left-1/2 -translate-x-1/2 z-10 w-full max-w-lg px-4"
+      key={latest.content}
+      className="absolute top-4 left-1/2 -translate-x-1/2 z-10 w-full max-w-lg px-4"
       initial={{ opacity: 0, y: -4 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -4 }}
       transition={{ duration: 0.3 }}
     >
-      <FeatheredScroll
-        ref={scrollRef}
-        direction="vertical"
-        className="max-h-full flex-col gap-1 overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
-      >
-        {petMessages.map((msg, i) => (
-          <p
-            key={`${petMessages.length - i}`}
-            className="w-full shrink-0 px-3 py-2 bg-zinc-100 border-2 border-black text-lg"
-          >
-            {msg.content}
-          </p>
-        ))}
-      </FeatheredScroll>
+      <p className="w-full px-3 py-2 bg-zinc-100 border-2 border-black text-lg">
+        {latest.content}
+      </p>
     </motion.div>
   );
 }
