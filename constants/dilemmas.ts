@@ -328,7 +328,7 @@ export const dilemmas: Record<string, Dilemma> = {
   // gavel: retribution × dominance — what if the law and justice aren't the same thing?
   judgeconscience: {
     id: "judgeconscience",
-    text: "{pet} is the judge in a high-profile case. the defendant broke the law while setting out to expose a corruption scandal that hurt innocent people for years. every legal precedent says convict. the courtroom is full and watching. does {pet} follow the law?",
+    text: "{pet} is the judge in a high-profile case. the defendant broke the law while setting out to expose a corruption scandal that hurt innocent people for years. every legal precedent says convict. does {pet} follow the law?",
   },
 
   // vigilante: retribution × personal integrity — punish wrongdoers, but your hands aren't clean either
@@ -340,7 +340,7 @@ export const dilemmas: Record<string, Dilemma> = {
   // godfather: dominance × ego — the throne or the payout?
   walkaway: {
     id: "walkaway",
-    text: "{pet} is the boss. a rival makes an offer: walk away, take the money, and let them absorb everything {pet} built. the payout is life-changing, but the moment {pet} takes it, {pet}'s name means nothing ever again. does {pet} cash out?",
+    text: "{pet} is the boss of an excellent operation. a rival makes an offer to purchase everything {pet} built, but in exchange, {pet} loses their name and legacy. does {pet} cash out?",
   },
 
   // guardian: dominance × selflessness — save them from themselves vs. respect their right to fall
@@ -352,13 +352,13 @@ export const dilemmas: Record<string, Dilemma> = {
   // aristocrat: loyalty × indulgence — old crowd vs. new life
   birthdayevent: {
     id: "birthdayevent",
-    text: "{pet} scores an invite to an exclusive party that could genuinely change their career on the same night as their best friend's birthday at a sticky dive bar across town. the friend hasn't asked if {pet} is coming, they're just expecting it. does {pet} go to the party?",
+    text: "{pet} scores an invite to an exclusive party that could be huge for their career on the same night as their best friend's birthday at a sticky dive bar across town. the friend is expecting {pet} to come. does {pet} go to the party?",
   },
 
   // sigma: ego × logic — the math says volunteer, but the ego says why me?
   worstjob: {
     id: "worstjob",
-    text: "{pet} has run the numbers. the group project goes best if {pet} takes the worst, but still crucial role: no credit, no glory, janitorial work while everyone else does more interesting work. logically it's the correct move but {pet} still finds it annoying. does {pet} volunteer?",
+    text: "{pet} is in a group project, and realizes that it would be logically best if {pet} takes the worst but still crucial role in the team. it's a role with no credit and no glory that {pet} would simply be best at, while others get to do what they like. does {pet} volunteer?",
   },
 
   // saint: virtue × loyalty — moral truth vs. protecting the person you love most
