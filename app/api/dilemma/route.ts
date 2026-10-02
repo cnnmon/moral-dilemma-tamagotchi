@@ -34,6 +34,7 @@ async function processDilemmaResponse(pet: Pet, dilemma: ActiveDilemma): Promise
     const completion = await openai.chat.completions.create({
       model: 'gpt-5-mini',
       messages,
+      reasoning_effort: "low",
       response_format: { type: 'json_object' },
     });
 
