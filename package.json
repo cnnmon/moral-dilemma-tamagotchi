@@ -8,7 +8,8 @@
     "dev:backend": "convex dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "test:graduation": "npx tsx tests/graduation.test.ts"
   },
   "dependencies": {
     "@next/eslint-plugin-next": "~15.1.0",
